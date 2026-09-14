@@ -8,116 +8,169 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap">
 <style>
 :root{
-  --brick:#C2653F; --brick-dark:#A4502F;
-  --cream:#F7F1E6; --card:#FFFFFF; --ink:#2B211A; --ink-2:#7A6A5B;
-  --rule:#E5D9C7; --green:#4A6350;
+  --navy:#0E1B2A; --navy-2:#152436; --navy-3:#1D3048;
+  --gold:#C9A227; --gold-soft:#E0C36A; --gold-dim:rgba(201,162,39,.28);
+  --cream:#F2E8D5; --cream-2:#A9A08E;
+  --line:rgba(201,162,39,.20);
   --r:14px;
 }
-@media (prefers-color-scheme: dark){
-  :root{ --cream:#14100D; --card:#1E1815; --ink:#F0E7DA; --ink-2:#9C8C7C; --rule:#2E2621; --brick:#E0825A; }
-}
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{margin:0; background:var(--navy); color:var(--cream)}
 body{
-  margin:0; background:var(--cream); color:var(--ink);
   font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif; font-size:16px; line-height:1.5;
-  padding:0 16px 120px;
+  padding-bottom:120px;
+  background-image:
+    radial-gradient(1100px 380px at 50% -160px, rgba(201,162,39,.10), transparent 70%),
+    linear-gradient(180deg, #0E1B2A 0%, #0B1522 100%);
+  background-attachment:fixed;
 }
-header{padding:22px 0 14px}
-h1{font-family:"Playfair Display",Georgia,serif; font-size:26px; margin:0 0 4px; font-weight:700}
-.sub{color:var(--ink-2); font-size:14.5px}
-section{margin-top:22px}
-.label{font-size:13px; color:var(--ink-2); margin-bottom:9px; letter-spacing:.02em}
+.wrap{padding:0 18px}
+
+/* шапка */
+.hero{position:relative; margin:0 0 6px; height:168px; overflow:hidden}
+.hero img{width:100%; height:100%; object-fit:cover; display:block; opacity:.5}
+.hero::after{content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(14,27,42,.35) 0%, rgba(14,27,42,.92) 78%, #0E1B2A 100%)}
+.hero .cap{position:absolute; left:18px; right:18px; bottom:14px; z-index:2}
+.brand{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--gold-soft); margin-bottom:5px}
+h1{font-family:"Playfair Display",Georgia,serif; font-size:29px; line-height:1.1; margin:0; font-weight:700}
+.sub{color:var(--cream-2); font-size:14.5px; margin-top:6px}
+
+/* секции */
+section{margin-top:26px}
+.label{
+  display:flex; align-items:center; gap:9px; font-size:12px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--gold-soft); margin-bottom:11px;
+}
+.label::after{content:""; flex:1; height:1px; background:var(--line)}
+.num{
+  width:20px; height:20px; border:1px solid var(--gold-dim); border-radius:50%;
+  display:grid; place-items:center; font-size:10.5px; color:var(--gold-soft); flex-shrink:0;
+}
 .row{display:flex; flex-wrap:wrap; gap:8px}
 .chip{
-  border:1px solid var(--rule); background:var(--card); color:var(--ink);
-  padding:11px 15px; border-radius:99px; font-size:15px; cursor:pointer;
-  transition:transform .08s, border-color .12s, background .12s;
+  border:1px solid var(--line); background:var(--navy-2); color:var(--cream);
+  padding:11px 16px; border-radius:99px; font-size:15px; font-family:inherit; cursor:pointer;
+  transition:transform .08s ease, background .15s, border-color .15s, color .15s;
 }
-.chip:active{transform:scale(.97)}
-.chip.on{background:var(--brick); border-color:var(--brick); color:#fff; font-weight:500}
-.chip.wide{flex:1; text-align:center; min-width:96px}
+.chip:active{transform:scale(.96)}
+.chip.on{background:var(--gold); border-color:var(--gold); color:#101A26; font-weight:600}
+.chip.wide{flex:1; min-width:98px; text-align:center}
+
+/* залы */
 .halls{display:grid; gap:10px}
 .hall{
-  display:flex; gap:12px; align-items:center; padding:8px; border:1px solid var(--rule);
-  border-radius:var(--r); background:var(--card); cursor:pointer;
+  position:relative; display:flex; gap:13px; align-items:center; padding:9px;
+  border:1px solid var(--line); border-radius:var(--r); background:var(--navy-2); cursor:pointer;
+  transition:border-color .15s, background .15s;
 }
-.hall.on{border-color:var(--brick); box-shadow:0 0 0 1px var(--brick) inset}
-.hall img{width:84px; height:64px; object-fit:cover; border-radius:9px; flex-shrink:0; background:var(--rule)}
-.hall b{display:block; font-size:15.5px; font-weight:600}
-.hall span{font-size:13px; color:var(--ink-2)}
+.hall.on{border-color:var(--gold); background:var(--navy-3)}
+.hall.on::before{content:"✓"; position:absolute; top:9px; right:12px; color:var(--gold); font-size:14px}
+.hall img{width:92px; height:68px; object-fit:cover; border-radius:10px; flex-shrink:0; background:var(--navy-3)}
+.hall b{display:block; font-size:15.5px; font-weight:600; font-family:"Playfair Display",Georgia,serif}
+.hall span{font-size:13px; color:var(--cream-2)}
+
+/* поля */
 input[type=text], input[type=date]{
-  width:100%; padding:13px 15px; border:1px solid var(--rule); border-radius:var(--r);
-  background:var(--card); color:var(--ink); font-size:16px; font-family:inherit;
+  width:100%; padding:13px 15px; border:1px solid var(--line); border-radius:var(--r);
+  background:var(--navy-2); color:var(--cream); font-size:16px; font-family:inherit;
 }
-input:focus{outline:none; border-color:var(--brick)}
-.phone-row{display:flex; gap:8px; align-items:center}
+input::placeholder{color:#6E7B8C}
+input:focus{outline:none; border-color:var(--gold)}
 .phone-btn{
-  flex:1; padding:14px; border:none; border-radius:var(--r); background:var(--green);
-  color:#fff; font-size:15.5px; font-weight:500; font-family:inherit; cursor:pointer;
+  width:100%; padding:15px; border:1px solid var(--gold); border-radius:var(--r);
+  background:transparent; color:var(--gold-soft); font-size:15.5px; font-weight:500;
+  font-family:inherit; cursor:pointer;
 }
-.got{background:var(--card); border:1px solid var(--green); color:var(--green); text-align:center;
-  padding:13px; border-radius:var(--r); font-size:15.5px}
-.hint{font-size:13px; color:var(--ink-2); margin-top:7px}
+.phone-btn:active{background:var(--navy-3)}
+.got{
+  background:var(--navy-2); border:1px solid var(--gold); color:var(--gold-soft);
+  text-align:center; padding:14px; border-radius:var(--r); font-size:15.5px;
+}
+.hint{font-size:12.5px; color:var(--cream-2); margin-top:8px}
+.hint.tap{color:var(--gold-soft); cursor:pointer; text-decoration:underline; text-underline-offset:3px}
+
+/* итог */
 .summary{
-  background:var(--card); border:1px solid var(--rule); border-radius:var(--r);
-  padding:15px 17px; margin-top:24px; font-size:15px; display:none;
+  margin-top:26px; border:1px solid var(--line); border-radius:var(--r);
+  background:var(--navy-2); overflow:hidden;
 }
-.summary.show{display:block}
-.summary div{display:flex; justify-content:space-between; gap:12px; padding:5px 0}
-.summary span:first-child{color:var(--ink-2)}
-.closed-note{
-  background:var(--card); border:1px solid var(--rule); border-left:3px solid var(--brick);
-  border-radius:10px; padding:11px 14px; font-size:14px; color:var(--ink-2); margin-top:10px;
+.summary .head{
+  padding:11px 16px; border-bottom:1px solid var(--line); font-size:12px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--gold-soft);
 }
+.summary .body{padding:6px 16px 13px}
+.summary div.line{display:flex; justify-content:space-between; gap:14px; padding:7px 0; font-size:15px}
+.summary .line span:first-child{color:var(--cream-2)}
+.summary .line span:last-child{text-align:right}
+.note{
+  border:1px solid var(--line); border-left:2px solid var(--gold); border-radius:10px;
+  padding:11px 14px; font-size:14px; color:var(--cream-2); margin-top:11px; background:var(--navy-2);
+}
+footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin-top:26px}
 </style>
 </head>
 <body>
-<header>
-  <h1>Забронировать стол</h1>
-  <div class="sub">Пара касаний, и администратор перезвонит подтвердить</div>
-</header>
+
+<div class="hero">
+  <img src="https://the-red-beard.github.io/retro-photos/img/terrasa-01-neon-arki.jpg" alt="">
+  <div class="cap">
+    <div class="brand">Retro Milliy</div>
+    <h1>Забронировать стол</h1>
+  </div>
+</div>
+
+<div class="wrap">
+<div class="sub">Пара касаний, и администратор перезвонит подтвердить</div>
 
 <section>
-  <div class="label">Когда придёте</div>
+  <div class="label"><span class="num">1</span> Когда придёте</div>
   <div class="row" id="days"></div>
   <div style="margin-top:9px; display:none" id="dateWrap"><input type="date" id="dateInput"></div>
 </section>
 
 <section>
-  <div class="label">Время</div>
+  <div class="label"><span class="num">2</span> Время</div>
   <div class="row" id="parts"></div>
   <div class="row" id="slots" style="margin-top:9px"></div>
-  <div class="closed-note" id="closedNote" style="display:none"></div>
+  <div class="note" id="closedNote" style="display:none"></div>
 </section>
 
 <section>
-  <div class="label">Сколько гостей</div>
+  <div class="label"><span class="num">3</span> Сколько гостей</div>
   <div class="row" id="guests"></div>
 </section>
 
 <section>
-  <div class="label">Где посадить</div>
+  <div class="label"><span class="num">4</span> Где посадить</div>
   <div class="halls" id="halls"></div>
 </section>
 
 <section>
-  <div class="label">Как вас зовут</div>
+  <div class="label"><span class="num">5</span> Как вас зовут</div>
   <input type="text" id="name" placeholder="Имя" autocomplete="given-name">
 </section>
 
 <section>
-  <div class="label">Телефон</div>
+  <div class="label"><span class="num">6</span> Телефон</div>
   <div id="phoneBox"></div>
   <div class="hint">Номер нужен администратору, чтобы подтвердить бронь звонком</div>
 </section>
 
-<div class="summary" id="summary"></div>
+<div class="summary" id="summary">
+  <div class="head">Ваша бронь</div>
+  <div class="body" id="summaryBody"></div>
+</div>
+
+<footer>Retro Milliy · Олтинтепа 28 · каждый день 9:00–23:00</footer>
+</div>
 
 <script>
 const tg = window.Telegram?.WebApp;
 const P = new URLSearchParams(location.search);
 const closed = (P.get('closed') || '').split(',').filter(Boolean);
-const PHOTOS = 'https://the-red-beard.github.io/retro-photos/sq/';
+const SQ = 'https://the-red-beard.github.io/retro-photos/sq/';
 
 const DAYS = [['today','Сегодня'],['tomorrow','Завтра'],['other','Другой день']];
 const PARTS = [
@@ -134,142 +187,111 @@ const HALLS = [
 ];
 
 const s = { day:null, dayLabel:null, date:null, part:null, time:null, guests:null, hall:null, hallLabel:null, name:'', phone:'' };
+const el=(t,c,x)=>{const e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e;};
+const pick=(box,on)=>{[...box.children].forEach(c=>c.classList.remove('on')); on.classList.add('on');};
+const buzz=()=>{ try{ tg?.HapticFeedback?.selectionChanged(); }catch(e){} };
 
-function el(tag, cls, text){ const e=document.createElement(tag); if(cls)e.className=cls; if(text!=null)e.textContent=text; return e; }
-function pick(container, on){ [...container.children].forEach(c=>c.classList.remove('on')); on.classList.add('on'); }
-
-// дни
-const days = document.getElementById('days');
+const days=document.getElementById('days');
 DAYS.forEach(([k,label])=>{
-  const b = el('button','chip wide',label);
-  b.onclick = ()=>{
-    pick(days,b); s.day=k; s.dayLabel=label.toLowerCase();
-    document.getElementById('dateWrap').style.display = k==='other' ? 'block' : 'none';
-    renderParts(); update();
-  };
+  const b=el('button','chip wide',label);
+  b.onclick=()=>{ buzz(); pick(days,b); s.day=k; s.dayLabel=label.toLowerCase();
+    document.getElementById('dateWrap').style.display = k==='other'?'block':'none';
+    renderParts(); update(); };
   days.appendChild(b);
 });
-document.getElementById('dateInput').onchange = e => { s.date = e.target.value; s.dayLabel = e.target.value; update(); };
+document.getElementById('dateInput').onchange=e=>{ s.date=e.target.value; s.dayLabel=e.target.value; update(); };
 
-// части дня
-const parts = document.getElementById('parts');
-const slots = document.getElementById('slots');
-const note = document.getElementById('closedNote');
+const parts=document.getElementById('parts'), slots=document.getElementById('slots'), note=document.getElementById('closedNote');
 function renderParts(){
   parts.innerHTML=''; slots.innerHTML=''; note.style.display='none'; s.part=null; s.time=null;
-  const blocked = [];
+  const blocked=[];
   PARTS.forEach(([k,label,times])=>{
-    const isClosed = (s.day==='today' && closed.includes('today_'+k)) || (s.day==='tomorrow' && closed.includes('tomorrow_'+k));
-    if (isClosed){ blocked.push(label.replace(/^\S+\s/,'').toLowerCase()); return; }
-    const b = el('button','chip',label);
-    b.onclick = ()=>{ pick(parts,b); s.part=k; s.time=null; renderSlots(times); update(); };
+    const shut=(s.day==='today'&&closed.includes('today_'+k))||(s.day==='tomorrow'&&closed.includes('tomorrow_'+k));
+    if(shut){ blocked.push(label.replace(/^\S+\s/,'').toLowerCase()); return; }
+    const b=el('button','chip',label);
+    b.onclick=()=>{ buzz(); pick(parts,b); s.part=k; s.time=null; renderSlots(times); update(); };
     parts.appendChild(b);
   });
-  if (blocked.length){
-    note.textContent = 'На это время всё занято: ' + blocked.join(', ') + '. Выберите другое.';
-    note.style.display='block';
-  }
+  if(blocked.length){ note.textContent='На это время всё занято: '+blocked.join(', ')+'. Выберите другое.'; note.style.display='block'; }
 }
 function renderSlots(times){
   slots.innerHTML='';
-  times.forEach(t=>{
-    const b = el('button','chip',t);
-    b.onclick = ()=>{ pick(slots,b); s.time=t; update(); };
-    slots.appendChild(b);
-  });
+  times.forEach(t=>{ const b=el('button','chip',t);
+    b.onclick=()=>{ buzz(); pick(slots,b); s.time=t; update(); }; slots.appendChild(b); });
 }
 
-// гости
-const guests = document.getElementById('guests');
+const guests=document.getElementById('guests');
 ['2','3','4','5','6','8','10','больше 10'].forEach(n=>{
-  const b = el('button','chip',n);
-  b.onclick = ()=>{ pick(guests,b); s.guests=n; update(); };
+  const b=el('button','chip',n);
+  b.onclick=()=>{ buzz(); pick(guests,b); s.guests=n; update(); };
   guests.appendChild(b);
 });
 
-// залы
-const halls = document.getElementById('halls');
+const halls=document.getElementById('halls');
 HALLS.forEach(([k,title,desc,file,field])=>{
-  if (field && closed.includes(field)) return;
-  const d = el('div','hall');
-  const img = el('img'); img.src = PHOTOS+file; img.alt = title; img.loading='lazy';
-  const box = el('div');
-  box.appendChild(el('b',null,title));
-  box.appendChild(el('span',null,desc));
+  if(field&&closed.includes(field)) return;
+  const d=el('div','hall');
+  const img=el('img'); img.src=SQ+file; img.alt=title; img.loading='lazy';
+  const box=el('div'); box.appendChild(el('b',null,title)); box.appendChild(el('span',null,desc));
   d.appendChild(img); d.appendChild(box);
-  d.onclick = ()=>{ pick(halls,d); s.hall=k; s.hallLabel=title; update(); };
+  d.onclick=()=>{ buzz(); pick(halls,d); s.hall=k; s.hallLabel=title; update(); };
   halls.appendChild(d);
 });
 
-// имя
-const nameInput = document.getElementById('name');
-const who = tg?.initDataUnsafe?.user;
-if (who?.first_name) nameInput.value = [who.first_name, who.last_name].filter(Boolean).join(' ');
-s.name = nameInput.value;
-nameInput.oninput = e => { s.name = e.target.value.trim(); update(); };
+const nameInput=document.getElementById('name');
+const who=tg?.initDataUnsafe?.user;
+if(who?.first_name) nameInput.value=[who.first_name,who.last_name].filter(Boolean).join(' ');
+s.name=nameInput.value;
+nameInput.oninput=e=>{ s.name=e.target.value.trim(); update(); };
 
-// телефон
-const phoneBox = document.getElementById('phoneBox');
+const phoneBox=document.getElementById('phoneBox');
 function renderPhone(){
   phoneBox.innerHTML='';
-  if (s.phone){ phoneBox.appendChild(el('div','got','Номер получен: '+s.phone)); return; }
-  const b = el('button','phone-btn','📱 Взять номер из Telegram');
-  b.onclick = ()=>{
-    if (!tg?.requestContact){ manual(); return; }
-    tg.requestContact((ok, res)=>{
-      if (ok){
-        const raw = res?.responseUnsafe?.contact?.phone_number || res?.contact?.phone_number;
-        s.phone = raw ? (String(raw).startsWith('+')?raw:'+'+raw) : 'получен';
-        renderPhone(); update();
-      } else manual();
+  if(s.phone){ phoneBox.appendChild(el('div','got','Номер получен: '+s.phone)); return; }
+  const b=el('button','phone-btn','📱 Взять номер из Telegram');
+  b.onclick=()=>{
+    if(!tg?.requestContact){ manual(); return; }
+    tg.requestContact((ok,res)=>{
+      if(ok){ const raw=res?.responseUnsafe?.contact?.phone_number||res?.contact?.phone_number;
+        s.phone=raw?(String(raw).startsWith('+')?raw:'+'+raw):'получен'; renderPhone(); update(); }
+      else manual();
     });
   };
   phoneBox.appendChild(b);
-  const m = el('div','hint','Не сработало? Напишите вручную');
-  m.style.cursor='pointer'; m.onclick = manual;
-  phoneBox.appendChild(m);
+  const m=el('div','hint tap','Не сработало? Написать вручную');
+  m.onclick=manual; phoneBox.appendChild(m);
 }
 function manual(){
   phoneBox.innerHTML='';
-  const i = el('input'); i.type='text'; i.placeholder='+998 XX XXX XX XX'; i.inputMode='tel';
-  i.oninput = e => { s.phone = e.target.value.trim(); update(); };
+  const i=el('input'); i.type='text'; i.placeholder='+998 XX XXX XX XX'; i.inputMode='tel';
+  i.oninput=e=>{ s.phone=e.target.value.trim(); update(); };
   phoneBox.appendChild(i); i.focus();
 }
 renderPhone();
 
-// итог и кнопка
-const summary = document.getElementById('summary');
-function ready(){
-  return s.day && (s.day!=='other' || s.date) && s.time && s.guests && s.hall && s.name && s.phone.replace(/\D/g,'').length>=9;
-}
+const body=document.getElementById('summaryBody');
+const ready=()=>s.day&&(s.day!=='other'||s.date)&&s.time&&s.guests&&s.hall&&s.name&&s.phone.replace(/\D/g,'').length>=9;
 function update(){
-  const rows = [
-    ['Когда', s.dayLabel && s.time ? s.dayLabel+', '+s.time : '—'],
-    ['Гостей', s.guests || '—'],
-    ['Зона', s.hallLabel || '—'],
-    ['Имя', s.name || '—'],
-    ['Телефон', s.phone || '—'],
-  ];
-  summary.innerHTML='';
-  rows.forEach(([k,v])=>{
-    const d = el('div'); d.appendChild(el('span',null,k)); d.appendChild(el('span',null,v)); summary.appendChild(d);
-  });
-  summary.classList.add('show');
-  const btn = tg?.MainButton;
-  if (!btn) return;
-  if (ready()){ btn.setText('Отправить заявку'); btn.color='#C2653F'; btn.show(); btn.enable(); }
+  const rows=[['Когда', s.dayLabel&&s.time?s.dayLabel+', '+s.time:'—'],
+    ['Гостей', s.guests||'—'], ['Зона', s.hallLabel||'—'],
+    ['Имя', s.name||'—'], ['Телефон', s.phone||'—']];
+  body.innerHTML='';
+  rows.forEach(([k,v])=>{ const d=el('div','line');
+    d.appendChild(el('span',null,k)); d.appendChild(el('span',null,v)); body.appendChild(d); });
+  const btn=tg?.MainButton; if(!btn) return;
+  btn.setParams({ color:'#C9A227', text_color:'#101A26' });
+  if(ready()){ btn.setText('Отправить заявку'); btn.show(); btn.enable(); }
   else { btn.setText('Заполните все поля'); btn.show(); btn.disable(); }
 }
 
-if (tg){
+if(tg){
   tg.ready(); tg.expand();
+  try{ tg.setHeaderColor('#0E1B2A'); tg.setBackgroundColor('#0E1B2A'); }catch(e){}
   tg.MainButton.onClick(()=>{
-    if (!ready()) return;
-    tg.sendData(JSON.stringify({
-      t:'table', day:s.day, date:s.date, dayLabel:s.dayLabel, part:s.part,
-      time:s.time, guests:s.guests, hall:s.hall, hallLabel:s.hallLabel,
-      name:s.name, phone:s.phone,
-    }));
+    if(!ready()) return;
+    try{ tg.HapticFeedback?.notificationOccurred('success'); }catch(e){}
+    tg.sendData(JSON.stringify({ t:'table', day:s.day, date:s.date, dayLabel:s.dayLabel, part:s.part,
+      time:s.time, guests:s.guests, hall:s.hall, hallLabel:s.hallLabel, name:s.name, phone:s.phone }));
   });
 }
 update();
