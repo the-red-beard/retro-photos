@@ -272,6 +272,7 @@ renderPhone();
 const body=document.getElementById('summaryBody');
 const ready=()=>s.day&&(s.day!=='other'||s.date)&&s.time&&s.guests&&s.hall&&s.name&&s.phone.replace(/\D/g,'').length>=9;
 function update(){
+  if(window.__sent) return;
   const rows=[['Когда', s.dayLabel&&s.time?s.dayLabel+', '+s.time:'—'],
     ['Гостей', s.guests||'—'], ['Зона', s.hallLabel||'—'],
     ['Имя', s.name||'—'], ['Телефон', s.phone||'—']];
@@ -287,8 +288,13 @@ function update(){
 if(tg){
   tg.ready(); tg.expand();
   try{ tg.setHeaderColor('#0E1B2A'); tg.setBackgroundColor('#0E1B2A'); }catch(e){}
+  let sent=false;                       // заявка уходит один раз, сколько бы ни нажали
   tg.MainButton.onClick(()=>{
-    if(!ready()) return;
+    if(sent || !ready()) return;
+    sent=true; window.__sent=true;
+    tg.MainButton.disable();
+    tg.MainButton.setText('Отправляем…');
+    try{ tg.MainButton.showProgress(true); }catch(e){}
     try{ tg.HapticFeedback?.notificationOccurred('success'); }catch(e){}
     tg.sendData(JSON.stringify({ t:'table', day:s.day, date:s.date, dayLabel:s.dayLabel, part:s.part,
       time:s.time, guests:s.guests, hall:s.hall, hallLabel:s.hallLabel, name:s.name, phone:s.phone }));
