@@ -18,7 +18,8 @@
 html,body{margin:0; background:var(--navy); color:var(--cream)}
 body{
   font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif; font-size:16px; line-height:1.5;
-  padding-bottom:120px;
+  /* запас снизу — только под кнопку Telegram и вырез экрана, не 120px вслепую */
+  padding-bottom:calc(28px + env(safe-area-inset-bottom, 0px));
   background-image:
     radial-gradient(1100px 380px at 50% -160px, rgba(201,162,39,.10), transparent 70%),
     linear-gradient(180deg, #0E1B2A 0%, #0B1522 100%);
@@ -27,14 +28,16 @@ body{
 .wrap{padding:0 18px}
 
 /* шапка */
-.hero{position:relative; margin:0 0 6px; height:168px; overflow:hidden}
+/* Шапка ужимается на низких экранах: на 4.7" она съедала треть окна,
+   из-за чего страница уезжала и обрезалась. */
+.hero{position:relative; margin:0 0 6px; height:clamp(96px, 20vh, 168px); overflow:hidden}
 .hero img{width:100%; height:100%; object-fit:cover; display:block; opacity:.5}
 .hero::after{content:""; position:absolute; inset:0;
   background:linear-gradient(180deg, rgba(14,27,42,.35) 0%, rgba(14,27,42,.92) 78%, #0E1B2A 100%)}
 .hero .cap{position:absolute; left:18px; right:18px; bottom:14px; z-index:2}
 .brand{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.22em;
   text-transform:uppercase; color:var(--gold-soft); margin-bottom:5px}
-h1{font-family:"Playfair Display",Georgia,serif; font-size:29px; line-height:1.1; margin:0; font-weight:700}
+h1{font-family:"Playfair Display",Georgia,serif; font-size:clamp(21px, 6.2vw, 29px); line-height:1.1; margin:0; font-weight:700}
 .sub{color:var(--cream-2); font-size:14.5px; margin-top:6px}
 
 /* переключатель языка */
@@ -47,7 +50,15 @@ h1{font-family:"Playfair Display",Georgia,serif; font-size:29px; line-height:1.1
 .langbar button.on{border-color:var(--gold); color:var(--gold-soft)}
 
 /* секции */
-section{margin-top:26px}
+section{margin-top:22px}
+.page[hidden]{display:none}
+
+/* индикатор шага */
+.progress{height:2px; background:var(--line); border-radius:2px; margin:14px 0 9px; overflow:hidden}
+.progress i{display:block; height:100%; width:0; background:var(--gold);
+  transition:width .22s ease}
+.stepline{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--gold-soft)}
 .label{
   display:flex; align-items:center; gap:9px; font-size:12px; letter-spacing:.12em;
   text-transform:uppercase; color:var(--gold-soft); margin-bottom:11px;
@@ -132,45 +143,52 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin-top:26p
 </div>
 
 <div class="wrap">
+<div class="progress"><i id="bar"></i></div>
+<div class="stepline" id="stepline"></div>
 <div class="sub" id="sub"></div>
 
-<section>
-  <div class="label"><span class="num">1</span> <span id="l1"></span></div>
-  <div class="row" id="days"></div>
-  <div style="margin-top:9px; display:none" id="dateWrap"><input type="date" id="dateInput"></div>
-</section>
+<div class="page" data-step="1">
+  <section>
+    <div class="label"><span class="num">1</span> <span id="l1"></span></div>
+    <div class="row" id="days"></div>
+    <div style="margin-top:9px; display:none" id="dateWrap"><input type="date" id="dateInput"></div>
+  </section>
+  <section>
+    <div class="label"><span class="num">2</span> <span id="l2"></span></div>
+    <div class="row" id="parts"></div>
+    <div class="row" id="slots" style="margin-top:9px"></div>
+    <div class="note" id="closedNote" style="display:none"></div>
+  </section>
+</div>
 
-<section>
-  <div class="label"><span class="num">2</span> <span id="l2"></span></div>
-  <div class="row" id="parts"></div>
-  <div class="row" id="slots" style="margin-top:9px"></div>
-  <div class="note" id="closedNote" style="display:none"></div>
-</section>
+<div class="page" data-step="2" hidden>
+  <section>
+    <div class="label"><span class="num">3</span> <span id="l3"></span></div>
+    <div class="row" id="guests"></div>
+  </section>
+</div>
 
-<section>
-  <div class="label"><span class="num">3</span> <span id="l3"></span></div>
-  <div class="row" id="guests"></div>
-</section>
+<div class="page" data-step="3" hidden>
+  <section>
+    <div class="label"><span class="num">4</span> <span id="l4"></span></div>
+    <div class="halls" id="halls"></div>
+  </section>
+</div>
 
-<section>
-  <div class="label"><span class="num">4</span> <span id="l4"></span></div>
-  <div class="halls" id="halls"></div>
-</section>
-
-<section>
-  <div class="label"><span class="num">5</span> <span id="l5"></span></div>
-  <input type="text" id="name" autocomplete="given-name">
-</section>
-
-<section id="phoneSection">
-  <div class="label"><span class="num">6</span> <span id="l6"></span></div>
-  <div id="phoneBox"></div>
-  <div class="hint" id="phoneHint"></div>
-</section>
-
-<div class="summary" id="summary">
-  <div class="head" id="sumHead"></div>
-  <div class="body" id="summaryBody"></div>
+<div class="page" data-step="4" hidden>
+  <section>
+    <div class="label"><span class="num">5</span> <span id="l5"></span></div>
+    <input type="text" id="name" autocomplete="given-name">
+  </section>
+  <section id="phoneSection">
+    <div class="label"><span class="num">6</span> <span id="l6"></span></div>
+    <div id="phoneBox"></div>
+    <div class="hint" id="phoneHint"></div>
+  </section>
+  <div class="summary" id="summary">
+    <div class="head" id="sumHead"></div>
+    <div class="body" id="summaryBody"></div>
+  </div>
 </div>
 
 <footer id="foot"></footer>
@@ -203,6 +221,7 @@ const T = {
     sumHead:"Sizning bandligingiz",
     kWhen:"Qachon", kGuests:"Mehmonlar", kHall:"Zal", kName:"Ism", kPhone:"Telefon",
     send:"Arizani yuborish", fill:"Barcha maydonlarni to'ldiring", sending:"Yuborilmoqda…",
+    next:"Keyingi", stepOf:"{m} dan {n}-qadam",
     closedNote:"Bu vaqt band: ", closedTail:". Boshqasini tanlang.",
     foot:"Retro Milliy · Oltintepa 28 · har kuni 9:00–23:00"
   },
@@ -221,6 +240,7 @@ const T = {
     sumHead:"Ваша бронь",
     kWhen:"Когда", kGuests:"Гостей", kHall:"Зона", kName:"Имя", kPhone:"Телефон",
     send:"Отправить заявку", fill:"Заполните все поля", sending:"Отправляем…",
+    next:"Далее", stepOf:"Шаг {n} из {m}",
     closedNote:"На это время всё занято: ", closedTail:". Выберите другое.",
     foot:"Retro Milliy · Олтинтепа 28 · каждый день 9:00–23:00"
   },
@@ -239,6 +259,7 @@ const T = {
     sumHead:"Your booking",
     kWhen:"When", kGuests:"Guests", kHall:"Hall", kName:"Name", kPhone:"Phone",
     send:"Send request", fill:"Fill in every field", sending:"Sending…",
+    next:"Next", stepOf:"Step {n} of {m}",
     closedNote:"Fully booked then: ", closedTail:". Please pick another.",
     foot:"Retro Milliy · Oltintepa 28 · every day 9:00–23:00"
   }
@@ -406,8 +427,27 @@ function manual(){
 }
 
 // ── итог и главная кнопка ───────────────────────────────
-const ready=()=>s.day&&(s.day!=='other'||s.date)&&s.time&&s.guests&&s.hall&&s.name&&
-  (KNOWN || s.phone.replace(/\D/g,'').length>=9);
+// ── шаги ────────────────────────────────────────────────
+// Бронь разбита на четыре экрана: на одном полотне шесть блоков не помещались
+// и уезжали за край на невысоких телефонах.
+const STEPS=4;
+let step=1;
+const stepReady=(n)=>
+  n===1 ? !!(s.day && (s.day!=='other'||s.date) && s.time) :
+  n===2 ? !!s.guests :
+  n===3 ? !!s.hall :
+          !!(s.name && (KNOWN || s.phone.replace(/\D/g,'').length>=9));
+const ready=()=>[1,2,3,4].every(stepReady);
+
+function showStep(n){
+  step=Math.min(Math.max(n,1),STEPS);
+  document.querySelectorAll('.page').forEach(p=>{ p.hidden = +p.dataset.step!==step; });
+  $('bar').style.width = Math.round(step/STEPS*100)+'%';
+  $('stepline').textContent=(L.stepOf||'{n}/{m}').replace('{n}',step).replace('{m}',STEPS);
+  if(tg){ step>1 ? tg.BackButton.show() : tg.BackButton.hide(); }
+  window.scrollTo(0,0);
+  update();
+}
 
 function update(){
   if(window.__sent) return;
@@ -421,21 +461,25 @@ function update(){
     d.appendChild(el('span',null,k)); d.appendChild(el('span',null,v)); body.appendChild(d); });
   const btn=tg?.MainButton; if(!btn) return;
   btn.setParams({ color:'#C9A227', text_color:'#101A26' });
-  if(ready()){ btn.setText(L.send); btn.show(); btn.enable(); }
-  else { btn.setText(L.fill); btn.show(); btn.disable(); }
+  const last = step===STEPS;
+  btn.setText(last ? L.send : (L.next||'→'));
+  btn.show();
+  stepReady(step) ? btn.enable() : btn.disable();
 }
 
 function renderAll(){
   renderLangbar(); renderChrome(); renderDays(); renderGuests(); renderHalls();
   if(s.day) renderParts(false);
-  renderPhone(); update();
+  renderPhone(); showStep(step);
 }
 
 if(tg){
   tg.ready(); tg.expand();
   try{ tg.setHeaderColor('#0E1B2A'); tg.setBackgroundColor('#0E1B2A'); }catch(e){}
+  tg.BackButton.onClick(()=>{ if(step>1) showStep(step-1); });
   let sent=false;                       // заявка уходит один раз, сколько бы ни нажали
   tg.MainButton.onClick(()=>{
+    if(step<STEPS){ if(stepReady(step)) showStep(step+1); return; }
     if(sent || !ready()) return;
     sent=true; window.__sent=true;
     tg.MainButton.disable();
