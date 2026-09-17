@@ -20,12 +20,16 @@ body{
   font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif; font-size:16px; line-height:1.5;
   /* запас снизу — только под кнопку Telegram и вырез экрана, не 120px вслепую */
   padding-bottom:calc(28px + env(safe-area-inset-bottom, 0px));
+  /* Колонка на всю высоту окна: иначе короткий шаг оставлял под собой
+     провал до кнопки Telegram, и подвал зависал посередине экрана. */
+  display:flex; flex-direction:column; min-height:100vh;
   background-image:
     radial-gradient(1100px 380px at 50% -160px, rgba(201,162,39,.10), transparent 70%),
     linear-gradient(180deg, #0E1B2A 0%, #0B1522 100%);
   background-attachment:fixed;
 }
-.wrap{padding:0 18px}
+.wrap{padding:0 18px; flex:1; display:flex; flex-direction:column}
+@supports (height:100dvh){ body{min-height:100dvh} }
 
 /* шапка */
 /* Шапка ужимается на низких экранах: на 4.7" она съедала треть окна,
@@ -128,7 +132,7 @@ input:focus{outline:none; border-color:var(--gold)}
   border:1px solid var(--line); border-left:2px solid var(--gold); border-radius:10px;
   padding:11px 14px; font-size:14px; color:var(--cream-2); margin-top:11px; background:var(--navy-2);
 }
-footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin-top:26px}
+footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin-top:auto; padding-top:26px}
 </style>
 </head>
 <body>
@@ -153,7 +157,7 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin-top:26p
     <div class="row" id="days"></div>
     <div style="margin-top:9px; display:none" id="dateWrap"><input type="date" id="dateInput"></div>
   </section>
-  <section>
+  <section id="timeSection" hidden>
     <div class="label"><span class="num">2</span> <span id="l2"></span></div>
     <div class="row" id="parts"></div>
     <div class="row" id="slots" style="margin-top:9px"></div>
@@ -344,6 +348,9 @@ $('dateInput').onchange=e=>{ s.date=e.target.value; update(); };
 // reset=false — просто перерисовка (например, после смены языка): выбор сохраняем.
 function renderParts(reset){
   const parts=$('parts'), slots=$('slots'), note=$('closedNote');
+  // Блок времени появляется только после выбора дня: пустой заголовок
+  // без единой кнопки под ним читался как сломанный экран.
+  $('timeSection').hidden = !s.day;
   parts.innerHTML=''; slots.innerHTML=''; note.style.display='none';
   if(reset){ s.part=null; s.time=null; }
   const blocked=[];
@@ -470,7 +477,7 @@ function update(){
 
 function renderAll(){
   renderLangbar(); renderChrome(); renderDays(); renderGuests(); renderHalls();
-  if(s.day) renderParts(false);
+  renderParts(false);
   renderPhone(); showStep(step);
 }
 
