@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="ru">
+<html lang="uz">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Бронь стола · Retro Milliy</title>
+<title>Retro Milliy</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap">
 <style>
@@ -36,6 +36,15 @@ body{
   text-transform:uppercase; color:var(--gold-soft); margin-bottom:5px}
 h1{font-family:"Playfair Display",Georgia,serif; font-size:29px; line-height:1.1; margin:0; font-weight:700}
 .sub{color:var(--cream-2); font-size:14.5px; margin-top:6px}
+
+/* переключатель языка */
+.langbar{position:absolute; top:12px; right:14px; z-index:3; display:flex; gap:6px}
+.langbar button{
+  border:1px solid var(--line); background:rgba(14,27,42,.72); color:var(--cream-2);
+  border-radius:99px; padding:5px 11px; font-size:12px; font-family:inherit;
+  letter-spacing:.08em; text-transform:uppercase; cursor:pointer;
+}
+.langbar button.on{border-color:var(--gold); color:var(--gold-soft)}
 
 /* секции */
 section{margin-top:26px}
@@ -115,55 +124,56 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin-top:26p
 
 <div class="hero">
   <img src="https://the-red-beard.github.io/retro-photos/img/terrasa-01-neon-arki.jpg" alt="">
+  <div class="langbar" id="langbar"></div>
   <div class="cap">
     <div class="brand">Retro Milliy</div>
-    <h1>Забронировать стол</h1>
+    <h1 id="h1"></h1>
   </div>
 </div>
 
 <div class="wrap">
-<div class="sub">Пара касаний, и администратор перезвонит подтвердить</div>
+<div class="sub" id="sub"></div>
 
 <section>
-  <div class="label"><span class="num">1</span> Когда придёте</div>
+  <div class="label"><span class="num">1</span> <span id="l1"></span></div>
   <div class="row" id="days"></div>
   <div style="margin-top:9px; display:none" id="dateWrap"><input type="date" id="dateInput"></div>
 </section>
 
 <section>
-  <div class="label"><span class="num">2</span> Время</div>
+  <div class="label"><span class="num">2</span> <span id="l2"></span></div>
   <div class="row" id="parts"></div>
   <div class="row" id="slots" style="margin-top:9px"></div>
   <div class="note" id="closedNote" style="display:none"></div>
 </section>
 
 <section>
-  <div class="label"><span class="num">3</span> Сколько гостей</div>
+  <div class="label"><span class="num">3</span> <span id="l3"></span></div>
   <div class="row" id="guests"></div>
 </section>
 
 <section>
-  <div class="label"><span class="num">4</span> Где посадить</div>
+  <div class="label"><span class="num">4</span> <span id="l4"></span></div>
   <div class="halls" id="halls"></div>
 </section>
 
 <section>
-  <div class="label"><span class="num">5</span> Как вас зовут</div>
-  <input type="text" id="name" placeholder="Имя" autocomplete="given-name">
+  <div class="label"><span class="num">5</span> <span id="l5"></span></div>
+  <input type="text" id="name" autocomplete="given-name">
 </section>
 
-<section>
-  <div class="label"><span class="num">6</span> Телефон</div>
+<section id="phoneSection">
+  <div class="label"><span class="num">6</span> <span id="l6"></span></div>
   <div id="phoneBox"></div>
-  <div class="hint">Номер нужен администратору, чтобы подтвердить бронь звонком</div>
+  <div class="hint" id="phoneHint"></div>
 </section>
 
 <div class="summary" id="summary">
-  <div class="head">Ваша бронь</div>
+  <div class="head" id="sumHead"></div>
   <div class="body" id="summaryBody"></div>
 </div>
 
-<footer>Retro Milliy · Олтинтепа 28 · каждый день 9:00–23:00</footer>
+<footer id="foot"></footer>
 </div>
 
 <script>
@@ -172,116 +182,253 @@ const P = new URLSearchParams(location.search);
 const closed = (P.get('closed') || '').split(',').filter(Boolean);
 const SQ = 'https://the-red-beard.github.io/retro-photos/sq/';
 
-const DAYS = [['today','Сегодня'],['tomorrow','Завтра'],['other','Другой день']];
-const PARTS = [
-  ['утро','🌅 Утром',['9:00','10:00','11:00']],
-  ['день','🌤 Днём',['12:00','13:00','14:00','15:00']],
-  ['вечер','🌆 Вечером',['17:00','18:00','19:00','20:00']],
-];
-const HALLS = [
-  ['терраса','Крытая терраса','светло, панорамные окна','terrasa-03-zal-zelen.jpg','hall_terrace'],
-  ['музыкальный','Музыкальный зал','вечерний свет, неон','muzyk-01-bankentnyy-stol-zerkala.jpg','hall_music'],
-  ['семейная','Семейная зона','рядом с игровой','semya-01-igrovaya-gorka.jpg','hall_family'],
-  ['без разницы','Без разницы','посадите где удобно','terrasa-11-zal-sverhu.jpg',null],
-];
+// Гость, которого бот уже знает: телефон лежит в профиле, второй раз не спрашиваем.
+const KNOWN = P.get('known') === '1';
+const PRENAME = P.get('name') || '';
 
-const s = { day:null, dayLabel:null, date:null, part:null, time:null, guests:null, hall:null, hallLabel:null, name:'', phone:'' };
+// ── языки ───────────────────────────────────────────────
+const T = {
+  uz:{
+    h1:"Stol band qilish", sub:"Bir necha marta bosasiz, administrator tasdiqlash uchun qo'ng'iroq qiladi",
+    l1:"Qachon kelasiz", l2:"Vaqt", l3:"Necha kishi", l4:"Qayerga o'tqazamiz",
+    l5:"Ismingiz", l6:"Telefon",
+    days:["Bugun","Ertaga","Boshqa kun"],
+    parts:["🌅 Ertalab","🌤 Kunduzi","🌆 Kechqurun"],
+    many:"10 dan ko'p",
+    halls:[["Yopiq terrasa","gulli toqilar, neon, tepada ko'katlar"],["Musiqali zal","past yorug'lik, uzun stol"],
+           ["Oilaviy zona","yorug' zal, o'yin maydonchasi yonida"],["Farqi yo'q","qulay joyga o'tqazing"]],
+    namePh:"Ism",
+    phoneBtn:"📱 Telegramdan raqamni olish", phoneManual:"Ishlamadimi? Qo'lda yozish",
+    phoneGot:"Raqam olindi: ", phoneHint:"Raqam administratorga bandlikni tasdiqlash uchun kerak",
+    sumHead:"Sizning bandligingiz",
+    kWhen:"Qachon", kGuests:"Mehmonlar", kHall:"Zal", kName:"Ism", kPhone:"Telefon",
+    send:"Arizani yuborish", fill:"Barcha maydonlarni to'ldiring", sending:"Yuborilmoqda…",
+    closedNote:"Bu vaqt band: ", closedTail:". Boshqasini tanlang.",
+    foot:"Retro Milliy · Oltintepa 28 · har kuni 9:00–23:00"
+  },
+  ru:{
+    h1:"Забронировать стол", sub:"Пара касаний, и администратор перезвонит подтвердить",
+    l1:"Когда придёте", l2:"Время", l3:"Сколько гостей", l4:"Где посадить",
+    l5:"Как вас зовут", l6:"Телефон",
+    days:["Сегодня","Завтра","Другой день"],
+    parts:["🌅 Утром","🌤 Днём","🌆 Вечером"],
+    many:"больше 10",
+    halls:[["Крытая терраса","арки, неон, зелень над головой"],["Музыкальный зал","приглушённый свет, длинный стол"],
+           ["Семейная зона","светлый зал, игровая рядом"],["Без разницы","посадите где удобно"]],
+    namePh:"Имя",
+    phoneBtn:"📱 Взять номер из Telegram", phoneManual:"Не сработало? Написать вручную",
+    phoneGot:"Номер получен: ", phoneHint:"Номер нужен администратору, чтобы подтвердить бронь звонком",
+    sumHead:"Ваша бронь",
+    kWhen:"Когда", kGuests:"Гостей", kHall:"Зона", kName:"Имя", kPhone:"Телефон",
+    send:"Отправить заявку", fill:"Заполните все поля", sending:"Отправляем…",
+    closedNote:"На это время всё занято: ", closedTail:". Выберите другое.",
+    foot:"Retro Milliy · Олтинтепа 28 · каждый день 9:00–23:00"
+  },
+  en:{
+    h1:"Book a table", sub:"A few taps, and the host calls you back to confirm",
+    l1:"When you come", l2:"Time", l3:"How many guests", l4:"Where to seat you",
+    l5:"Your name", l6:"Phone",
+    days:["Today","Tomorrow","Another day"],
+    parts:["🌅 Morning","🌤 Afternoon","🌆 Evening"],
+    many:"more than 10",
+    halls:[["Covered terrace","arches, neon, greenery overhead"],["Music hall","low light, long table"],
+           ["Family area","bright hall, playroom next door"],["No preference","seat us wherever suits"]],
+    namePh:"Name",
+    phoneBtn:"📱 Take number from Telegram", phoneManual:"Didn't work? Type it in",
+    phoneGot:"Number received: ", phoneHint:"The host needs your number to confirm the booking by call",
+    sumHead:"Your booking",
+    kWhen:"When", kGuests:"Guests", kHall:"Hall", kName:"Name", kPhone:"Phone",
+    send:"Send request", fill:"Fill in every field", sending:"Sending…",
+    closedNote:"Fully booked then: ", closedTail:". Please pick another.",
+    foot:"Retro Milliy · Oltintepa 28 · every day 9:00–23:00"
+  }
+};
+let lang = P.get('lang');
+if(!T[lang]) lang = 'uz';
+let L = T[lang];
+
+// Канонические ключи уходят боту, подписи — только для глаз гостя.
+const DAY_KEYS  = ['today','tomorrow','other'];
+const PART_KEYS = ['утро','день','вечер'];
+const PART_TIMES= [['9:00','10:00','11:00'],['12:00','13:00','14:00','15:00'],['17:00','18:00','19:00','20:00']];
+const HALL_KEYS = ['терраса','музыкальный','семейная','без разницы'];
+// Кадр к каждому залу подобран по тому, что на нём видно, а не по имени папки:
+// в съёмке «1-terrasa» лежит и терраса, и светлый семейный зал.
+const HALL_FILES= ['terrasa-01-neon-arki.jpg','muzyk-01-bankentnyy-stol-zerkala.jpg',
+                   'terrasa-03-zal-zelen.jpg','terrasa-11-zal-sverhu.jpg'];
+const HALL_FIELDS=['hall_terrace','hall_music','hall_family',null];
+
+// В состоянии живут только канонические ключи. Подписи считаются от текущего
+// языка при каждой отрисовке — иначе после переключения языка в итоге
+// оставались слова на прежнем.
+const s = { day:null, date:null, part:null, time:null, guests:null,
+            hall:null, name:'', phone:'' };
+
+const dayLabel = () => {
+  if(!s.day) return null;
+  if(s.day==='other') return s.date || null;
+  return L.days[DAY_KEYS.indexOf(s.day)];
+};
+const hallLabel = () => {
+  const i = HALL_KEYS.indexOf(s.hall);
+  return i < 0 ? null : L.halls[i][0];
+};
+
 const el=(t,c,x)=>{const e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e;};
 const pick=(box,on)=>{[...box.children].forEach(c=>c.classList.remove('on')); on.classList.add('on');};
 const buzz=()=>{ try{ tg?.HapticFeedback?.selectionChanged(); }catch(e){} };
+const $=(id)=>document.getElementById(id);
 
-const days=document.getElementById('days');
-DAYS.forEach(([k,label])=>{
-  const b=el('button','chip wide',label);
-  b.onclick=()=>{ buzz(); pick(days,b); s.day=k; s.dayLabel=label.toLowerCase();
-    document.getElementById('dateWrap').style.display = k==='other'?'block':'none';
-    renderParts(); update(); };
-  days.appendChild(b);
-});
-document.getElementById('dateInput').onchange=e=>{ s.date=e.target.value; s.dayLabel=e.target.value; update(); };
+// ── переключатель языка ─────────────────────────────────
+const langbar=$('langbar');
+function renderLangbar(){
+  langbar.innerHTML='';
+  ['uz','ru','en'].forEach(code=>{
+    const b=el('button',code===lang?'on':null,code.toUpperCase());
+    b.onclick=()=>{ if(code===lang) return; lang=code; L=T[code];
+      document.documentElement.lang=code; buzz(); renderAll(); };
+    langbar.appendChild(b);
+  });
+}
 
-const parts=document.getElementById('parts'), slots=document.getElementById('slots'), note=document.getElementById('closedNote');
-function renderParts(){
-  parts.innerHTML=''; slots.innerHTML=''; note.style.display='none'; s.part=null; s.time=null;
+// ── статический текст ───────────────────────────────────
+function renderChrome(){
+  $('h1').textContent=L.h1; $('sub').textContent=L.sub;
+  $('l1').textContent=L.l1; $('l2').textContent=L.l2; $('l3').textContent=L.l3;
+  $('l4').textContent=L.l4; $('l5').textContent=L.l5; $('l6').textContent=L.l6;
+  $('name').placeholder=L.namePh;
+  $('phoneHint').textContent=L.phoneHint;
+  $('sumHead').textContent=L.sumHead;
+  $('foot').textContent=L.foot;
+  document.title='Retro Milliy';
+}
+
+// ── день ────────────────────────────────────────────────
+function renderDays(){
+  const days=$('days'); days.innerHTML='';
+  DAY_KEYS.forEach((k,i)=>{
+    const b=el('button','chip wide',L.days[i]);
+    if(s.day===k) b.classList.add('on');
+    b.onclick=()=>{ buzz(); pick(days,b); s.day=k;
+      $('dateWrap').style.display = k==='other'?'block':'none';
+      renderParts(true); update(); };
+    days.appendChild(b);
+  });
+}
+$('dateInput').onchange=e=>{ s.date=e.target.value; update(); };
+
+// ── время ───────────────────────────────────────────────
+// reset=true — гость сменил день, прежнее время больше не годится.
+// reset=false — просто перерисовка (например, после смены языка): выбор сохраняем.
+function renderParts(reset){
+  const parts=$('parts'), slots=$('slots'), note=$('closedNote');
+  parts.innerHTML=''; slots.innerHTML=''; note.style.display='none';
+  if(reset){ s.part=null; s.time=null; }
   const blocked=[];
-  PARTS.forEach(([k,label,times])=>{
+  PART_KEYS.forEach((k,i)=>{
     const shut=(s.day==='today'&&closed.includes('today_'+k))||(s.day==='tomorrow'&&closed.includes('tomorrow_'+k));
-    if(shut){ blocked.push(label.replace(/^\S+\s/,'').toLowerCase()); return; }
-    const b=el('button','chip',label);
-    b.onclick=()=>{ buzz(); pick(parts,b); s.part=k; s.time=null; renderSlots(times); update(); };
+    if(shut){ blocked.push(L.parts[i].replace(/^\S+\s/,'').toLowerCase()); return; }
+    const b=el('button','chip',L.parts[i]);
+    if(s.part===k) b.classList.add('on');
+    b.onclick=()=>{ buzz(); pick(parts,b); s.part=k; s.time=null; renderSlots(PART_TIMES[i]); update(); };
     parts.appendChild(b);
   });
-  if(blocked.length){ note.textContent='На это время всё занято: '+blocked.join(', ')+'. Выберите другое.'; note.style.display='block'; }
+  if(s.part){ const i=PART_KEYS.indexOf(s.part); if(i>=0) renderSlots(PART_TIMES[i]); }
+  if(blocked.length){ note.textContent=L.closedNote+blocked.join(', ')+L.closedTail; note.style.display='block'; }
 }
 function renderSlots(times){
-  slots.innerHTML='';
+  const slots=$('slots'); slots.innerHTML='';
   times.forEach(t=>{ const b=el('button','chip',t);
+    if(s.time===t) b.classList.add('on');
     b.onclick=()=>{ buzz(); pick(slots,b); s.time=t; update(); }; slots.appendChild(b); });
 }
 
-const guests=document.getElementById('guests');
-['2','3','4','5','6','8','10','больше 10'].forEach(n=>{
-  const b=el('button','chip',n);
-  b.onclick=()=>{ buzz(); pick(guests,b); s.guests=n; update(); };
-  guests.appendChild(b);
-});
+// ── гости ───────────────────────────────────────────────
+function renderGuests(){
+  const guests=$('guests'); guests.innerHTML='';
+  ['2','3','4','5','6','8','10',L.many].forEach(n=>{
+    const b=el('button','chip',n);
+    if(s.guests===n) b.classList.add('on');
+    b.onclick=()=>{ buzz(); pick(guests,b); s.guests=n; update(); };
+    guests.appendChild(b);
+  });
+}
 
-const halls=document.getElementById('halls');
-HALLS.forEach(([k,title,desc,file,field])=>{
-  if(field&&closed.includes(field)) return;
-  const d=el('div','hall');
-  const img=el('img'); img.src=SQ+file; img.alt=title; img.loading='lazy';
-  const box=el('div'); box.appendChild(el('b',null,title)); box.appendChild(el('span',null,desc));
-  d.appendChild(img); d.appendChild(box);
-  d.onclick=()=>{ buzz(); pick(halls,d); s.hall=k; s.hallLabel=title; update(); };
-  halls.appendChild(d);
-});
+// ── залы ────────────────────────────────────────────────
+function renderHalls(){
+  const halls=$('halls'); halls.innerHTML='';
+  HALL_KEYS.forEach((k,i)=>{
+    if(HALL_FIELDS[i]&&closed.includes(HALL_FIELDS[i])) return;
+    const [title,desc]=L.halls[i];
+    const d=el('div','hall');
+    if(s.hall===k) d.classList.add('on');
+    const img=el('img'); img.src=SQ+HALL_FILES[i]; img.alt=title; img.loading='lazy';
+    const box=el('div'); box.appendChild(el('b',null,title)); box.appendChild(el('span',null,desc));
+    d.appendChild(img); d.appendChild(box);
+    d.onclick=()=>{ buzz(); pick(halls,d); s.hall=k; update(); };
+    halls.appendChild(d);
+  });
+}
 
-const nameInput=document.getElementById('name');
+// ── имя ─────────────────────────────────────────────────
+const nameInput=$('name');
 const who=tg?.initDataUnsafe?.user;
-if(who?.first_name) nameInput.value=[who.first_name,who.last_name].filter(Boolean).join(' ');
-s.name=nameInput.value;
+nameInput.value = PRENAME || (who?.first_name ? [who.first_name,who.last_name].filter(Boolean).join(' ') : '');
+s.name=nameInput.value.trim();
 nameInput.oninput=e=>{ s.name=e.target.value.trim(); update(); };
 
-const phoneBox=document.getElementById('phoneBox');
+// ── телефон ─────────────────────────────────────────────
+// Своего гостя не переспрашиваем: раздел просто не показывается,
+// телефон подставит бот из профиля.
 function renderPhone(){
-  phoneBox.innerHTML='';
-  if(s.phone){ phoneBox.appendChild(el('div','got','Номер получен: '+s.phone)); return; }
-  const b=el('button','phone-btn','📱 Взять номер из Telegram');
+  const box=$('phoneBox');
+  if(KNOWN){ $('phoneSection').style.display='none'; return; }
+  box.innerHTML='';
+  if(s.phone){ box.appendChild(el('div','got',L.phoneGot+s.phone)); return; }
+  const b=el('button','phone-btn',L.phoneBtn);
   b.onclick=()=>{
     if(!tg?.requestContact){ manual(); return; }
     tg.requestContact((ok,res)=>{
       if(ok){ const raw=res?.responseUnsafe?.contact?.phone_number||res?.contact?.phone_number;
-        s.phone=raw?(String(raw).startsWith('+')?raw:'+'+raw):'получен'; renderPhone(); update(); }
+        s.phone=raw?(String(raw).startsWith('+')?raw:'+'+raw):'—'; renderPhone(); update(); }
       else manual();
     });
   };
-  phoneBox.appendChild(b);
-  const m=el('div','hint tap','Не сработало? Написать вручную');
-  m.onclick=manual; phoneBox.appendChild(m);
+  box.appendChild(b);
+  const m=el('div','hint tap',L.phoneManual);
+  m.onclick=manual; box.appendChild(m);
 }
 function manual(){
-  phoneBox.innerHTML='';
+  const box=$('phoneBox'); box.innerHTML='';
   const i=el('input'); i.type='text'; i.placeholder='+998 XX XXX XX XX'; i.inputMode='tel';
   i.oninput=e=>{ s.phone=e.target.value.trim(); update(); };
-  phoneBox.appendChild(i); i.focus();
+  box.appendChild(i); i.focus();
 }
-renderPhone();
 
-const body=document.getElementById('summaryBody');
-const ready=()=>s.day&&(s.day!=='other'||s.date)&&s.time&&s.guests&&s.hall&&s.name&&s.phone.replace(/\D/g,'').length>=9;
+// ── итог и главная кнопка ───────────────────────────────
+const ready=()=>s.day&&(s.day!=='other'||s.date)&&s.time&&s.guests&&s.hall&&s.name&&
+  (KNOWN || s.phone.replace(/\D/g,'').length>=9);
+
 function update(){
   if(window.__sent) return;
-  const rows=[['Когда', s.dayLabel&&s.time?s.dayLabel+', '+s.time:'—'],
-    ['Гостей', s.guests||'—'], ['Зона', s.hallLabel||'—'],
-    ['Имя', s.name||'—'], ['Телефон', s.phone||'—']];
-  body.innerHTML='';
+  const dl=dayLabel();
+  const rows=[[L.kWhen, dl&&s.time?dl+', '+s.time:'—'],
+    [L.kGuests, s.guests||'—'], [L.kHall, hallLabel()||'—'],
+    [L.kName, s.name||'—']];
+  if(!KNOWN) rows.push([L.kPhone, s.phone||'—']);
+  const body=$('summaryBody'); body.innerHTML='';
   rows.forEach(([k,v])=>{ const d=el('div','line');
     d.appendChild(el('span',null,k)); d.appendChild(el('span',null,v)); body.appendChild(d); });
   const btn=tg?.MainButton; if(!btn) return;
   btn.setParams({ color:'#C9A227', text_color:'#101A26' });
-  if(ready()){ btn.setText('Отправить заявку'); btn.show(); btn.enable(); }
-  else { btn.setText('Заполните все поля'); btn.show(); btn.disable(); }
+  if(ready()){ btn.setText(L.send); btn.show(); btn.enable(); }
+  else { btn.setText(L.fill); btn.show(); btn.disable(); }
+}
+
+function renderAll(){
+  renderLangbar(); renderChrome(); renderDays(); renderGuests(); renderHalls();
+  if(s.day) renderParts(false);
+  renderPhone(); update();
 }
 
 if(tg){
@@ -292,14 +439,15 @@ if(tg){
     if(sent || !ready()) return;
     sent=true; window.__sent=true;
     tg.MainButton.disable();
-    tg.MainButton.setText('Отправляем…');
+    tg.MainButton.setText(L.sending);
     try{ tg.MainButton.showProgress(true); }catch(e){}
     try{ tg.HapticFeedback?.notificationOccurred('success'); }catch(e){}
-    tg.sendData(JSON.stringify({ t:'table', day:s.day, date:s.date, dayLabel:s.dayLabel, part:s.part,
-      time:s.time, guests:s.guests, hall:s.hall, hallLabel:s.hallLabel, name:s.name, phone:s.phone }));
+    tg.sendData(JSON.stringify({ t:'table', lang, day:s.day, date:s.date, dayLabel:dayLabel(),
+      part:s.part, time:s.time, guests:s.guests, hall:s.hall, hallLabel:hallLabel(),
+      name:s.name, phone:KNOWN?'':s.phone }));
   });
 }
-update();
+renderAll();
 </script>
 </body>
 </html>
