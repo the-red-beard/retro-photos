@@ -198,6 +198,7 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin-top:26p
 const tg = window.Telegram?.WebApp;
 const P = new URLSearchParams(location.search);
 const closed = (P.get('closed') || '').split(',').filter(Boolean);
+const API = (P.get('api') || '').replace(/\/+$/,'');
 const SQ = 'https://the-red-beard.github.io/retro-photos/sq/';
 
 // Гость, которого бот уже знает: телефон лежит в профиле, второй раз не спрашиваем.
@@ -486,9 +487,32 @@ if(tg){
     tg.MainButton.setText(L.sending);
     try{ tg.MainButton.showProgress(true); }catch(e){}
     try{ tg.HapticFeedback?.notificationOccurred('success'); }catch(e){}
-    tg.sendData(JSON.stringify({ t:'table', lang, day:s.day, date:s.date, dayLabel:dayLabel(),
+
+    const booking={ t:'table', lang, day:s.day, date:s.date, dayLabel:dayLabel(),
       part:s.part, time:s.time, guests:s.guests, hall:s.hall, hallLabel:hallLabel(),
-      name:s.name, phone:KNOWN?'':s.phone }));
+      name:s.name, phone:KNOWN?'':s.phone };
+
+    // sendData умеет только приложение, открытое кнопкой клавиатуры. Если у нас
+    // есть адрес бота и подпись Telegram — шлём напрямую, и тогда бронь работает
+    // из любой точки входа: кнопки меню, ссылки, сообщения с фото.
+    if(API && tg.initData){
+      fetch(API+'/booking',{ method:'POST', headers:{'content-type':'application/json'},
+        body:JSON.stringify({ initData:tg.initData, booking }) })
+        .then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
+        .then(()=>{ try{ tg.HapticFeedback?.notificationOccurred('success'); }catch(e){} tg.close(); })
+        .catch(()=>{
+          // не достучались — пробуем старым путём, а если и он недоступен,
+          // возвращаем кнопку, чтобы гость не остался с мёртвым экраном
+          try{ tg.sendData(JSON.stringify(booking)); }
+          catch(e){
+            sent=false; window.__sent=false;
+            try{ tg.MainButton.hideProgress(); }catch(e2){}
+            tg.MainButton.setText(L.send); tg.MainButton.enable();
+          }
+        });
+      return;
+    }
+    tg.sendData(JSON.stringify(booking));
   });
 }
 renderAll();
