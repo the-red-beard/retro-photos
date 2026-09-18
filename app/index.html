@@ -78,10 +78,6 @@ section{margin-top:22px}
   text-transform:uppercase; color:var(--gold-soft); margin-bottom:11px;
 }
 .label::after{content:""; flex:1; height:1px; background:var(--line)}
-.num{
-  width:20px; height:20px; border:1px solid var(--gold-dim); border-radius:50%;
-  display:grid; place-items:center; font-size:10.5px; color:var(--gold-soft); flex-shrink:0;
-}
 .row{display:flex; flex-wrap:wrap; gap:8px}
 .chip{
   border:1px solid var(--line); background:var(--navy-2); color:var(--cream);
@@ -102,6 +98,8 @@ section{margin-top:22px}
 .hall.on{border-color:var(--gold); background:var(--navy-3)}
 .hall.on::before{content:"✓"; position:absolute; top:9px; right:12px; color:var(--gold); font-size:14px}
 .hall img{width:92px; height:68px; object-fit:cover; border-radius:10px; flex-shrink:0; background:var(--navy-3)}
+.hall .nophoto{width:92px; height:68px; border-radius:10px; flex-shrink:0;
+  border:1px dashed var(--line); background:rgba(201,162,39,.05)}
 .hall b{display:block; font-size:15.5px; font-weight:600; font-family:"Playfair Display",Georgia,serif}
 .hall span{font-size:13px; color:var(--cream-2)}
 
@@ -148,7 +146,7 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin-top:24p
 <body>
 
 <div class="hero">
-  <img src="https://the-red-beard.github.io/retro-photos/img/terrasa-01-neon-arki.jpg" alt="">
+  <img src="https://the-red-beard.github.io/retro-photos/img/terrasa-12-zal-vecherom.jpg" alt="">
   <div class="langbar" id="langbar"></div>
   <div class="cap">
     <div class="brand">Retro Milliy</div>
@@ -163,12 +161,12 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin-top:24p
 
 <div class="page" data-step="1">
   <section>
-    <div class="label"><span class="num">1</span> <span id="l1"></span></div>
+    <div class="label"><span id="l1"></span></div>
     <div class="row" id="days"></div>
     <div style="margin-top:9px; display:none" id="dateWrap"><input type="date" id="dateInput"></div>
   </section>
   <section id="timeSection" hidden>
-    <div class="label"><span class="num">2</span> <span id="l2"></span></div>
+    <div class="label"><span id="l2"></span></div>
     <div class="row" id="parts"></div>
     <div class="row" id="slots" style="margin-top:9px"></div>
     <div class="note" id="closedNote" style="display:none"></div>
@@ -177,25 +175,25 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin-top:24p
 
 <div class="page" data-step="2" hidden>
   <section>
-    <div class="label"><span class="num">3</span> <span id="l3"></span></div>
+    <div class="label"><span id="l3"></span></div>
     <div class="row" id="guests"></div>
   </section>
 </div>
 
 <div class="page" data-step="3" hidden>
   <section>
-    <div class="label"><span class="num">4</span> <span id="l4"></span></div>
+    <div class="label"><span id="l4"></span></div>
     <div class="halls" id="halls"></div>
   </section>
 </div>
 
 <div class="page" data-step="4" hidden>
   <section>
-    <div class="label"><span class="num">5</span> <span id="l5"></span></div>
+    <div class="label"><span id="l5"></span></div>
     <input type="text" id="name" autocomplete="given-name">
   </section>
   <section id="phoneSection">
-    <div class="label"><span class="num">6</span> <span id="l6"></span></div>
+    <div class="label"><span id="l6"></span></div>
     <div id="phoneBox"></div>
     <div class="hint" id="phoneHint"></div>
   </section>
@@ -222,7 +220,7 @@ const PRENAME = P.get('name') || '';
 // ── языки ───────────────────────────────────────────────
 const T = {
   uz:{
-    h1:"Stol band qilish", sub:"Bir necha marta bosasiz, administrator tasdiqlash uchun qo'ng'iroq qiladi",
+    h1:"Stol band qilish", sub:"Bir daqiqada to'ldirasiz, administrator qo'ng'iroq qilib tasdiqlaydi",
     l1:"Qachon kelasiz", l2:"Vaqt", l3:"Necha kishi", l4:"Qayerga o'tqazamiz",
     l5:"Ismingiz", l6:"Telefon",
     days:["Bugun","Ertaga","Boshqa kun"],
@@ -236,12 +234,12 @@ const T = {
     sumHead:"Sizning bandligingiz",
     kWhen:"Qachon", kGuests:"Mehmonlar", kHall:"Zal", kName:"Ism", kPhone:"Telefon",
     send:"Arizani yuborish", fill:"Barcha maydonlarni to'ldiring", sending:"Yuborilmoqda…",
-    next:"Keyingi", stepOf:"{m} dan {n}-qadam",
+    next:"Keyingi", stepOf:"{m} qadamdan {n}-si",
     closedNote:"Bu vaqt band: ", closedTail:". Boshqasini tanlang.",
     foot:"Retro Milliy · Oltintepa 28 · har kuni 9:00–23:00"
   },
   ru:{
-    h1:"Забронировать стол", sub:"Пара касаний, и администратор перезвонит подтвердить",
+    h1:"Забронировать стол", sub:"Заполните за минуту, администратор перезвонит и подтвердит",
     l1:"Когда придёте", l2:"Время", l3:"Сколько гостей", l4:"Где посадить",
     l5:"Как вас зовут", l6:"Телефон",
     days:["Сегодня","Завтра","Другой день"],
@@ -291,7 +289,7 @@ const HALL_KEYS = ['терраса','музыкальный','семейная',
 // Кадр к каждому залу подобран по тому, что на нём видно, а не по имени папки:
 // в съёмке «1-terrasa» лежит и терраса, и светлый семейный зал.
 const HALL_FILES= ['terrasa-01-neon-arki.jpg','muzyk-01-bankentnyy-stol-zerkala.jpg',
-                   'terrasa-03-zal-zelen.jpg','terrasa-11-zal-sverhu.jpg'];
+                   'terrasa-03-zal-zelen.jpg', null];
 const HALL_FIELDS=['hall_terrace','hall_music','hall_family',null];
 
 // В состоянии живут только канонические ключи. Подписи считаются от текущего
@@ -401,7 +399,8 @@ function renderHalls(){
     const [title,desc]=L.halls[i];
     const d=el('div','hall');
     if(s.hall===k) d.classList.add('on');
-    const img=el('img'); img.src=SQ+HALL_FILES[i]; img.alt=title; img.loading='lazy';
+    const img=el(HALL_FILES[i]?'img':'div', HALL_FILES[i]?null:'nophoto');
+    if(HALL_FILES[i]){ img.src=SQ+HALL_FILES[i]; img.alt=title; img.loading='lazy'; }
     const box=el('div'); box.appendChild(el('b',null,title)); box.appendChild(el('span',null,desc));
     d.appendChild(img); d.appendChild(box);
     d.onclick=()=>{ buzz(); pick(halls,d); s.hall=k; update(); };
@@ -429,7 +428,8 @@ function renderPhone(){
     if(!tg?.requestContact){ manual(); return; }
     tg.requestContact((ok,res)=>{
       if(ok){ const raw=res?.responseUnsafe?.contact?.phone_number||res?.contact?.phone_number;
-        s.phone=raw?(String(raw).startsWith('+')?raw:'+'+raw):'—'; renderPhone(); update(); }
+        if(raw){ s.phone=String(raw).startsWith('+')?raw:'+'+raw; renderPhone(); update(); }
+        else manual(); }
       else manual();
     });
   };
@@ -461,6 +461,7 @@ function showStep(n){
   step=Math.min(Math.max(n,1),STEPS);
   document.querySelectorAll('.page').forEach(p=>{ p.hidden = +p.dataset.step!==step; });
   $('bar').style.width = Math.round(step/STEPS*100)+'%';
+  $('sub').hidden = step>1; // вводная фраза нужна один раз, на входе
   $('stepline').textContent=(L.stepOf||'{n}/{m}').replace('{n}',step).replace('{m}',STEPS);
   if(tg){ step>1 ? tg.BackButton.show() : tg.BackButton.hide(); }
   window.scrollTo(0,0);
@@ -470,12 +471,12 @@ function showStep(n){
 function update(){
   if(window.__sent) return;
   const dl=dayLabel();
-  const rows=[[L.kWhen, dl&&s.time?dl+', '+s.time:'—'],
-    [L.kGuests, s.guests||'—'], [L.kHall, hallLabel()||'—'],
-    [L.kName, s.name||'—']];
-  if(!KNOWN) rows.push([L.kPhone, s.phone||'—']);
+  const rows=[[L.kWhen, dl&&s.time?dl+', '+s.time:''],
+    [L.kGuests, s.guests||''], [L.kHall, hallLabel()||''],
+    [L.kName, s.name||'']];
+  if(!KNOWN) rows.push([L.kPhone, s.phone||'']);
   const body=$('summaryBody'); body.innerHTML='';
-  rows.forEach(([k,v])=>{ const d=el('div','line');
+  rows.filter(([,v])=>v).forEach(([k,v])=>{ const d=el('div','line');
     d.appendChild(el('span',null,k)); d.appendChild(el('span',null,v)); body.appendChild(d); });
   const btn=tg?.MainButton; if(!btn) return;
   btn.setParams({ color:'#C9A227', text_color:'#101A26' });
