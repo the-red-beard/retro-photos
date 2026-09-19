@@ -13,6 +13,8 @@
   --cream:#F2E8D5; --cream-2:#A9A08E;
   --line:rgba(201,162,39,.20);
   --r:14px;
+  /* высоту липкой полосы вкладок меряет JS: под ней приклеивается лента разделов меню */
+  --tabsH:47px;
 }
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
 html,body{margin:0; background:var(--navy); color:var(--cream)}
@@ -37,6 +39,9 @@ body{
    на длинном — ужимается до минимума и уступает место содержимому. */
 .hero{position:relative; margin:0 0 6px; flex:1 1 auto;
   min-height:104px; max-height:60vh; overflow:hidden}
+/* На сетах, меню и залах содержимое длинное, и растянутая шапка только
+   отодвигала бы его вниз: там она сжата до узкой полосы с названием. */
+body:not(.tab-book) .hero{flex:0 0 auto; min-height:96px; max-height:96px}
 /* Абсолютом, а не height:100%: шапка тянется флексом, заданной высоты у неё
    нет, и процент от «авто» браузер считать отказывается — картинка вставала
    в натуральный размер, а остаток шапки оставался пустой заливкой. */
@@ -48,7 +53,10 @@ body{
   background:linear-gradient(180deg,
     rgba(14,27,42,.10) 0%, rgba(14,27,42,.18) 42%,
     rgba(14,27,42,.78) 82%, #0E1B2A 100%)}
+body:not(.tab-book) .hero::after{
+  background:linear-gradient(180deg, rgba(14,27,42,.34) 0%, rgba(14,27,42,.74) 58%, #0E1B2A 100%)}
 .hero .cap{position:absolute; left:18px; right:18px; bottom:14px; z-index:2}
+body:not(.tab-book) .hero .cap{bottom:10px}
 .brand{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; letter-spacing:.22em;
   text-transform:uppercase; color:var(--gold-soft); margin-bottom:5px}
 h1{font-family:"Playfair Display",Georgia,serif; font-size:clamp(21px, 6.2vw, 29px); line-height:1.1; margin:0; font-weight:700}
@@ -63,9 +71,24 @@ h1{font-family:"Playfair Display",Georgia,serif; font-size:clamp(21px, 6.2vw, 29
 }
 .langbar button.on{border-color:var(--gold); color:var(--gold-soft)}
 
+/* вкладки: бронь, сеты, меню, залы. Липнут к верху, поэтому уйти с меню
+   обратно в бронь можно с любой точки прокрутки. */
+.tabs{
+  position:sticky; top:0; z-index:7; display:flex; gap:5px; padding:7px 18px 6px;
+  background:rgba(11,21,34,.93); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line); overflow-x:auto; scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{
+  flex:1 1 auto; white-space:nowrap; border:1px solid transparent; background:transparent;
+  color:var(--cream-2); font-family:inherit; font-size:14px; padding:7px 10px;
+  border-radius:99px; cursor:pointer; transition:color .15s, background .15s, border-color .15s;
+}
+.tabs button.on{background:var(--navy-3); border-color:var(--gold-dim); color:var(--gold-soft); font-weight:600}
+
 /* секции */
 section{margin-top:22px}
-.page[hidden]{display:none}
+.page[hidden], .tabpage[hidden]{display:none}
 
 /* индикатор шага */
 .progress{height:2px; background:var(--line); border-radius:2px; margin:14px 0 9px; overflow:hidden}
@@ -103,13 +126,50 @@ section{margin-top:22px}
 .hall b{display:block; font-size:15.5px; font-weight:600; font-family:"Playfair Display",Georgia,serif}
 .hall span{font-size:13px; color:var(--cream-2)}
 
+/* витрина сетов — стоит перед формой брони, палитра и радиусы те же,
+   что у карточек залов. Лента едет по горизонтали: семь карточек в столбик
+   увели бы выбор дня на второй экран. Полные карточки с составом живут
+   на вкладке «Сеты», данные у обеих витрин одни (массив SETS). */
+.setrow{
+  display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory;
+  /* лента выходит под края экрана, чтобы обрезанная карточка подсказывала прокрутку */
+  margin:0 -18px; padding:2px 18px 5px; scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.setrow::-webkit-scrollbar{display:none}
+.setcard{
+  flex:0 0 172px; scroll-snap-align:start; display:flex; flex-direction:column;
+  border:1px solid var(--line); border-radius:var(--r); background:var(--navy-2); overflow:hidden;
+  cursor:pointer; text-align:left; font-family:inherit; color:inherit; padding:0;
+}
+.setcard img{width:100%; height:100px; object-fit:cover; display:block; background:var(--navy-3)}
+/* Кадра к сету пока нет — вместо пустой дырки мягкая заливка в той же палитре */
+.setcard .nophoto{height:100px; border-bottom:1px solid var(--line);
+  background:radial-gradient(120px 60px at 50% 120%, rgba(201,162,39,.16), transparent 70%), var(--navy-3)}
+.setcard .in{padding:9px 12px 11px; display:flex; flex-direction:column; gap:3px; flex:1}
+.setcard .when{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10.5px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--cream-2)}
+.setcard b{font-family:"Playfair Display",Georgia,serif; font-size:15px; font-weight:600; line-height:1.2}
+.setcard .gift{font-size:12px; color:var(--cream-2); line-height:1.3}
+.setcard .price{margin-top:auto; padding-top:6px; color:var(--gold-soft);
+  font-size:14.5px; font-weight:600}
+/* последняя плитка ленты уводит на полную витрину */
+.setmore{
+  flex:0 0 112px; scroll-snap-align:start; display:flex; align-items:center; justify-content:center;
+  text-align:center; padding:12px; border:1px dashed var(--line); border-radius:var(--r);
+  background:transparent; color:var(--gold-soft); font-family:inherit; font-size:13.5px; cursor:pointer;
+}
+
 /* поля */
-input[type=text], input[type=date]{
+input[type=text], input[type=date], input[type=search]{
   width:100%; padding:13px 15px; border:1px solid var(--line); border-radius:var(--r);
   background:var(--navy-2); color:var(--cream); font-size:16px; font-family:inherit;
 }
 input::placeholder{color:#6E7B8C}
 input:focus{outline:none; border-color:var(--gold)}
+input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none; height:16px; width:16px;
+  background:var(--cream-2); cursor:pointer;
+  -webkit-mask:radial-gradient(circle,#000 42%,transparent 44%) no-repeat center/100% 100%}
 .phone-btn{
   width:100%; padding:15px; border:1px solid var(--gold); border-radius:var(--r);
   background:transparent; color:var(--gold-soft); font-size:15.5px; font-weight:500;
@@ -122,6 +182,83 @@ input:focus{outline:none; border-color:var(--gold)}
 }
 .hint{font-size:12.5px; color:var(--cream-2); margin-top:8px}
 .hint.tap{color:var(--gold-soft); cursor:pointer; text-decoration:underline; text-underline-offset:3px}
+
+/* ── вкладка «Сеты»: полная карточка с составом ───────── */
+.setfull{display:grid; gap:14px; margin-top:16px}
+.setbig{border:1px solid var(--line); border-radius:var(--r); background:var(--navy-2); overflow:hidden}
+.setbig>img{width:100%; height:168px; object-fit:cover; display:block; background:var(--navy-3)}
+.setbig .nophoto{height:96px; border-bottom:1px solid var(--line);
+  background:radial-gradient(180px 90px at 50% 120%, rgba(201,162,39,.16), transparent 70%), var(--navy-3)}
+.setbig .in{padding:13px 15px 15px}
+.setbig .when{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10.5px;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--gold-soft)}
+.setbig h3{font-family:"Playfair Display",Georgia,serif; font-size:19px; font-weight:600;
+  margin:5px 0 0; line-height:1.15}
+.setbig .who{font-size:12.5px; color:var(--cream-2); margin-top:3px}
+.setbig .made{font-size:14px; color:var(--cream); margin-top:9px; line-height:1.45}
+.setbig .gift{font-size:13.5px; color:var(--gold-soft); margin-top:7px; line-height:1.4}
+.setbig .pr{display:flex; align-items:baseline; gap:9px; flex-wrap:wrap; margin-top:11px}
+.setbig .pr b{font-size:18px; color:var(--gold-soft); font-family:"Playfair Display",Georgia,serif}
+.setbig .pr span{font-size:12.5px; color:var(--cream-2)}
+.ghost{
+  margin-top:12px; width:100%; padding:12px; border:1px solid var(--gold-dim); border-radius:12px;
+  background:transparent; color:var(--gold-soft); font-family:inherit; font-size:14.5px; cursor:pointer;
+}
+.ghost:active{background:var(--navy-3)}
+
+/* ── вкладка «Меню» ───────────────────────────────────── */
+.msearch{margin-top:16px}
+/* Лента разделов липнет прямо под вкладками: на 139 позициях это
+   единственный способ попасть в нужный раздел без долгой прокрутки. */
+.rail{
+  position:sticky; top:var(--tabsH); z-index:6; display:flex; gap:7px; overflow-x:auto;
+  margin:12px -18px 0; padding:9px 18px; scrollbar-width:none;
+  background:rgba(11,21,34,.94); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.rail::-webkit-scrollbar{display:none}
+.rail button{
+  white-space:nowrap; border:1px solid var(--line); background:var(--navy-2); color:var(--cream-2);
+  font-family:inherit; font-size:13px; padding:6px 13px; border-radius:99px; cursor:pointer;
+}
+.rail button.on{background:var(--gold); border-color:var(--gold); color:#101A26; font-weight:600}
+.msec{padding-top:6px}
+.mtitle{
+  display:flex; align-items:baseline; gap:9px; flex-wrap:wrap;
+  margin:20px 0 4px; padding-top:6px;
+}
+.mtitle b{font-family:"Playfair Display",Georgia,serif; font-size:19px; font-weight:600}
+.mtitle .mtime{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10.5px;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--cream-2)}
+.mgh{font-size:12px; letter-spacing:.1em; text-transform:uppercase; color:var(--gold-soft);
+  margin:14px 0 2px}
+.dish{display:flex; gap:12px; padding:11px 0; border-bottom:1px solid rgba(201,162,39,.10)}
+.dish img, .dish .ph{
+  width:56px; height:56px; border-radius:10px; flex:0 0 56px; object-fit:cover;
+  background:var(--navy-3);
+}
+.dish .ph{border:1px solid var(--line);
+  background:radial-gradient(28px 28px at 50% 120%, rgba(201,162,39,.18), transparent 70%), var(--navy-3)}
+.dish .t{flex:1 1 auto; min-width:0}
+.dish .hd{display:flex; justify-content:space-between; align-items:baseline; gap:10px}
+.dish .n{font-size:15px; font-weight:500; line-height:1.25}
+.dish .n i{font-style:normal; color:var(--gold); font-size:12px; margin-left:5px}
+.dish .p{white-space:nowrap; color:var(--gold-soft); font-size:14.5px; font-weight:600}
+.dish .d{font-size:12.5px; color:var(--cream-2); line-height:1.35; margin-top:3px}
+.dish .nt{font-size:11.5px; color:var(--gold-soft); opacity:.8; margin-top:3px}
+.mempty{text-align:center; color:var(--cream-2); padding:34px 0; font-size:14.5px}
+
+/* ── вкладка «Залы» ───────────────────────────────────── */
+.zone{border:1px solid var(--line); border-radius:var(--r); background:var(--navy-2);
+  overflow:hidden; margin-top:14px}
+.shots{display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory;
+  padding:8px; scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.shots::-webkit-scrollbar{display:none}
+.shots img{flex:0 0 76%; height:168px; object-fit:cover; border-radius:10px;
+  scroll-snap-align:center; background:var(--navy-3)}
+.zone .in{padding:4px 15px 15px}
+.zone h3{font-family:"Playfair Display",Georgia,serif; font-size:19px; font-weight:600; margin:6px 0 0}
+.zone p{font-size:14px; color:var(--cream-2); margin:6px 0 0; line-height:1.45}
 
 /* итог */
 .summary{
@@ -140,13 +277,25 @@ input:focus{outline:none; border-color:var(--gold)}
   border:1px solid var(--line); border-left:2px solid var(--gold); border-radius:10px;
   padding:11px 14px; font-size:14px; color:var(--cream-2); margin-top:11px; background:var(--navy-2);
 }
-footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin-top:24px}
+footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 4px}
+
+/* Узкие телефоны (360 px и уже): ужимаем то, что первым упирается в край. */
+@media (max-width:374px){
+  .wrap{padding:0 14px}
+  .setrow, .rail{margin-left:-14px; margin-right:-14px; padding-left:14px; padding-right:14px}
+  .tabs{padding-left:14px; padding-right:14px; gap:4px}
+  .tabs button{font-size:13px; padding:7px 8px}
+  .chip{padding:10px 13px; font-size:14.5px}
+  .dish img, .dish .ph{width:50px; height:50px; flex-basis:50px}
+  .dish .n{font-size:14.5px}
+  .hero .cap{left:14px; right:14px}
+}
 </style>
 </head>
-<body>
+<body class="tab-book">
 
 <div class="hero">
-  <img src="https://the-red-beard.github.io/retro-photos/img/terrasa-12-zal-vecherom.jpg" alt="">
+  <img src="../img/terrasa-12-zal-vecherom.jpg" alt="">
   <div class="langbar" id="langbar"></div>
   <div class="cap">
     <div class="brand">Retro Milliy</div>
@@ -154,53 +303,87 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin-top:24p
   </div>
 </div>
 
+<nav class="tabs" id="tabs"></nav>
+
 <div class="wrap">
-<div class="progress"><i id="bar"></i></div>
-<div class="stepline" id="stepline"></div>
-<div class="sub" id="sub"></div>
 
-<div class="page" data-step="1">
-  <section>
-    <div class="label"><span id="l1"></span></div>
-    <div class="row" id="days"></div>
-    <div style="margin-top:9px; display:none" id="dateWrap"><input type="date" id="dateInput"></div>
-  </section>
-  <section id="timeSection" hidden>
-    <div class="label"><span id="l2"></span></div>
-    <div class="row" id="parts"></div>
-    <div class="row" id="slots" style="margin-top:9px"></div>
-    <div class="note" id="closedNote" style="display:none"></div>
-  </section>
-</div>
+<!-- ── бронь ─────────────────────────────────────────── -->
+<div class="tabpage" data-tab="book">
+  <div class="progress"><i id="bar"></i></div>
+  <div class="stepline" id="stepline"></div>
+  <div class="sub" id="sub"></div>
 
-<div class="page" data-step="2" hidden>
-  <section>
-    <div class="label"><span id="l3"></span></div>
-    <div class="row" id="guests"></div>
-  </section>
-</div>
-
-<div class="page" data-step="3" hidden>
-  <section>
-    <div class="label"><span id="l4"></span></div>
-    <div class="halls" id="halls"></div>
-  </section>
-</div>
-
-<div class="page" data-step="4" hidden>
-  <section>
-    <div class="label"><span id="l5"></span></div>
-    <input type="text" id="name" autocomplete="given-name">
-  </section>
-  <section id="phoneSection">
-    <div class="label"><span id="l6"></span></div>
-    <div id="phoneBox"></div>
-    <div class="hint" id="phoneHint"></div>
-  </section>
-  <div class="summary" id="summary">
-    <div class="head" id="sumHead"></div>
-    <div class="body" id="summaryBody"></div>
+  <div class="page" data-step="1">
+    <section id="setsSection">
+      <div class="label"><span id="lSets"></span></div>
+      <div class="hint" id="setsLead" style="margin-top:0; margin-bottom:10px"></div>
+      <div class="setrow" id="sets"></div>
+      <div class="hint" id="setsFoot"></div>
+    </section>
+    <section>
+      <div class="label"><span id="l1"></span></div>
+      <div class="row" id="days"></div>
+      <div style="margin-top:9px; display:none" id="dateWrap"><input type="date" id="dateInput"></div>
+    </section>
+    <section id="timeSection" hidden>
+      <div class="label"><span id="l2"></span></div>
+      <div class="row" id="parts"></div>
+      <div class="row" id="slots" style="margin-top:9px"></div>
+      <div class="note" id="closedNote" style="display:none"></div>
+    </section>
   </div>
+
+  <div class="page" data-step="2" hidden>
+    <section>
+      <div class="label"><span id="l3"></span></div>
+      <div class="row" id="guests"></div>
+    </section>
+  </div>
+
+  <div class="page" data-step="3" hidden>
+    <section>
+      <div class="label"><span id="l4"></span></div>
+      <div class="halls" id="halls"></div>
+    </section>
+  </div>
+
+  <div class="page" data-step="4" hidden>
+    <section>
+      <div class="label"><span id="l5"></span></div>
+      <input type="text" id="name" autocomplete="given-name">
+    </section>
+    <section id="phoneSection">
+      <div class="label"><span id="l6"></span></div>
+      <div id="phoneBox"></div>
+      <div class="hint" id="phoneHint"></div>
+    </section>
+    <div class="summary" id="summary">
+      <div class="head" id="sumHead"></div>
+      <div class="body" id="summaryBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── сеты ──────────────────────────────────────────── -->
+<div class="tabpage" data-tab="sets" hidden>
+  <div class="sub" id="setsPageLead"></div>
+  <div class="setfull" id="setsFull"></div>
+  <div class="note" id="setsPageFoot"></div>
+</div>
+
+<!-- ── меню ──────────────────────────────────────────── -->
+<div class="tabpage" data-tab="menu" hidden>
+  <div class="sub" id="menuLead"></div>
+  <div class="msearch"><input type="search" id="mSearch" autocomplete="off" enterkeyhint="search"></div>
+  <div class="rail" id="rail"></div>
+  <div id="menuList"></div>
+  <div class="mempty" id="mEmpty" hidden></div>
+</div>
+
+<!-- ── залы ──────────────────────────────────────────── -->
+<div class="tabpage" data-tab="halls" hidden>
+  <div class="sub" id="hallsLead"></div>
+  <div id="zones"></div>
 </div>
 
 <footer id="foot"></footer>
@@ -211,7 +394,10 @@ const tg = window.Telegram?.WebApp;
 const P = new URLSearchParams(location.search);
 const closed = (P.get('closed') || '').split(',').filter(Boolean);
 const API = (P.get('api') || '').replace(/\/+$/,'');
-const SQ = 'https://the-red-beard.github.io/retro-photos/sq/';
+// Пути относительные: мини-апп и все кадры лежат в одном репозитории (retro-photos),
+// с чужого домена картинки всё равно брать нельзя. Заодно всё открывается локально.
+const TH = '../th/';        // кадры залов и еды, ужатые до 560 px
+const DISH = '../dishes/';  // съёмка блюд из печатного меню
 
 // Гость, которого бот уже знает: телефон лежит в профиле, второй раз не спрашиваем.
 const KNOWN = P.get('known') === '1';
@@ -223,6 +409,13 @@ const T = {
     h1:"Stol band qilish", sub:"Bir daqiqada to'ldirasiz, administrator qo'ng'iroq qilib tasdiqlaydi",
     l1:"Qachon kelasiz", l2:"Vaqt", l3:"Necha kishi", l4:"Qayerga o'tqazamiz",
     l5:"Ismingiz", l6:"Telefon",
+    lSets:"Setlar", setsLead:"Tayyor setlar: nonushta, tushlik va assorti",
+    setsFoot:"Banketni stolingizga qarab yig'amiz: (71) 269-30-05",
+    sum:"so'm",
+    setTag:{ gift:"Sovg'a: ikki kishiga choy",
+             giftPancakes:"Sovg'a: ikki tvorogli blinchik va ikki kishiga choy",
+             giftPorridge:"Sovg'a: ikki kishiga choy va ikki porsiya bo'tqa",
+             two:"2 kishiga" },
     days:["Bugun","Ertaga","Boshqa kun"],
     parts:["🌅 Ertalab","🌤 Kunduzi","🌆 Kechqurun"],
     many:"10 dan ko'p",
@@ -236,12 +429,49 @@ const T = {
     send:"Arizani yuborish", fill:"Barcha maydonlarni to'ldiring", sending:"Yuborilmoqda…",
     next:"Keyingi", stepOf:"{m} qadamdan {n}-si",
     closedNote:"Bu vaqt band: ", closedTail:". Boshqasini tanlang.",
-    foot:"Retro Milliy · Oltintepa 28 · har kuni 9:00–23:00"
+    foot:"Retro Milliy · Oltintepa 28 · har kuni 9:00–23:00",
+    // вкладки и разделы
+    tabs:["Band qilish","Setlar","Menyu","Zallar"],
+    titles:["Stol band qilish","Setlar","Menyu","Zallarimiz"],
+    bookCta:"Stol band qilish", allSets:"Barcha setlar →", seatHere:"Shu yerga o'tqazing",
+    setsPageLead:"Belgilangan narxdagi nonushta va tushliklar, dasturxonga yig'ilgan assorti.",
+    setsPageFoot:"Banketni stolingizga qarab yig'amiz: (71) 269-30-05",
+    forTwo:"Ikki kishiga", forOne:"Bir kishilik to'liq tushlik", perPerson:"kishi boshiga {n}",
+    menuLead:"Oshxonaning to'liq menyusi. Narxlar so'mda.",
+    mSearch:"Menyudan qidirish", mEmpty:"Hech narsa topilmadi",
+    mTime:"tayyorlanish vaqti {t} daqiqa",
+    hallsLead:"Uchta zal. Band qilishda o'zingizga yoqqanini tanlaysiz.",
+    secs:{salads:"Salatlar",starters:"Gazaklar",tandyr:"Tandir va pitsa",soups:"Birinchi taomlar",
+      national:"Milliy taomlar",turkish:"Turk taomlari",grill:"Shashliklar",sides:"Garnir va non",
+      desserts:"Shirinliklar",drinks:"Ichimliklar"},
+    grps:{cold:"Sovuq gazaklar · 8–10 daqiqa",hot:"Issiq gazaklar · 10–15 daqiqa",
+      tandyrDishes:"Tandir",pizza:"Pitsa",garnish:"Garnirlar",bread:"Non",lemonade:"Limonadlar",
+      mocktails:"Alkogolsiz kokteyllar",soft:"Ichimliklar",tea:"Choylar",fresh:"Freshlar",
+      milkshakes:"Milk sheyklar"},
+    setMade:{
+      retro:"Pishloq va go'sht kesimlari, brinza, sariyog', asal, murabbo, zaytun, pomidor, bodring va ko'katlar, sigara burek, tanlov bo'yicha issiq taom.",
+      sytnoe:"Pishloq va sabzavotli ikki omlet, go'shtli to'rt blinchik, ikki bo'tqa.",
+      domashnee:"Olti sirniki, tvorogli to'rt blinchik, ikki tuxum qovurdoq.",
+      lula:"Ezogelin sho'rvasi, lulya kabob, turkcha guruch, achichuk salati, tirnoq ekmek noni, turk choyi.",
+      kofte:"Mercimek sho'rvasi, sharq uslubida tovuqli kofte, kartoshka pyuresi, achichuk salati, tirnoq ekmek noni, turk choyi."
+    },
+    zones:[
+      ["Yopiq terrasa","Yorug' zal: devorlarda va stollar tepasida ko'katlar, chiroqli ravoqlar, deraza yonidagi stollar va yumshoq divanlar."],
+      ["Musiqali zal","Neonli qorong'i zal: dumaloq oynali devor bo'ylab uzun stol, yashil devor yonida baxmal divanlar."],
+      ["Oilaviy zona","O'yin xonasi yonidagi yorug' zal: gorka, labirint, quruq basseyn va yo'l naqshli gilam."]
+    ]
   },
   ru:{
     h1:"Забронировать стол", sub:"Заполните за минуту, администратор перезвонит и подтвердит",
     l1:"Когда придёте", l2:"Время", l3:"Сколько гостей", l4:"Где посадить",
     l5:"Как вас зовут", l6:"Телефон",
+    lSets:"Сеты", setsLead:"Готовые наборы: завтраки, обеды и ассорти из меню",
+    setsFoot:"Банкет соберём под ваш стол: (71) 269-30-05",
+    sum:"сум",
+    setTag:{ gift:"Подарок: чай на двоих",
+             giftPancakes:"Подарок: два блинчика с творогом и чай на двоих",
+             giftPorridge:"Подарок: чай на двоих и две порции каши",
+             two:"на 2 персоны" },
     days:["Сегодня","Завтра","Другой день"],
     parts:["🌅 Утром","🌤 Днём","🌆 Вечером"],
     many:"больше 10",
@@ -255,12 +485,48 @@ const T = {
     send:"Отправить заявку", fill:"Заполните все поля", sending:"Отправляем…",
     next:"Далее", stepOf:"Шаг {n} из {m}",
     closedNote:"На это время всё занято: ", closedTail:". Выберите другое.",
-    foot:"Retro Milliy · Олтинтепа 28 · каждый день 9:00–23:00"
+    foot:"Retro Milliy · Олтинтепа 28 · каждый день 9:00–23:00",
+    tabs:["Бронь","Сеты","Меню","Залы"],
+    titles:["Забронировать стол","Сеты","Меню","Наши залы"],
+    bookCta:"Забронировать стол", allSets:"Все сеты →", seatHere:"Посадить сюда",
+    setsPageLead:"Завтраки и обеды по фиксированной цене, ассорти на стол.",
+    setsPageFoot:"Банкет соберём под ваш стол: (71) 269-30-05",
+    forTwo:"На двоих", forOne:"Полный обед на одного", perPerson:"по {n} с человека",
+    menuLead:"Полное меню кухни. Цены в сумах.",
+    mSearch:"Поиск по меню", mEmpty:"Ничего не нашлось",
+    mTime:"время готовки {t} минут",
+    hallsLead:"Три зала. Выбираете свой при брони.",
+    secs:{salads:"Салаты",starters:"Закуски",tandyr:"Тандыр и пицца",soups:"Первые блюда",
+      national:"Национальные блюда",turkish:"Турецкие блюда",grill:"Шашлыки",sides:"Гарниры и хлеб",
+      desserts:"Десерты",drinks:"Напитки"},
+    grps:{cold:"Холодные закуски · 8–10 минут",hot:"Горячие закуски · 10–15 минут",
+      tandyrDishes:"Тандыр",pizza:"Пицца",garnish:"Гарниры",bread:"Наан",lemonade:"Лимонады",
+      mocktails:"Безалкогольные коктейли",soft:"Напитки",tea:"Чаи",fresh:"Фреши",
+      milkshakes:"Милк шейки"},
+    setMade:{
+      retro:"Сырная и мясная нарезка, брынза, сливочное масло, мёд, варенье, оливки, помидоры, огурцы и зелень, сигара бурек, горячее на выбор.",
+      sytnoe:"Два омлета с сыром и овощами, четыре блинчика с мясом, две каши.",
+      domashnee:"Шесть сырников, четыре блинчика с творогом, две яичницы.",
+      lula:"Суп эзогелин, шашлык люля, рис по-турецки, салат ачичук, хлеб тирнок экмек, турецкий чай.",
+      kofte:"Суп мержмек, куриная кофте по-восточному, картофельное пюре, салат ачичук, хлеб тирнок экмек, турецкий чай."
+    },
+    zones:[
+      ["Крытая терраса","Светлый зал: зелень по стенам и над столами, арки с лампами, столы у окон и мягкие диваны."],
+      ["Музыкальный зал","Тёмный зал с неоном: длинный стол вдоль стены с круглыми зеркалами, бархатные диваны у зелёной стены."],
+      ["Семейная зона","Светлый зал рядом с игровой комнатой: горка, лабиринт, сухой бассейн и ковёр-дорога."]
+    ]
   },
   en:{
     h1:"Book a table", sub:"A few taps, and the host calls you back to confirm",
     l1:"When you come", l2:"Time", l3:"How many guests", l4:"Where to seat you",
     l5:"Your name", l6:"Phone",
+    lSets:"Sets", setsLead:"Ready sets: breakfasts, lunches and platters from the menu",
+    setsFoot:"For a banquet the host puts a table together for you: (71) 269-30-05",
+    sum:"sum",
+    setTag:{ gift:"Gift: tea for two",
+             giftPancakes:"Gift: two curd pancakes plus tea for two",
+             giftPorridge:"Gift: tea for two plus two porridges",
+             two:"serves 2" },
     days:["Today","Tomorrow","Another day"],
     parts:["🌅 Morning","🌤 Afternoon","🌆 Evening"],
     many:"more than 10",
@@ -274,7 +540,91 @@ const T = {
     send:"Send request", fill:"Fill in every field", sending:"Sending…",
     next:"Next", stepOf:"Step {n} of {m}",
     closedNote:"Fully booked then: ", closedTail:". Please pick another.",
-    foot:"Retro Milliy · Oltintepa 28 · every day 9:00–23:00"
+    foot:"Retro Milliy · Oltintepa 28 · every day 9:00–23:00",
+    tabs:["Booking","Sets","Menu","Halls"],
+    titles:["Book a table","Sets","Menu","Our halls"],
+    bookCta:"Book a table", allSets:"All sets →", seatHere:"Seat us here",
+    setsPageLead:"Fixed-price breakfasts and lunches, platters for the table.",
+    setsPageFoot:"For a banquet the host puts a table together for you: (71) 269-30-05",
+    forTwo:"For two", forOne:"A full lunch for one", perPerson:"{n} per person",
+    menuLead:"The full kitchen menu. Prices in UZS.",
+    mSearch:"Search the menu", mEmpty:"Nothing found",
+    mTime:"cooking time {t} min",
+    hallsLead:"Three halls. You pick yours while booking.",
+    secs:{salads:"Salads",starters:"Starters",tandyr:"Tandyr and pizza",soups:"Soups",
+      national:"National dishes",turkish:"Turkish dishes",grill:"Grill",sides:"Sides and bread",
+      desserts:"Desserts",drinks:"Drinks"},
+    grps:{cold:"Cold starters · 8–10 min",hot:"Hot starters · 10–15 min",
+      tandyrDishes:"Tandyr",pizza:"Pizza",garnish:"Sides",bread:"Bread",lemonade:"Lemonades",
+      mocktails:"Mocktails",soft:"Soft drinks",tea:"Tea",fresh:"Fresh juices",
+      milkshakes:"Milkshakes"},
+    setMade:{
+      retro:"Cheese and cold cuts, brynza, butter, honey, jam, olives, tomatoes, cucumbers and herbs, sigara böreği, a hot dish of your choice.",
+      sytnoe:"Two omelettes with cheese and vegetables, four meat pancakes, two bowls of porridge.",
+      domashnee:"Six syrniki, four pancakes with curd, two fried eggs.",
+      lula:"Ezogelin soup, lyulya kebab, Turkish rice, achichuk salad, tirnok ekmek bread, Turkish tea.",
+      kofte:"Mercimek soup, eastern-style chicken kofte, mashed potatoes, achichuk salad, tirnok ekmek bread, Turkish tea."
+    },
+    zones:[
+      ["Covered terrace","A bright hall with greenery along the walls and above the tables, arches with lamps, tables by the windows and soft sofas."],
+      ["Music hall","A dark hall with neon: a long table along a wall of round mirrors, velvet sofas by the green wall."],
+      ["Family area","A bright hall next to the playroom: a slide, a maze, a ball pit and a road-print carpet."]
+    ]
+  },
+  tr:{
+    h1:"Masa ayırtın", sub:"Bir dakikada doldurun, yönetici arayıp onaylasın",
+    l1:"Ne zaman geliyorsunuz", l2:"Saat", l3:"Kaç kişi", l4:"Sizi nereye alalım",
+    l5:"Adınız", l6:"Telefon",
+    lSets:"Setler", setsLead:"Hazır setler: kahvaltılar, öğle yemekleri ve menüden tabaklar",
+    setsFoot:"Ziyafet için masayı size göre kuruyoruz: (71) 269-30-05",
+    sum:"som",
+    setTag:{ gift:"Hediye: iki kişilik çay",
+             giftPancakes:"Hediye: iki lorlu krep ve iki kişilik çay",
+             giftPorridge:"Hediye: iki kişilik çay ve iki kase muhallebi",
+             two:"2 kişilik" },
+    days:["Bugün","Yarın","Başka gün"],
+    parts:["🌅 Sabah","🌤 Gündüz","🌆 Akşam"],
+    many:"10'dan fazla",
+    halls:[["Kapalı teras","etrafı yeşillik"],["Müzik salonu","neon, uzun masa"],
+           ["Aile bölümü","aydınlık salon, oyun odası yanında"],["Fark etmez","uygun olan yere alın"]],
+    namePh:"Ad",
+    phoneBtn:"📱 Numarayı Telegram'dan al", phoneManual:"Olmadı mı? Elle yazın",
+    phoneGot:"Numara alındı: ", phoneHint:"Yönetici rezervasyonu telefonla onaylamak için numaranızı ister",
+    sumHead:"Rezervasyonunuz",
+    kWhen:"Ne zaman", kGuests:"Kişi", kHall:"Salon", kName:"Ad", kPhone:"Telefon",
+    send:"Talebi gönder", fill:"Tüm alanları doldurun", sending:"Gönderiliyor…",
+    next:"Devam", stepOf:"Adım {n} / {m}",
+    closedNote:"Bu saat dolu: ", closedTail:". Başka bir saat seçin.",
+    foot:"Retro Milliy · Oltintepa 28 · her gün 9:00–23:00",
+    tabs:["Rezervasyon","Setler","Menü","Salonlar"],
+    titles:["Masa ayırtın","Setler","Menü","Salonlarımız"],
+    bookCta:"Masa ayırtın", allSets:"Tüm setler →", seatHere:"Buraya alın",
+    setsPageLead:"Sabit fiyatlı kahvaltı ve öğle yemekleri, sofraya tabaklar.",
+    setsPageFoot:"Ziyafet için masayı size göre kuruyoruz: (71) 269-30-05",
+    forTwo:"İki kişilik", forOne:"Tek kişilik tam öğle yemeği", perPerson:"kişi başı {n}",
+    menuLead:"Mutfağın tam menüsü. Fiyatlar som cinsinden.",
+    mSearch:"Menüde ara", mEmpty:"Bir şey bulunamadı",
+    mTime:"pişirme süresi {t} dakika",
+    hallsLead:"Üç salon. Rezervasyonda kendinizinkini seçiyorsunuz.",
+    secs:{salads:"Salatalar",starters:"Başlangıçlar",tandyr:"Tandır ve pizza",soups:"Çorbalar",
+      national:"Milli yemekler",turkish:"Türk yemekleri",grill:"Şişler",sides:"Garnitür ve ekmek",
+      desserts:"Tatlılar",drinks:"İçecekler"},
+    grps:{cold:"Soğuk başlangıçlar · 8–10 dakika",hot:"Sıcak başlangıçlar · 10–15 dakika",
+      tandyrDishes:"Tandır",pizza:"Pizza",garnish:"Garnitürler",bread:"Ekmek",lemonade:"Limonatalar",
+      mocktails:"Alkolsüz kokteyller",soft:"İçecekler",tea:"Çaylar",fresh:"Taze sıkma",
+      milkshakes:"Milkshake"},
+    setMade:{
+      retro:"Peynir ve şarküteri tabağı, beyaz peynir, tereyağı, bal, reçel, zeytin, domates, salatalık ve yeşillik, sigara böreği, seçmeli sıcak.",
+      sytnoe:"Peynirli ve sebzeli iki omlet, kıymalı dört krep, iki kase muhallebi.",
+      domashnee:"Altı sirniki, lorlu dört krep, iki sahanda yumurta.",
+      lula:"Ezogelin çorbası, lüle kebap, Türk pilavı, acıçuk salatası, tırnak ekmek, Türk çayı.",
+      kofte:"Mercimek çorbası, doğu usulü tavuk köfte, patates püresi, acıçuk salatası, tırnak ekmek, Türk çayı."
+    },
+    zones:[
+      ["Kapalı teras","Aydınlık salon: duvarlarda ve masaların üstünde yeşillik, lambalı kemerler, pencere kenarı masalar ve yumuşak koltuklar."],
+      ["Müzik salonu","Neonlu karanlık salon: yuvarlak aynalı duvar boyunca uzun masa, yeşil duvarın yanında kadife koltuklar."],
+      ["Aile bölümü","Oyun odasının yanındaki aydınlık salon: kaydırak, labirent, top havuzu ve yol desenli halı."]
+    ]
   }
 };
 let lang = P.get('lang');
@@ -291,6 +641,235 @@ const HALL_KEYS = ['терраса','музыкальный','семейная',
 const HALL_FILES= ['terrasa-01-neon-arki.jpg','muzyk-01-bankentnyy-stol-zerkala.jpg',
                    'terrasa-03-zal-zelen.jpg', null];
 const HALL_FIELDS=['hall_terrace','hall_music','hall_family',null];
+// Витрина залов: кадры отобраны по тому, что на них видно.
+const HALL_SHOTS=[
+  ['terrasa-01-neon-arki.jpg','terrasa-02-arki-lampy.jpg','terrasa-05-zelenyy-potolok.jpg',
+   'terrasa-07-stoly-u-okon.jpg','terrasa-09-divan-trava.jpg','terrasa-13-dlinnyy-stol.jpg'],
+  ['muzyk-01-bankentnyy-stol-zerkala.jpg','muzyk-02-neon-divan.jpg','muzyk-03-vhod-neon.jpg'],
+  ['terrasa-03-zal-zelen.jpg','semya-01-igrovaya-gorka.jpg','semya-02-labirint-kover.jpg']
+];
+
+// Витрина сетов. Цены завтраков подтверждены владельцем (150 000, 150 000, 170 000
+// за двоих), обеды — 90 000 за шашлык люля и 80 000 за куриную кофте.
+// Второе место, где живут те же цифры, — Sets/content-pack-2026-09.md.
+// Состав «Ретро завтрака» снят с креатива Sets/creatives/zavtrak-retro-ru-150.png
+// (19.09.2026) — на кухне формулировку надо подтвердить. Ассорти и куртоба взяты
+// из меню кухни (раздел national),
+// их состав так и остаётся по-русски, как названия блюд в меню.
+const SETS = [
+  { id:"retro",     name:"Ретро завтрак",  price:150000, per:75000, photo:TH+"eda-01-zavtrak-devushka.jpg", hours:"09:00–12:00", tag:"gift",         who:"two" },
+  { id:"sytnoe",    name:"Сытное утро",    price:150000, per:75000, photo:TH+"eda-02-zavtrak-blizko.jpg",   hours:"09:00–12:00", tag:"giftPancakes", who:"two" },
+  { id:"domashnee", name:"Домашнее утро",  price:170000, per:85000, photo:TH+"eda-04-zavtrak-stol.jpg",     hours:"09:00–12:00", tag:"giftPorridge", who:"two" },
+  { id:"lula",      name:"Шашлык люля",    price:90000,  photo:null,                     hours:"12:00–16:00", who:"one" },
+  { id:"kofte",     name:"Куриная кофте",  price:80000,  photo:DISH+"kefte-vostochnomu-w.jpg", hours:"12:00–16:00", who:"one" },
+  { id:"assorti",   name:"Миллий ассорти", price:140000, photo:DISH+"milliy-assorti-w.jpg", tag:"two", who:"two",
+    made:"Говядина, люля, лук, соус, куриные крылья, картофель, долма." },
+  { id:"kurtoba",   name:"Куртоба",        price:156000, photo:DISH+"kurtoba-w.jpg",        tag:"two", who:"two",
+    made:"Тонкий хлеб, курт, говядина, помидоры, зелень, лук." },
+];
+
+// Меню кухни, перенесённое из site/src/data/fullMenu.ts и dishPhotos.ts
+// (источник — Меню.pdf, сентябрь 2026). Строка блюда:
+// [название, цена, вторая цена, примечание, состав, файл фото, хит].
+// Названия и составы остаются по-русски на всех языках: так они стоят в меню
+// и так их ищет гость. Переводятся заголовки разделов и интерфейс.
+const MENU=[
+{id:"salads",time:"8–10",g:[
+ {id:null,d:[
+  ["Винегрет",34000,0,"","Отварные свекла, картофель, морковь, капуста соленая, зелёный горошек","vinegret",1],
+  ["Салат Чобан Чирокчи",42000,0,"","Помидоры, огурцы, лук, перец болгарский, оливковое масло, лимон","choban",1],
+  ["Салат Ташкент",48000,0,"","Дайкон, говядина, яйцо куриное, йогурт, луковые кольца","tashkent",0],
+  ["Мутабель",42000,0,"","Баклажан с тахини, турецкая закуска","mutabel",0],
+  ["Оливье",50000,0,"","Вареный картофель, маринованные огурцы, морковь, говядина, зеленый горошек, майонез, яйцо куриное","olivie",0],
+  ["Салат Лайло",45000,0,"","Грибы вешенки маринованные, куриная грудка, картофель «Пай», яйцо, зелень, майонез","laylo",0],
+  ["Босфор",45000,0,"","Огурцы маринованные, колбаса копченая, помидоры, кукуруза, майонез, чеснок","bosfor",0],
+  ["Зеленый салат с моцареллой",57000,0,"","Руккола, кукуруза, помидоры черри, огурцы, сыр моцарелла, кунжутное масло, крем-бальзамик, наршараб","mozzarella",0],
+  ["Хрустящие баклажаны",69000,0,"","Карамелизированные баклажаны, кунжут, помидоры черри, зелень, кинза, соус Арай, соус Унаги","baklazhany",1],
+  ["Салат со свеклой и фетой с апельсинами",70000,0,"","Оливковое масло, свекла, руккола, фета, апельсин, грецкие орехи, лук шалот, мед, лимонный сок","svekla-feta",1],
+  ["Аляска",55000,0,"","Рулет индейка, шампиньоны, кукуруза, огурцы маринованные, сыр, помидоры маринованные","alyaska",0],
+  ["Элит",55000,0,"","Рулет говяжий, руккола, майонез, огурцы маринованные, соус ореховый, лук шалот, помидоры","elit",0],
+  ["Акдениз",55000,0,"","Фетакса, айсберг, лола росса, маслины, помидоры, болгарский перец, оливковое масло, огурцы","akdeniz",0],
+  ["Тулум",68000,0,"","Гранат, лола росса, руккола, кукуруза, орехи, сыр тулум, помидоры черри, яблоко, кишмиш, соус наршараб","tulum",0],
+  ["Салат Хевес",80000,0,"","Копченая индейка, копченая колбаса, огурцы, сыр, майонез","heves",0],
+  ["Цезарь",75000,0,"","Куриная грудка, пармезан, сухари, помидоры, соус Цезарь, айсберг, перепелиные яйца","cezar",0],
+  ["Салат Юлдуз",60000,0,"","Салат микс, донар мясо, огурцы, помидоры, петрушка, кинза, авторский соус","yulduz",0],
+  ["Ретро",90000,0,"","Говядина, кедровые орешки, баклажаны, руккола, айсберг, соус Арай, пармезан, помидоры черри","retro-salat",0],
+ ]},
+]},
+{id:"starters",time:null,g:[
+ {id:"cold",d:[
+  ["Хайдари",30000,0,"","Сузьма, масло оливковое, чеснок, приправа нанг, укроп","haydari",0],
+  ["Эзма",30000,0,"","Помидоры, петрушка, наршараб, масло оливковое, болгарский перец, чеснок, соус чили","ezma",0],
+  ["Овощное ассорти",36000,0,"","Огурцы, помидоры, зелень","ovoshchnoe",0],
+  ["Разносолы",36000,0,"","Помидоры, огурцы, капуста квашеная, бурые помидоры","raznosoly",0],
+  ["Соте",60000,0,"","Баклажаны, помидоры, зелень, чеснок, кинза, соус Тартар","sote-holod",0],
+  ["Сельдь по-русски",55000,0,"","Сельдь, картошка, лук","seld",0],
+  ["Сырное ассорти",150000,0,"","","syrnoe",0],
+  ["Мясная тарелка",200000,0,"","","myasnaya-tarelka",0],
+ ]},
+ {id:"hot",d:[
+  ["Сигара бурек с курицей или с брынзой",45000,0,"5 шт","Лаваш, курица, брынза, зелень","sigara-burek",0],
+  ["Праздник дунганских перчиков",50000,0,"","","perchiki",0],
+  ["Кефте по-стамбульски с моцареллой",40000,0,"","Картофельное пюре, моцарелла, петрушка, соус, специи","kefte-stambul",0],
+  ["Долма",60000,0,"","Говядина, виноградный лист, рис, сузьма, зелень","dolma",0],
+  ["Читир Тавук",55000,0,"150 г грудки","Куриная грудка, картофель фри","chitir-tavuk",0],
+  ["Цыплёнок Табака",84000,0,"700 г","","tabaka",0],
+  ["Гарлики хрустящие",30000,0,"","","garliki",0],
+ ]},
+]},
+{id:"tandyr",time:"10–15",g:[
+ {id:"tandyrDishes",d:[
+  ["Олот самса",12000,0,"","Тесто, мясо говядина, специи","olot-samsa",0],
+  ["Лахмаджун",55000,0,"","Говядина, помидоры, овощи, специи, тесто","lahmadzhun",0],
+  ["Пиде с сыром и медом",60000,0,"","Тонкое тесто, сыр, мёд, фисташки","pide-med",0],
+  ["Хачапури",70000,0,"","Тесто, моцарелла, сливочное масло","hachapuri",0],
+  ["Пиде с мясом и сыром",80000,0,"","Помидор, тесто, говядина, лук, перец, сыр","pide-myaso",0],
+  ["Пиде ассорти",70000,0,"","Помидор, тесто, говядина, курица, сыр, зелень, лимон, болгарский перец","pide-assorti",0],
+ ]},
+ {id:"pizza",d:[
+  ["Пепперони",80000,0,"","Тесто, сыр моцарелла, сырокопченая колбаса, помидоры","pepperoni",0],
+  ["Маргарита",80000,0,"","Тесто, сыр моцарелла, томаты","",0],
+ ]},
+]},
+{id:"soups",time:"10–15",g:[
+ {id:null,d:[
+  ["Мержемек шурпа",37000,0,"","Чечевица, масло оливковое, лимон, сухарики","merzhemek",0],
+  ["Эзогелин",37000,0,"","Чечевица, масло оливковое, морковь, перец","ezogelin",0],
+  ["Чучвара с бульоном",44000,0,"","Мясо, тесто, овощи, специи","chuchvara",0],
+  ["Товук шурпа",35000,0,"","Курица, вермишель, йогурт, специи","tovuk-shurpa",0],
+  ["Кофте шурпа",46000,0,"","Тефтели с рисом, картофель, помидор, морковь, бульон, зелень","kofte-shurpa",0],
+  ["Мастава",55000,0,"","Баранина, рис, морковь, картофель, помидор, специи","mastava",0],
+  ["Кайнатма шурпа",66000,0,"","Баранина, картофель, помидор, морковь, специи","kaynatma",0],
+  ["Грибной суп со сливками",45000,0,"","Шампиньоны, масло сливочное, зелень, молоко, сухарики","gribnoy",0],
+ ]},
+]},
+{id:"national",time:"15–20",g:[
+ {id:null,d:[
+  ["Манты",10000,0,"1 шт","Тесто, мясо, зелень","manty",0],
+  ["Рулька с пюре",155000,0,"","Говяжья рулька, пюре","rulka",0],
+  ["Норин",53000,0,"","Масло растительное, конина, лук репчатый, тесто, зира, специи","norin",0],
+  ["Лагман уйгурский",73000,0,"","Баранина, тесто, овощи, специи","lagman",1],
+  ["Вагури",210000,420000,"0,5 кг / 1 кг","Жареный барашек с картошкой","vaguri",0],
+  ["Думгаза с картофелем",150000,0,"","Хвост говяжий, картошка, лук, соус и специи","dumgaza",0],
+  ["Мясо по-домашнему",78000,0,"","Говядина, лук, картофель, специи","myaso-domashnee",0],
+  ["Судак жареный",125000,250000,"0,5 кг / 1 кг","","sudak",0],
+  ["Сазан жареный",250000,0,"1 шт, 1,7 кг","","sazan",0],
+  ["Дуппи",80000,0,"","Мясо говядина, лепешка, специи, лук","duppi",0],
+  ["Миллий ассорти",140000,0,"на 2 персоны","Говядина, люля, лук, соус, куриные крылья, картофель, долма","milliy-assorti",0],
+  ["Говядина с грибами в сливочном соусе",80000,0,"","Говядина, сливки, грибы, салат микс, рис","govyadina-griby",0],
+  ["Гушт Сай",84000,0,"","Говядина, помидоры, перец дунганский","gusht-say",0],
+  ["Форель на мангале",120000,0,"200 г","Форель, лимон","forel",0],
+  ["Бешбармак",100000,0,"","Казы, конина, лук, помидоры, тесто","beshbarmak",0],
+  ["Куртоба",156000,0,"на 2 персоны","Тонкий хлеб, курт, говядина, помидоры, зелень, лук","kurtoba",0],
+  ["Сокоро",84000,0,"","Растительное масло, баранина, лук, соя, рис","sokoro",0],
+ ]},
+]},
+{id:"turkish",time:"15–20",g:[
+ {id:null,d:[
+  ["Соте куриное",54000,0,"","Куриная грудка, сыр моцарелла, перец болгарский, лук, специи","sote-kurinoe",0],
+  ["Филе барбекю (куриный)",55000,0,"","Рис по-турецки, капуста красная, специи, куриная грудка на гриле","file-barbekyu",0],
+  ["Дурум куриный",57000,0,"","Куриное филе, лаваш, айсберг, помидоры, лук шалот, картофель фри, соус тар-тар","durum",0],
+  ["Альфредо",55000,0,"","Куриная грудка, сливки, сыр моцарелла, барилла","alfredo",0],
+  ["Сач кебаб с курицей",55000,0,"","Курица, специи, лук репчатый, перец болгарский, помидоры, масло растительное, рис по-турецки","sach-kuritsa",0],
+  ["Соте мясное",65000,0,"","Мясо говядина, сыр моцарелла, перец болгарский, лук, специи","sote-myasnoe",0],
+  ["Курица с грибами в сливочном соусе карри",60000,0,"","Куриная грудка, карри, рис, шампиньоны, сливки","kuritsa-karri",0],
+  ["Тава стейк",80000,0,"","Мясо говядина, сыр моцарелла, руккола, помидор черри","tava-steyk",0],
+  ["Бургер Ретро",80000,0,"","С фирменной котлетой, фри","burger-retro",0],
+  ["Куриная кефте по-восточному",50000,0,"","Сыр моцарелла, фарш куриный, зелень, сливки, шампиньоны, перец болгарский","kefte-vostochnomu",0],
+  ["Золотые шпажки падишаха с картофелем",65000,0,"","Говядина, лук, специи, картофель","shpazhki",0],
+  ["Томбик донер",70000,0,"","Донер, помидор, картофель фри, лист салата, соус, лепешка для донера","tombik",0],
+  ["Сач кебаб с мясом",85000,0,"","Говядина, лук репчатый, помидоры, масло растительное, рис по-турецки, специи, перец болгарский зелёный","sach-myaso",1],
+  ["Адана Тандыр",90000,0,"","Адана шашлык, помидоры, перец дунганский, сыр, сузьма, петрушка, лаваш","adana",0],
+  ["Искандер кебаб",100000,0,"","Мясной донар, турецкий хлеб, сливочное масло, сузьма, перец дунганский, помидоры","iskander",0],
+  ["Пилавли донар",100000,0,"","Говядина, лаваш, рис по-турецки, фри, специи, огурцы маринованные, перец маринованный","pilavli",0],
+  ["Кефта Султана с золотым пюре",45000,0,"","Фарш куриный, пюре, лук, специи","kefta-sultana",0],
+  ["Кефта кебаб",55000,0,"","Мясо рубленное, рис по-турецки, капуста красная, помидор, перец дунганский","kefta-kebab",1],
+ ]},
+]},
+{id:"grill",time:"15–20",g:[
+ {id:null,d:[
+  ["Рулет из говядины",45000,0,"","","",0],
+  ["Шашлык Марварид",35000,0,"","","",0],
+  ["Кусковой из говядины",35000,0,"","","",0],
+  ["Люля кебаб",30000,0,"","","",0],
+  ["Куриный шашлык",25000,0,"","","",0],
+  ["Шашлык Наполеон",40000,0,"","","",0],
+  ["Картофель на мангале",15000,0,"","","",0],
+  ["Кукуруза на мангале",18000,0,"","","",0],
+  ["Товук пирзола",65000,0,"","Шашлык из куриных бедёр, рис по-турецки, микс салат, соус","tovuk-pirzola",0],
+  ["Кашарли кофте",72000,0,"","Котлеты говяжьи, сыр моцарелла, рис по-турецки, капуста красная","kasharli-kofte",0],
+  ["Изгара кофте",70000,0,"","Говяжьи котлеты на мангале, рис по-турецки, микс салат, соус","izgara-kofte",0],
+  ["Кашарли бейти",80000,0,"","Молотый шашлык с сыром в лаваше из тандыра, рис по-турецки, микс салат, соус","kasharli-beyti",0],
+ ]},
+]},
+{id:"sides",time:null,g:[
+ {id:"garnish",d:[
+  ["Рис по-турецки",24000,0,"","","",0],
+  ["Картофель фри",35000,0,"","","",0],
+  ["Картофель по-деревенски",35000,0,"","","",0],
+  ["Булгур",24000,0,"","","",0],
+ ]},
+ {id:"bread",d:[
+  ["Тирнок экмек",8000,0,"","Турецкий хлеб","",0],
+  ["Хлеб симит",12000,0,"","","",0],
+  ["Афганский хлеб",22000,0,"","","",0],
+  ["Лепёшка",8000,0,"","","",0],
+  ["Пуф",10000,0,"","","",0],
+  ["Хлеб ассорти",32000,0,"","Симит, лепёшка, турецкий хлеб, афганский","hleb-assorti",0],
+ ]},
+]},
+{id:"desserts",time:null,g:[
+ {id:null,d:[
+  ["Фруктовое ассорти (большое)",200000,0,"","Сезонные фрукты","frukty",0],
+  ["Шоколадный фондан",40000,0,"","Шоколад, корица, мороженое, фисташки","fondan",0],
+  ["Мороженое",20000,0,"1 шарик","","morozhenoe",0],
+  ["Хавуч дилими",35000,0,"","Турецкая пахлава с мороженым","",0],
+  ["Пахлава фисташковая",42000,0,"","","pahlava",0],
+  ["Кунафе",42000,60000,"на 1 персону / на 2 персоны","","",0],
+  ["Катмир кассиб",66000,0,"","","",0],
+ ]},
+]},
+{id:"drinks",time:null,g:[
+ {id:"lemonade",d:[
+  ["Классический",28000,65000,"","","",0],
+  ["Цитрусовый",28000,65000,"","","",0],
+  ["Яблоко-тархун",28000,65000,"","","",0],
+  ["Ягодный",28000,65000,"","","",0],
+  ["Мохито",28000,65000,"","","",0],
+ ]},
+ {id:"mocktails",d:[
+  ["Вишневный поцелуй",42000,0,"","","",0],
+  ["Ретро",42000,0,"","","retro-salat",0],
+  ["Тропический бум",42000,0,"","","",0],
+ ]},
+ {id:"soft",d:[
+  ["Viko сок в ассортименте",26000,0,"","","",0],
+  ["Coca-cola / Fanta / Sprite",24000,0,"1 л","","",0],
+  ["Chortoq",30000,0,"0,5 л","","",0],
+  ["Минеральная вода",7000,14000,"стакан / 1 литр","","",0],
+  ["Ice tea",36000,60000,"","","",0],
+  ["Айран",25000,45000,"стакан (500 мл) / 1 литр","","",0],
+  ["Компот",12000,48000,"стакан / 1 литр","","",0],
+ ]},
+ {id:"tea",d:[
+  ["Турецкий чай",4500,0,"чашка","","turetskiy-chay",0],
+  ["Зеленый / черный чай",13000,0,"","","",0],
+  ["С лимоном",18000,0,"","","",0],
+  ["Фирменные чаи",42000,0,"","Фруктовый, имбирь, жасмин, цитрусовый","",0],
+ ]},
+ {id:"fresh",d:[
+  ["Апельсиновый",50000,0,"","","",0],
+  ["Яблочный",35000,0,"","","",0],
+  ["Яблочно-морковный",30000,0,"","","",0],
+  ["Яблоко-апельсин",40000,0,"","","",0],
+  ["Морковный фреш",30000,0,"","","",0],
+ ]},
+ {id:"milkshakes",d:[
+  ["Банановый",54000,0,"","","",0],
+  ["Шоколадный",54000,0,"","","milksheyk",0],
+ ]},
+]},
+];
 
 // В состоянии живут только канонические ключи. Подписи считаются от текущего
 // языка при каждой отрисовке — иначе после переключения языка в итоге
@@ -309,32 +888,89 @@ const hallLabel = () => {
 };
 
 const el=(t,c,x)=>{const e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e;};
+
+// ── отложенная загрузка кадров ──────────────────────────
+// Одного loading="lazy" мало: у картинок внутри спрятанной вкладки браузер
+// не может посчитать видимость и тянет их сразу — на старте уходило 110 файлов
+// и 2,6 МБ. Адрес подставляем сами, когда кадр подъезжает к экрану.
+const io = ('IntersectionObserver' in window) ? new IntersectionObserver((list)=>{
+  list.forEach(e=>{
+    if(!e.isIntersecting) return;
+    const t=e.target;
+    if(t.dataset.src){ t.src=t.dataset.src; t.removeAttribute('data-src'); }
+    io.unobserve(t);
+  });
+}, {rootMargin:'400px'}) : null;
+function lazyImg(url, alt){
+  const i=el('img'); i.alt=alt||''; i.loading='lazy'; i.decoding='async';
+  if(io){ i.dataset.src=url; io.observe(i); } else i.src=url;
+  return i;
+}
 const pick=(box,on)=>{[...box.children].forEach(c=>c.classList.remove('on')); on.classList.add('on');};
 const buzz=()=>{ try{ tg?.HapticFeedback?.selectionChanged(); }catch(e){} };
 const $=(id)=>document.getElementById(id);
 
-// ── переключатель языка ─────────────────────────────────
-const langbar=$('langbar');
-function renderLangbar(){
-  langbar.innerHTML='';
-  ['uz','ru','en'].forEach(code=>{
-    const b=el('button',code===lang?'on':null,code.toUpperCase());
-    b.onclick=()=>{ if(code===lang) return; lang=code; L=T[code];
-      document.documentElement.lang=code; buzz(); renderAll(); };
-    langbar.appendChild(b);
+// ── вкладки ─────────────────────────────────────────────
+// Бронь — вкладка по умолчанию, то есть ноль тапов от входа. С любой другой
+// вкладки в бронь ведут два пути: полоса вкладок сверху (она липкая) и главная
+// кнопка Telegram внизу, которая там подписана «Забронировать стол».
+const TABS = ['book','sets','menu','halls'];
+let tab = 'book';
+
+function renderTabs(){
+  const box=$('tabs'); box.innerHTML='';
+  TABS.forEach((k,i)=>{
+    const b=el('button',k===tab?'on':null,L.tabs[i]);
+    b.onclick=()=>{ if(k!==tab){ buzz(); goTab(k); } };
+    box.appendChild(b);
   });
+  measureTabs();
+}
+function measureTabs(){
+  const h=$('tabs').offsetHeight;
+  if(h) document.documentElement.style.setProperty('--tabsH', h+'px');
+}
+function goTab(k, keepScroll){
+  tab=k;
+  document.body.className='tab-'+k;
+  document.querySelectorAll('.tabpage').forEach(p=>{ p.hidden = p.dataset.tab!==k; });
+  renderTabs();
+  $('h1').textContent = L.titles[TABS.indexOf(k)];
+  if(!keepScroll) window.scrollTo(0,0);
+  if(tg){ (k!=='book' || step>1) ? tg.BackButton.show() : tg.BackButton.hide(); }
+  if(k==='menu'){ measureTabs(); syncRail(); }
+  update();
 }
 
 // ── статический текст ───────────────────────────────────
 function renderChrome(){
-  $('h1').textContent=L.h1; $('sub').textContent=L.sub;
+  $('h1').textContent=L.titles[TABS.indexOf(tab)];
+  $('sub').textContent=L.sub;
   $('l1').textContent=L.l1; $('l2').textContent=L.l2; $('l3').textContent=L.l3;
   $('l4').textContent=L.l4; $('l5').textContent=L.l5; $('l6').textContent=L.l6;
   $('name').placeholder=L.namePh;
   $('phoneHint').textContent=L.phoneHint;
   $('sumHead').textContent=L.sumHead;
   $('foot').textContent=L.foot;
+  $('setsPageLead').textContent=L.setsPageLead;
+  $('setsPageFoot').textContent=L.setsPageFoot;
+  $('menuLead').textContent=L.menuLead;
+  $('hallsLead').textContent=L.hallsLead;
+  $('mSearch').placeholder=L.mSearch;
+  $('mEmpty').textContent=L.mEmpty;
   document.title='Retro Milliy';
+}
+
+// ── переключатель языка ─────────────────────────────────
+const langbar=$('langbar');
+function renderLangbar(){
+  langbar.innerHTML='';
+  ['uz','ru','en','tr'].forEach(code=>{
+    const b=el('button',code===lang?'on':null,code.toUpperCase());
+    b.onclick=()=>{ if(code===lang) return; lang=code; L=T[code];
+      document.documentElement.lang=code; buzz(); renderAll(); };
+    langbar.appendChild(b);
+  });
 }
 
 // ── день ────────────────────────────────────────────────
@@ -391,7 +1027,7 @@ function renderGuests(){
   });
 }
 
-// ── залы ────────────────────────────────────────────────
+// ── залы: выбор в брони ─────────────────────────────────
 function renderHalls(){
   const halls=$('halls'); halls.innerHTML='';
   HALL_KEYS.forEach((k,i)=>{
@@ -399,14 +1035,209 @@ function renderHalls(){
     const [title,desc]=L.halls[i];
     const d=el('div','hall');
     if(s.hall===k) d.classList.add('on');
-    const img=el(HALL_FILES[i]?'img':'div', HALL_FILES[i]?null:'nophoto');
-    if(HALL_FILES[i]){ img.src=SQ+HALL_FILES[i]; img.alt=title; img.loading='lazy'; }
+    const img=HALL_FILES[i] ? lazyImg(TH+HALL_FILES[i], title) : el('div','nophoto');
     const box=el('div'); box.appendChild(el('b',null,title)); box.appendChild(el('span',null,desc));
     d.appendChild(img); d.appendChild(box);
     d.onclick=()=>{ buzz(); pick(halls,d); s.hall=k; update(); };
     halls.appendChild(d);
   });
 }
+
+// ── залы: витрина ───────────────────────────────────────
+function renderZones(){
+  const box=$('zones'); box.innerHTML='';
+  L.zones.forEach(([title,text],i)=>{
+    if(HALL_FIELDS[i]&&closed.includes(HALL_FIELDS[i])) return;
+    const card=el('div','zone');
+    const shots=el('div','shots');
+    HALL_SHOTS[i].forEach(f=>{
+      shots.appendChild(lazyImg(TH+f, title));
+    });
+    card.appendChild(shots);
+    const inn=el('div','in');
+    inn.appendChild(el('h3',null,title));
+    inn.appendChild(el('p',null,text));
+    const b=el('button','ghost',L.seatHere);
+    b.onclick=()=>{ buzz(); s.hall=HALL_KEYS[i]; renderHalls(); goTab('book'); };
+    inn.appendChild(b);
+    card.appendChild(inn);
+    box.appendChild(card);
+  });
+}
+
+// ── сеты ────────────────────────────────────────────────
+// Витрина только показывает: в заявку сет не попадает, поток брони прежний.
+const fmtSum=(n)=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' '+L.sum;
+const fmtNum=(n)=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+
+// короткая лента на первом шаге брони
+function renderSets(){
+  $('lSets').textContent=L.lSets;
+  $('setsLead').textContent=L.setsLead;
+  $('setsFoot').textContent=L.setsFoot;
+  const box=$('sets'); box.innerHTML='';
+  SETS.forEach(it=>{
+    const card=el('button','setcard'); card.type='button';
+    card.appendChild(it.photo ? lazyImg(it.photo, it.name) : el('div','nophoto'));
+    const inner=el('div','in');
+    if(it.hours) inner.appendChild(el('div','when',it.hours));
+    inner.appendChild(el('b',null,it.name));
+    if(it.tag) inner.appendChild(el('div','gift',L.setTag[it.tag]));
+    inner.appendChild(el('div','price',fmtSum(it.price)));
+    card.appendChild(inner);
+    card.onclick=()=>{ buzz(); goTab('sets'); };
+    box.appendChild(card);
+  });
+  const more=el('button','setmore',L.allSets); more.type='button';
+  more.onclick=()=>{ buzz(); goTab('sets'); };
+  box.appendChild(more);
+}
+
+// полные карточки на вкладке «Сеты»
+function renderSetsPage(){
+  const box=$('setsFull'); box.innerHTML='';
+  SETS.forEach(it=>{
+    const card=el('div','setbig');
+    card.appendChild(it.photo ? lazyImg(it.photo, it.name) : el('div','nophoto'));
+    const inn=el('div','in');
+    if(it.hours) inn.appendChild(el('div','when',it.hours));
+    inn.appendChild(el('h3',null,it.name));
+    inn.appendChild(el('div','who', it.who==='one' ? L.forOne : L.forTwo));
+    const made = (L.setMade && L.setMade[it.id]) || it.made;
+    if(made) inn.appendChild(el('div','made',made));
+    if(it.tag && it.tag!=='two') inn.appendChild(el('div','gift',L.setTag[it.tag]));
+    const pr=el('div','pr');
+    pr.appendChild(el('b',null,fmtSum(it.price)));
+    if(it.per) pr.appendChild(el('span',null,L.perPerson.replace('{n}',fmtNum(it.per))));
+    inn.appendChild(pr);
+    const b=el('button','ghost',L.bookCta);
+    b.onclick=()=>{ buzz(); goTab('book'); };
+    inn.appendChild(b);
+    card.appendChild(inn);
+    box.appendChild(card);
+  });
+}
+
+// ── меню ────────────────────────────────────────────────
+// 139 позиций одним списком не вываливаем: сверху липкая лента разделов
+// (перескок к якорю) и поиск по названию и составу.
+let mQuery='';
+const norm=(x)=>x.toLowerCase().replace(/ё/g,'е');
+
+function renderMenu(){
+  const list=$('menuList'); list.innerHTML='';
+  const rail=$('rail'); rail.innerHTML='';
+  MENU.forEach(sec=>{
+    const chip=el('button',null,L.secs[sec.id]||sec.id);
+    chip.dataset.for=sec.id;
+    chip.onclick=()=>{ buzz(); jumpTo(sec.id); };
+    rail.appendChild(chip);
+
+    const box=el('div','msec'); box.id='sec-'+sec.id; box.dataset.sec=sec.id;
+    const title=el('div','mtitle');
+    title.appendChild(el('b',null,L.secs[sec.id]||sec.id));
+    if(sec.time) title.appendChild(el('span','mtime',L.mTime.replace('{t}',sec.time)));
+    box.appendChild(title);
+    sec.g.forEach(gr=>{
+      const g=el('div','mgrp');
+      if(gr.id) g.appendChild(el('div','mgh',L.grps[gr.id]||gr.id));
+      gr.d.forEach(d=>g.appendChild(dishRow(d)));
+      box.appendChild(g);
+    });
+    list.appendChild(box);
+  });
+  applySearch();
+}
+
+// d = [название, цена, вторая цена, примечание, состав, файл фото, хит]
+function dishRow(d){
+  const row=el('div','dish');
+  row.dataset.q=norm(d[0]+' '+d[4]);
+  if(d[5]){
+    const img=lazyImg(DISH+d[5]+'.jpg', d[0]); img.width=56; img.height=56;
+    row.appendChild(img);
+  } else row.appendChild(el('div','ph'));
+  const t=el('div','t');
+  const hd=el('div','hd');
+  const n=el('span','n',d[0]);
+  if(d[6]) n.appendChild(el('i',null,'♥'));
+  hd.appendChild(n);
+  hd.appendChild(el('span','p', d[2] ? fmtNum(d[1])+' / '+fmtNum(d[2]) : fmtNum(d[1])));
+  t.appendChild(hd);
+  if(d[4]) t.appendChild(el('div','d',d[4]));
+  if(d[3]) t.appendChild(el('div','nt',d[3]));
+  row.appendChild(t);
+  return row;
+}
+
+function applySearch(){
+  const q=norm(mQuery.trim());
+  $('rail').hidden = !!q;
+  let found=0;
+  document.querySelectorAll('#menuList .msec').forEach(sec=>{
+    let vis=0;
+    sec.querySelectorAll('.mgrp').forEach(g=>{
+      let gv=0;
+      g.querySelectorAll('.dish').forEach(r=>{
+        const ok = !q || r.dataset.q.includes(q);
+        r.hidden=!ok; if(ok) gv++;
+      });
+      g.hidden = gv===0; vis+=gv;
+    });
+    sec.hidden = vis===0; found+=vis;
+  });
+  $('mEmpty').hidden = found>0;
+  if(!q) syncRail();
+}
+$('mSearch').oninput=e=>{ mQuery=e.target.value; applySearch(); };
+
+const stickyH=()=>$('tabs').offsetHeight + ($('rail').hidden?0:$('rail').offsetHeight);
+// Своя анимация вместо scroll-behavior:smooth: в вебвью Telegram на старых
+// телефонах плавная прокрутка просто не срабатывает, и перескок по разделу
+// молча не работал. Здесь он работает везде.
+let slide=0, slideEnd=0;
+function glideTo(y){
+  cancelAnimationFrame(slide); clearTimeout(slideEnd);
+  const from=window.scrollY;
+  const to=Math.max(0, Math.min(y, document.documentElement.scrollHeight-window.innerHeight));
+  const dist=to-from;
+  if(Math.abs(dist)<2 || document.hidden){ window.scrollTo(0,to); return; }
+  const t0=performance.now(), ms=Math.min(420, 160+Math.abs(dist)/6);
+  const tick=(now)=>{
+    const k=Math.min(1,(now-t0)/ms), e=1-Math.pow(1-k,3);
+    window.scrollTo(0, from+dist*e);
+    if(k<1) slide=requestAnimationFrame(tick);
+  };
+  slide=requestAnimationFrame(tick);
+  // Страховка: если кадры не идут (свёрнутое окно, экономия батареи),
+  // раздел всё равно оказывается там, где его ждут.
+  slideEnd=setTimeout(()=>{ cancelAnimationFrame(slide); window.scrollTo(0,to); }, ms+140);
+}
+function jumpTo(id){
+  const t=$('sec-'+id); if(!t) return;
+  glideTo(t.getBoundingClientRect().top + window.scrollY - stickyH() - 4);
+}
+let railTick=false;
+function syncRail(){
+  if(tab!=='menu') return;
+  const rail=$('rail'); if(rail.hidden) return;
+  const edge=stickyH()+14;
+  let cur=null;
+  document.querySelectorAll('#menuList .msec').forEach(sec=>{
+    if(!sec.hidden && sec.getBoundingClientRect().top<=edge) cur=sec.dataset.sec;
+  });
+  if(!cur && rail.children.length) cur=rail.children[0].dataset.for;
+  [...rail.children].forEach(c=>{
+    const on=c.dataset.for===cur;
+    if(on && !c.classList.contains('on')) rail.scrollLeft=Math.max(c.offsetLeft-70,0);
+    c.classList.toggle('on', on);
+  });
+}
+window.addEventListener('scroll',()=>{
+  if(railTick) return; railTick=true;
+  requestAnimationFrame(()=>{ railTick=false; syncRail(); });
+}, {passive:true});
+window.addEventListener('resize', ()=>{ measureTabs(); syncRail(); });
 
 // ── имя ─────────────────────────────────────────────────
 const nameInput=$('name');
@@ -463,7 +1294,7 @@ function showStep(n){
   $('bar').style.width = Math.round(step/STEPS*100)+'%';
   $('sub').hidden = step>1; // вводная фраза нужна один раз, на входе
   $('stepline').textContent=(L.stepOf||'{n}/{m}').replace('{n}',step).replace('{m}',STEPS);
-  if(tg){ step>1 ? tg.BackButton.show() : tg.BackButton.hide(); }
+  if(tg){ (step>1 || tab!=='book') ? tg.BackButton.show() : tg.BackButton.hide(); }
   window.scrollTo(0,0);
   update();
 }
@@ -480,6 +1311,8 @@ function update(){
     d.appendChild(el('span',null,k)); d.appendChild(el('span',null,v)); body.appendChild(d); });
   const btn=tg?.MainButton; if(!btn) return;
   btn.setParams({ color:'#C9A227', text_color:'#101A26' });
+  // На сетах, меню и залах главная кнопка ведёт в бронь: оттуда она в один тап.
+  if(tab!=='book'){ btn.setText(L.bookCta); btn.show(); btn.enable(); return; }
   const last = step===STEPS;
   btn.setText(last ? L.send : (L.next||'→'));
   btn.show();
@@ -487,17 +1320,25 @@ function update(){
 }
 
 function renderAll(){
-  renderLangbar(); renderChrome(); renderDays(); renderGuests(); renderHalls();
+  if(io) io.disconnect();   // прежние кадры выброшены, наблюдать за ними нечего
+  renderLangbar(); renderChrome(); renderTabs();
+  renderSets(); renderSetsPage(); renderMenu(); renderZones();
+  renderDays(); renderGuests(); renderHalls();
   renderParts(false);
   renderPhone(); showStep(step);
+  measureTabs();
 }
 
 if(tg){
   tg.ready(); tg.expand();
   try{ tg.setHeaderColor('#0E1B2A'); tg.setBackgroundColor('#0E1B2A'); }catch(e){}
-  tg.BackButton.onClick(()=>{ if(step>1) showStep(step-1); });
+  tg.BackButton.onClick(()=>{
+    if(tab!=='book'){ goTab('book'); return; }
+    if(step>1) showStep(step-1);
+  });
   let sent=false;                       // заявка уходит один раз, сколько бы ни нажали
   tg.MainButton.onClick(()=>{
+    if(tab!=='book'){ goTab('book'); return; }
     if(step<STEPS){ if(stepReady(step)) showStep(step+1); return; }
     if(sent || !ready()) return;
     sent=true; window.__sent=true;
