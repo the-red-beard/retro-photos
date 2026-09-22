@@ -65,30 +65,40 @@ h1{font-family:"Playfair Display",Georgia,serif; font-size:clamp(21px, 6.2vw, 29
 /* переключатель языка */
 .langbar{position:absolute; top:12px; right:14px; z-index:3; display:flex; gap:6px}
 .langbar button{
+  display:inline-flex; align-items:center; justify-content:center; min-height:34px;
   border:1px solid var(--line); background:rgba(14,27,42,.72); color:var(--cream-2);
-  border-radius:99px; padding:5px 11px; font-size:12px; font-family:inherit;
+  border-radius:99px; padding:0 12px; font-size:12px; font-family:inherit;
   letter-spacing:.08em; text-transform:uppercase; cursor:pointer;
+  transition:opacity .12s, border-color .15s, color .15s;
 }
 .langbar button.on{border-color:var(--gold); color:var(--gold-soft)}
+.langbar button:active{opacity:.55}
 
 /* вкладки: бронь, сеты, меню, залы. Липнут к верху, поэтому уйти с меню
    обратно в бронь можно с любой точки прокрутки. */
 .tabs{
-  position:sticky; top:0; z-index:7; display:flex; gap:5px; padding:7px 18px 6px;
+  position:sticky; top:0; z-index:7; display:flex; gap:5px; padding:5px 18px;
   background:rgba(11,21,34,.93); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
   border-bottom:1px solid var(--line); overflow-x:auto; scrollbar-width:none;
 }
 .tabs::-webkit-scrollbar{display:none}
+/* Кнопка вкладки ростом в 44 px: это главная навигация, и мимо неё
+   промахивались на ходу. */
 .tabs button{
-  flex:1 1 auto; white-space:nowrap; border:1px solid transparent; background:transparent;
-  color:var(--cream-2); font-family:inherit; font-size:14px; padding:7px 10px;
+  flex:1 1 auto; display:flex; align-items:center; justify-content:center; min-height:44px;
+  white-space:nowrap; border:1px solid transparent; background:transparent;
+  color:var(--cream-2); font-family:inherit; font-size:14px; padding:4px 10px;
   border-radius:99px; cursor:pointer; transition:color .15s, background .15s, border-color .15s;
 }
 .tabs button.on{background:var(--navy-3); border-color:var(--gold-dim); color:var(--gold-soft); font-weight:600}
+.tabs button:active{background:var(--navy-2)}
 
 /* секции */
 section{margin-top:22px}
-.page[hidden], .tabpage[hidden]{display:none}
+/* Свой display у элемента (flex у строки блюда, у ленты разделов, у вкладки)
+   перебивал браузерное правило для hidden, и поиск по меню прятал разделы,
+   но оставлял на экране все блюда до единого. Гасим hidden поверх всего. */
+[hidden]{display:none !important}
 
 /* индикатор шага */
 .progress{height:2px; background:var(--line); border-radius:2px; margin:14px 0 9px; overflow:hidden}
@@ -119,6 +129,7 @@ section{margin-top:22px}
   transition:border-color .15s, background .15s;
 }
 .hall.on{border-color:var(--gold); background:var(--navy-3)}
+.hall:active{background:var(--navy-3)}
 .hall.on::before{content:"✓"; position:absolute; top:9px; right:12px; color:var(--gold); font-size:14px}
 .hall img{width:92px; height:68px; object-fit:cover; border-radius:10px; flex-shrink:0; background:var(--navy-3)}
 .hall .nophoto{width:92px; height:68px; border-radius:10px; flex-shrink:0;
@@ -141,7 +152,9 @@ section{margin-top:22px}
   flex:0 0 172px; scroll-snap-align:start; display:flex; flex-direction:column;
   border:1px solid var(--line); border-radius:var(--r); background:var(--navy-2); overflow:hidden;
   cursor:pointer; text-align:left; font-family:inherit; color:inherit; padding:0;
+  transition:transform .08s ease, border-color .15s;
 }
+.setcard:active, .setmore:active{transform:scale(.985)}
 .setcard img{width:100%; height:100px; object-fit:cover; display:block; background:var(--navy-3)}
 /* Кадра к сету пока нет — вместо пустой дырки мягкая заливка в той же палитре */
 .setcard .nophoto{height:100px; border-bottom:1px solid var(--line);
@@ -181,11 +194,21 @@ input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none; height
   text-align:center; padding:14px; border-radius:var(--r); font-size:15.5px;
 }
 .hint{font-size:12.5px; color:var(--cream-2); margin-top:8px}
-.hint.tap{color:var(--gold-soft); cursor:pointer; text-decoration:underline; text-underline-offset:3px}
+/* Запасной путь для телефона: по нему промахивались, потому что ссылка
+   была ровно в строку текста. Теперь у неё полноценная высота нажатия. */
+.hint.tap{
+  display:inline-flex; align-items:center; min-height:44px; margin-top:0;
+  color:var(--gold-soft); cursor:pointer; text-decoration:underline; text-underline-offset:3px;
+}
+.hint.tap:active{color:var(--gold)}
 
 /* ── вкладка «Сеты»: полная карточка с составом ───────── */
 .setfull{display:grid; gap:14px; margin-top:16px}
-.setbig{border:1px solid var(--line); border-radius:var(--r); background:var(--navy-2); overflow:hidden}
+.setbig{border:1px solid var(--line); border-radius:var(--r); background:var(--navy-2); overflow:hidden;
+  transition:border-color .5s ease}
+/* Пришли сюда тапом по ленте на шаге брони — на секунду обводим тот сет,
+   иначе гость видит просто список и не понимает, куда попал. */
+.setbig.flash{border-color:var(--gold)}
 .setbig>img{width:100%; height:168px; object-fit:cover; display:block; background:var(--navy-3)}
 .setbig .nophoto{height:96px; border-bottom:1px solid var(--line);
   background:radial-gradient(180px 90px at 50% 120%, rgba(201,162,39,.16), transparent 70%), var(--navy-3)}
@@ -212,16 +235,19 @@ input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none; height
    единственный способ попасть в нужный раздел без долгой прокрутки. */
 .rail{
   position:sticky; top:var(--tabsH); z-index:6; display:flex; gap:7px; overflow-x:auto;
-  margin:12px -18px 0; padding:9px 18px; scrollbar-width:none;
+  margin:12px -18px 0; padding:7px 18px; scrollbar-width:none;
   background:rgba(11,21,34,.94); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
   border-bottom:1px solid var(--line);
 }
 .rail::-webkit-scrollbar{display:none}
 .rail button{
+  display:flex; align-items:center; min-height:38px; flex:0 0 auto;
   white-space:nowrap; border:1px solid var(--line); background:var(--navy-2); color:var(--cream-2);
-  font-family:inherit; font-size:13px; padding:6px 13px; border-radius:99px; cursor:pointer;
+  font-family:inherit; font-size:13px; padding:0 14px; border-radius:99px; cursor:pointer;
+  transition:background .15s, border-color .15s, color .15s;
 }
 .rail button.on{background:var(--gold); border-color:var(--gold); color:#101A26; font-weight:600}
+.rail button:active{border-color:var(--gold)}
 .msec{padding-top:6px}
 .mtitle{
   display:flex; align-items:baseline; gap:9px; flex-wrap:wrap;
@@ -252,10 +278,10 @@ input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none; height
 .zone{border:1px solid var(--line); border-radius:var(--r); background:var(--navy-2);
   overflow:hidden; margin-top:14px}
 .shots{display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory;
-  padding:8px; scrollbar-width:none; -webkit-overflow-scrolling:touch}
+  padding:8px; scroll-padding-left:8px; scrollbar-width:none; -webkit-overflow-scrolling:touch}
 .shots::-webkit-scrollbar{display:none}
 .shots img{flex:0 0 76%; height:168px; object-fit:cover; border-radius:10px;
-  scroll-snap-align:center; background:var(--navy-3)}
+  scroll-snap-align:start; background:var(--navy-3)}
 .zone .in{padding:4px 15px 15px}
 .zone h3{font-family:"Playfair Display",Georgia,serif; font-size:19px; font-weight:600; margin:6px 0 0}
 .zone p{font-size:14px; color:var(--cream-2); margin:6px 0 0; line-height:1.45}
@@ -277,6 +303,10 @@ input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none; height
   border:1px solid var(--line); border-left:2px solid var(--gold); border-radius:10px;
   padding:11px 14px; font-size:14px; color:var(--cream-2); margin-top:11px; background:var(--navy-2);
 }
+/* Телефон в подписи — ссылка: по банкету звонят прямо отсюда. */
+a.tel{display:inline-block; padding:7px 0; color:var(--gold-soft);
+  text-decoration:none; border-bottom:1px solid var(--gold-dim)}
+a.tel:active{color:var(--gold); border-color:var(--gold)}
 footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 4px}
 
 /* Узкие телефоны (360 px и уже): ужимаем то, что первым упирается в край. */
@@ -284,7 +314,7 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 
   .wrap{padding:0 14px}
   .setrow, .rail{margin-left:-14px; margin-right:-14px; padding-left:14px; padding-right:14px}
   .tabs{padding-left:14px; padding-right:14px; gap:4px}
-  .tabs button{font-size:13px; padding:7px 8px}
+  .tabs button{font-size:13px; padding:4px 8px}
   .chip{padding:10px 13px; font-size:14.5px}
   .dish img, .dish .ph{width:50px; height:50px; flex-basis:50px}
   .dish .n{font-size:14.5px}
@@ -314,12 +344,6 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 
   <div class="sub" id="sub"></div>
 
   <div class="page" data-step="1">
-    <section id="setsSection">
-      <div class="label"><span id="lSets"></span></div>
-      <div class="hint" id="setsLead" style="margin-top:0; margin-bottom:10px"></div>
-      <div class="setrow" id="sets"></div>
-      <div class="hint" id="setsFoot"></div>
-    </section>
     <section>
       <div class="label"><span id="l1"></span></div>
       <div class="row" id="days"></div>
@@ -330,6 +354,15 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 
       <div class="row" id="parts"></div>
       <div class="row" id="slots" style="margin-top:9px"></div>
       <div class="note" id="closedNote" style="display:none"></div>
+    </section>
+    <!-- Витрина сетов стоит после дня и времени: первое действие брони
+         должно быть видно без прокрутки, а сеты гость встречает сразу
+         под ним, пока выбирает день. -->
+    <section id="setsSection">
+      <div class="label"><span id="lSets"></span></div>
+      <div class="hint" id="setsLead" style="margin-top:0; margin-bottom:10px"></div>
+      <div class="setrow" id="sets"></div>
+      <div class="hint" id="setsFoot"></div>
     </section>
   </div>
 
@@ -679,7 +712,7 @@ const SETS = [
   { id:"retro",     name:"Ретро завтрак",  price:150000, per:75000, photo:TH+"eda-01-zavtrak-devushka.jpg", hours:"09:00–12:00", tag:"gift",         who:"two" },
   { id:"sytnoe",    name:"Сытное утро",    price:150000, per:75000, photo:TH+"eda-02-zavtrak-blizko.jpg",   hours:"09:00–12:00", tag:"giftPancakes", who:"two" },
   { id:"domashnee", name:"Домашнее утро",  price:170000, per:85000, photo:TH+"eda-04-zavtrak-stol.jpg",     hours:"09:00–12:00", tag:"giftPorridge", who:"two" },
-  { id:"lula",      name:"Шашлык люля",    price:90000,  photo:null,                     hours:"12:00–16:00", who:"one" },
+  { id:"lula",      name:"Шашлык люля",    price:90000,  photo:TH+"eda-05-obed-lula.jpg",                     hours:"12:00–16:00", who:"one" },
   { id:"kofte",     name:"Куриная кофте",  price:80000,  photo:DISH+"kefte-vostochnomu-w.jpg", hours:"12:00–16:00", who:"one" },
   { id:"assorti",   name:"Миллий ассорти", price:140000, photo:DISH+"milliy-assorti-w.jpg", tag:"two", who:"two",
     made:"Говядина, люля, лук, соус, куриные крылья, картофель, долма." },
@@ -972,7 +1005,7 @@ function renderChrome(){
   $('sumHead').textContent=L.sumHead;
   $('foot').textContent=L.foot;
   $('setsPageLead').textContent=L.setsPageLead;
-  $('setsPageFoot').textContent=L.setsPageFoot;
+  withPhone($('setsPageFoot'), L.setsPageFoot);
   $('menuLead').textContent=L.menuLead;
   $('hallsLead').textContent=L.hallsLead;
   $('mSearch').placeholder=L.mSearch;
@@ -1005,6 +1038,10 @@ function renderDays(){
   });
 }
 $('dateInput').onchange=e=>{ s.date=e.target.value; update(); };
+// Календарь начинается с сегодня: вчерашняя бронь администратору не нужна,
+// а в пустом поле date гость её выбирал молча.
+(()=>{ const d=new Date(), p=n=>String(n).padStart(2,'0');
+  $('dateInput').min = d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); })();
 
 // ── время ───────────────────────────────────────────────
 // reset=true — гость сменил день, прежнее время больше не годится.
@@ -1077,7 +1114,8 @@ function renderZones(){
     inn.appendChild(el('h3',null,title));
     inn.appendChild(el('p',null,text));
     const b=el('button','ghost',L.seatHere);
-    b.onclick=()=>{ buzz(); s.hall=HALL_KEYS[i]; renderHalls(); goTab('book'); };
+    b.onclick=()=>{ buzz(); s.hall=HALL_KEYS[i]; renderHalls(); goTab('book');
+      if(stepReady(1) && stepReady(2)) showStep(3); };
     inn.appendChild(b);
     card.appendChild(inn);
     box.appendChild(card);
@@ -1089,11 +1127,24 @@ function renderZones(){
 const fmtSum=(n)=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' '+L.sum;
 const fmtNum=(n)=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
 
+// Номер в подписи про банкет одинаков во всех четырёх языках, поэтому
+// вырезаем его из строки и отдаём ссылкой на звонок.
+const PHONE_SHOWN='(71) 269-30-05', PHONE_TEL='+998712693005';
+function withPhone(node, text){
+  node.textContent='';
+  const i=text.indexOf(PHONE_SHOWN);
+  if(i<0){ node.textContent=text; return; }
+  node.appendChild(document.createTextNode(text.slice(0,i)));
+  const a=el('a','tel',PHONE_SHOWN); a.href='tel:'+PHONE_TEL;
+  node.appendChild(a);
+  node.appendChild(document.createTextNode(text.slice(i+PHONE_SHOWN.length)));
+}
+
 // короткая лента на первом шаге брони
 function renderSets(){
   $('lSets').textContent=L.lSets;
   $('setsLead').textContent=L.setsLead;
-  $('setsFoot').textContent=L.setsFoot;
+  withPhone($('setsFoot'), L.setsFoot);
   const box=$('sets'); box.innerHTML='';
   SETS.forEach(it=>{
     const card=el('button','setcard'); card.type='button';
@@ -1104,7 +1155,7 @@ function renderSets(){
     if(it.tag) inner.appendChild(el('div','gift',L.setTag[it.tag]));
     inner.appendChild(el('div','price',fmtSum(it.price)));
     card.appendChild(inner);
-    card.onclick=()=>{ buzz(); goTab('sets'); };
+    card.onclick=()=>{ buzz(); goTab('sets'); showSet(it.id); };
     box.appendChild(card);
   });
   const more=el('button','setmore',L.allSets); more.type='button';
@@ -1113,10 +1164,22 @@ function renderSets(){
 }
 
 // полные карточки на вкладке «Сеты»
+// Гость тапнул «Куртобу» в ленте брони — на вкладке «Сеты» он должен увидеть
+// куртобу, а не начало списка.
+let flashed=null;
+function showSet(id){
+  const card=document.getElementById('set-'+id); if(!card) return;
+  glideTo(card.getBoundingClientRect().top + window.scrollY - $('tabs').offsetHeight - 10);
+  if(flashed) flashed.classList.remove('flash');
+  card.classList.add('flash'); flashed=card;
+  setTimeout(()=>{ card.classList.remove('flash'); if(flashed===card) flashed=null; }, 1500);
+}
+
 function renderSetsPage(){
   const box=$('setsFull'); box.innerHTML='';
+  flashed=null;
   SETS.forEach(it=>{
-    const card=el('div','setbig');
+    const card=el('div','setbig'); card.id='set-'+it.id;
     card.appendChild(it.photo ? lazyImg(it.photo, it.name) : el('div','nophoto'));
     const inn=el('div','in');
     if(it.hours) inn.appendChild(el('div','when',it.hours));
@@ -1234,7 +1297,7 @@ function glideTo(y){
 }
 function jumpTo(id){
   const t=$('sec-'+id); if(!t) return;
-  glideTo(t.getBoundingClientRect().top + window.scrollY - stickyH() - 4);
+  glideTo(t.getBoundingClientRect().top + window.scrollY - stickyH() - 12);
 }
 let railTick=false;
 function syncRail(){
@@ -1339,10 +1402,12 @@ function update(){
   btn.setParams({ color:'#C9A227', text_color:'#101A26' });
   // На сетах, меню и залах главная кнопка ведёт в бронь: оттуда она в один тап.
   if(tab!=='book'){ btn.setText(L.bookCta); btn.show(); btn.enable(); return; }
-  const last = step===STEPS;
-  btn.setText(last ? L.send : (L.next||'→'));
+  const last = step===STEPS, okStep = last ? ready() : stepReady(step);
+  // На последнем шаге полей несколько, и серая кнопка без подписи молчала о том,
+  // чего не хватает. На шагах выбора этого не нужно: там один вопрос на экране.
+  btn.setText(last ? (okStep ? L.send : L.fill) : (L.next||'→'));
   btn.show();
-  stepReady(step) ? btn.enable() : btn.disable();
+  okStep ? btn.enable() : btn.disable();
 }
 
 // keepScroll=true — это смена языка: страница та же, отбрасывать гостя наверх
