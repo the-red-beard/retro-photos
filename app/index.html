@@ -627,9 +627,28 @@ const T = {
     ]
   }
 };
-let lang = P.get('lang');
-if(!T[lang]) lang = 'uz';
+// Язык из адреса кладёт бот — он знает язык переписки. Но гость может сменить
+// его прямо в шапке, и этот выбор должен пережить перезагрузку и следующее
+// открытие. Поэтому рядом с выбором храним адресный язык на момент выбора:
+// сменили язык в боте — приходит другой адрес, и побеждает он, прежний выбор
+// снимается. Пока адрес прежний, побеждает выбор гостя.
+const LANGS = ['uz','ru','en','tr'];
+const URL_LANG = T[P.get('lang')] ? P.get('lang') : '';
+const LANG_KEY = 'retro.lang';
+function savedLang(){
+  try{
+    const v = JSON.parse(localStorage.getItem(LANG_KEY) || 'null');
+    if(!v || !T[v.lang]) return null;
+    // Адреса нет (открыли ссылкой напрямую) — спорить не с чем, берём выбор.
+    return (!URL_LANG || (v.from||'') === URL_LANG) ? v.lang : null;
+  }catch(e){ return null; }
+}
+function rememberLang(code){
+  try{ localStorage.setItem(LANG_KEY, JSON.stringify({lang:code, from:URL_LANG})); }catch(e){}
+}
+let lang = savedLang() || URL_LANG || 'uz';
 let L = T[lang];
+document.documentElement.lang = lang;
 
 // Канонические ключи уходят боту, подписи — только для глаз гостя.
 const DAY_KEYS  = ['today','tomorrow','other'];
@@ -965,10 +984,10 @@ function renderChrome(){
 const langbar=$('langbar');
 function renderLangbar(){
   langbar.innerHTML='';
-  ['uz','ru','en','tr'].forEach(code=>{
+  LANGS.forEach(code=>{
     const b=el('button',code===lang?'on':null,code.toUpperCase());
-    b.onclick=()=>{ if(code===lang) return; lang=code; L=T[code];
-      document.documentElement.lang=code; buzz(); renderAll(); };
+    b.onclick=()=>{ if(code===lang) return; lang=code; L=T[code]; rememberLang(code);
+      document.documentElement.lang=code; buzz(); renderAll(true); };
     langbar.appendChild(b);
   });
 }
@@ -1249,9 +1268,13 @@ nameInput.oninput=e=>{ s.name=e.target.value.trim(); update(); };
 // ── телефон ─────────────────────────────────────────────
 // Своего гостя не переспрашиваем: раздел просто не показывается,
 // телефон подставит бот из профиля.
+// Гость пишет номер руками: перерисовка (например, после смены языка) не должна
+// подменять поле ввода строкой «номер получен» — дописать его было бы нечем.
+let manualPhone=false;
 function renderPhone(){
   const box=$('phoneBox');
   if(KNOWN){ $('phoneSection').style.display='none'; return; }
+  if(manualPhone){ manual(false); return; }
   box.innerHTML='';
   if(s.phone){ box.appendChild(el('div','got',L.phoneGot+s.phone)); return; }
   const b=el('button','phone-btn',L.phoneBtn);
@@ -1266,13 +1289,16 @@ function renderPhone(){
   };
   box.appendChild(b);
   const m=el('div','hint tap',L.phoneManual);
-  m.onclick=manual; box.appendChild(m);
+  m.onclick=()=>manual(); box.appendChild(m);
 }
-function manual(){
+// focus=false — это перерисовка, клавиатуру сами не поднимаем.
+function manual(focus){
+  manualPhone=true;
   const box=$('phoneBox'); box.innerHTML='';
   const i=el('input'); i.type='text'; i.placeholder='+998 XX XXX XX XX'; i.inputMode='tel';
+  i.value=s.phone||'';
   i.oninput=e=>{ s.phone=e.target.value.trim(); update(); };
-  box.appendChild(i); i.focus();
+  box.appendChild(i); if(focus!==false) i.focus();
 }
 
 // ── итог и главная кнопка ───────────────────────────────
@@ -1288,14 +1314,14 @@ const stepReady=(n)=>
           !!(s.name && (KNOWN || s.phone.replace(/\D/g,'').length>=9));
 const ready=()=>[1,2,3,4].every(stepReady);
 
-function showStep(n){
+function showStep(n, keepScroll){
   step=Math.min(Math.max(n,1),STEPS);
   document.querySelectorAll('.page').forEach(p=>{ p.hidden = +p.dataset.step!==step; });
   $('bar').style.width = Math.round(step/STEPS*100)+'%';
   $('sub').hidden = step>1; // вводная фраза нужна один раз, на входе
   $('stepline').textContent=(L.stepOf||'{n}/{m}').replace('{n}',step).replace('{m}',STEPS);
   if(tg){ (step>1 || tab!=='book') ? tg.BackButton.show() : tg.BackButton.hide(); }
-  window.scrollTo(0,0);
+  if(!keepScroll) window.scrollTo(0,0);
   update();
 }
 
@@ -1319,14 +1345,19 @@ function update(){
   stepReady(step) ? btn.enable() : btn.disable();
 }
 
-function renderAll(){
+// keepScroll=true — это смена языка: страница та же, отбрасывать гостя наверх
+// (особенно посреди меню на 139 позиций) незачем. Позицию снимаем заранее:
+// пока список пересобирается, страница коротко проседает и браузер её сбрасывает.
+function renderAll(keepScroll){
+  const y = keepScroll ? window.scrollY : 0;
   if(io) io.disconnect();   // прежние кадры выброшены, наблюдать за ними нечего
   renderLangbar(); renderChrome(); renderTabs();
   renderSets(); renderSetsPage(); renderMenu(); renderZones();
   renderDays(); renderGuests(); renderHalls();
   renderParts(false);
-  renderPhone(); showStep(step);
+  renderPhone(); showStep(step, keepScroll);
   measureTabs();
+  if(keepScroll){ window.scrollTo(0,y); syncRail(); }
 }
 
 if(tg){
