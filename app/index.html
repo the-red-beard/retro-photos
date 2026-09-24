@@ -481,12 +481,20 @@ const T = {
       tandyrDishes:"Tandir",pizza:"Pitsa",garnish:"Garnirlar",bread:"Non",lemonade:"Limonadlar",
       mocktails:"Alkogolsiz kokteyllar",soft:"Ichimliklar",tea:"Choylar",fresh:"Freshlar",
       milkshakes:"Milk sheyklar"},
+    // примечания к блюдам (порция, вес, объём): ключ — строка из меню как есть
+    notes:{"5 шт":"5 dona","150 г грудки":"150 g tovuq to'shi","700 г":"700 g","1 шт":"1 dona",
+      "0,5 кг / 1 кг":"0,5 kg / 1 kg","1 шт, 1,7 кг":"1 dona, 1,7 kg","на 2 персоны":"2 kishiga",
+      "200 г":"200 g","1 шарик":"1 sharcha","на 1 персону / на 2 персоны":"1 kishiga / 2 kishiga",
+      "1 л":"1 l","0,5 л":"0,5 l","стакан / 1 литр":"stakan / 1 litr",
+      "стакан (500 мл) / 1 литр":"stakan (500 ml) / 1 litr","чашка":"piyola"},
     setMade:{
       retro:"Pishloq va go'sht kesimlari, brinza, sariyog', asal, murabbo, zaytun, pomidor, bodring va ko'katlar, sigara burek, tanlov bo'yicha issiq taom.",
       sytnoe:"Pishloq va sabzavotli ikki omlet, go'shtli to'rt blinchik, ikki bo'tqa.",
       domashnee:"Olti sirniki, tvorogli to'rt blinchik, ikki tuxum qovurdoq.",
       lula:"Ezogelin sho'rvasi, lulya kabob, turkcha guruch, achichuk salati, tirnoq ekmek noni, turk choyi.",
-      kofte:"Mercimek sho'rvasi, sharq uslubida tovuqli kofte, kartoshka pyuresi, achichuk salati, tirnoq ekmek noni, turk choyi."
+      kofte:"Mercimek sho'rvasi, sharq uslubida tovuqli kofte, kartoshka pyuresi, achichuk salati, tirnoq ekmek noni, turk choyi.",
+      assorti:"Mol go'shti, lulya kabob, piyoz, sous, tovuq qanotlari, kartoshka, do'lma.",
+      kurtoba:"Yupqa non, qurt, mol go'shti, pomidor, ko'katlar, piyoz."
     },
     zones:[
       ["Yopiq terrasa","Yorug' zal: devorlarda va stollar tepasida ko'katlar, chiroqli ravoqlar, deraza yonidagi stollar va yumshoq divanlar."],
@@ -536,12 +544,19 @@ const T = {
       tandyrDishes:"Тандыр",pizza:"Пицца",garnish:"Гарниры",bread:"Наан",lemonade:"Лимонады",
       mocktails:"Безалкогольные коктейли",soft:"Напитки",tea:"Чаи",fresh:"Фреши",
       milkshakes:"Милк шейки"},
+    notes:{"5 шт":"5 шт","150 г грудки":"150 г грудки","700 г":"700 г","1 шт":"1 шт",
+      "0,5 кг / 1 кг":"0,5 кг / 1 кг","1 шт, 1,7 кг":"1 шт, 1,7 кг","на 2 персоны":"на 2 персоны",
+      "200 г":"200 г","1 шарик":"1 шарик","на 1 персону / на 2 персоны":"на 1 персону / на 2 персоны",
+      "1 л":"1 л","0,5 л":"0,5 л","стакан / 1 литр":"стакан / 1 литр",
+      "стакан (500 мл) / 1 литр":"стакан (500 мл) / 1 литр","чашка":"чашка"},
     setMade:{
       retro:"Сырная и мясная нарезка, брынза, сливочное масло, мёд, варенье, оливки, помидоры, огурцы и зелень, сигара бурек, горячее на выбор.",
       sytnoe:"Два омлета с сыром и овощами, четыре блинчика с мясом, две каши.",
       domashnee:"Шесть сырников, четыре блинчика с творогом, две яичницы.",
       lula:"Суп эзогелин, шашлык люля, рис по-турецки, салат ачичук, хлеб тирнок экмек, турецкий чай.",
-      kofte:"Суп мержмек, куриная кофте по-восточному, картофельное пюре, салат ачичук, хлеб тирнок экмек, турецкий чай."
+      kofte:"Суп мержмек, куриная кофте по-восточному, картофельное пюре, салат ачичук, хлеб тирнок экмек, турецкий чай.",
+      assorti:"Говядина, люля, лук, соус, куриные крылья, картофель, долма.",
+      kurtoba:"Тонкий хлеб, курт, говядина, помидоры, зелень, лук."
     },
     zones:[
       ["Крытая терраса","Светлый зал: зелень по стенам и над столами, арки с лампами, столы у окон и мягкие диваны."],
@@ -591,12 +606,19 @@ const T = {
       tandyrDishes:"Tandyr",pizza:"Pizza",garnish:"Sides",bread:"Bread",lemonade:"Lemonades",
       mocktails:"Mocktails",soft:"Soft drinks",tea:"Tea",fresh:"Fresh juices",
       milkshakes:"Milkshakes"},
+    notes:{"5 шт":"5 pcs","150 г грудки":"150 g chicken breast","700 г":"700 g","1 шт":"1 pc",
+      "0,5 кг / 1 кг":"0.5 kg / 1 kg","1 шт, 1,7 кг":"1 pc, 1.7 kg","на 2 персоны":"serves 2",
+      "200 г":"200 g","1 шарик":"1 scoop","на 1 персону / на 2 персоны":"serves 1 / serves 2",
+      "1 л":"1 l","0,5 л":"0.5 l","стакан / 1 литр":"glass / 1 litre",
+      "стакан (500 мл) / 1 литр":"glass (500 ml) / 1 litre","чашка":"cup"},
     setMade:{
       retro:"Cheese and cold cuts, brynza, butter, honey, jam, olives, tomatoes, cucumbers and herbs, sigara böreği, a hot dish of your choice.",
       sytnoe:"Two omelettes with cheese and vegetables, four meat pancakes, two bowls of porridge.",
       domashnee:"Six syrniki, four pancakes with curd, two fried eggs.",
       lula:"Ezogelin soup, lyulya kebab, Turkish rice, achichuk salad, tirnok ekmek bread, Turkish tea.",
-      kofte:"Mercimek soup, eastern-style chicken kofte, mashed potatoes, achichuk salad, tirnok ekmek bread, Turkish tea."
+      kofte:"Mercimek soup, eastern-style chicken kofte, mashed potatoes, achichuk salad, tirnok ekmek bread, Turkish tea.",
+      assorti:"Beef, lyulya kebab, onion, sauce, chicken wings, potatoes, dolma.",
+      kurtoba:"Thin flatbread, kurt, beef, tomatoes, herbs, onion."
     },
     zones:[
       ["Covered terrace","A bright hall with greenery along the walls and above the tables, arches with lamps, tables by the windows and soft sofas."],
@@ -613,7 +635,7 @@ const T = {
     sum:"som",
     setTag:{ gift:"Hediye: iki kişilik çay",
              giftPancakes:"Hediye: iki lorlu krep ve iki kişilik çay",
-             giftPorridge:"Hediye: iki kişilik çay ve iki kase muhallebi",
+             giftPorridge:"Hediye: iki kişilik çay ve iki kâse lapa",
              two:"2 kişilik" },
     days:["Bugün","Yarın","Başka gün"],
     parts:["🌅 Sabah","🌤 Gündüz","🌆 Akşam"],
@@ -646,12 +668,19 @@ const T = {
       tandyrDishes:"Tandır",pizza:"Pizza",garnish:"Garnitürler",bread:"Ekmek",lemonade:"Limonatalar",
       mocktails:"Alkolsüz kokteyller",soft:"İçecekler",tea:"Çaylar",fresh:"Taze sıkma",
       milkshakes:"Milkshake"},
+    notes:{"5 шт":"5 adet","150 г грудки":"150 g tavuk göğsü","700 г":"700 g","1 шт":"1 adet",
+      "0,5 кг / 1 кг":"0,5 kg / 1 kg","1 шт, 1,7 кг":"1 adet, 1,7 kg","на 2 персоны":"2 kişilik",
+      "200 г":"200 g","1 шарик":"1 top","на 1 персону / на 2 персоны":"1 kişilik / 2 kişilik",
+      "1 л":"1 l","0,5 л":"0,5 l","стакан / 1 литр":"bardak / 1 litre",
+      "стакан (500 мл) / 1 литр":"bardak (500 ml) / 1 litre","чашка":"bardak"},
     setMade:{
       retro:"Peynir ve şarküteri tabağı, beyaz peynir, tereyağı, bal, reçel, zeytin, domates, salatalık ve yeşillik, sigara böreği, seçmeli sıcak.",
-      sytnoe:"Peynirli ve sebzeli iki omlet, kıymalı dört krep, iki kase muhallebi.",
+      sytnoe:"Peynirli ve sebzeli iki omlet, kıymalı dört krep, iki kâse lapa.",
       domashnee:"Altı sirniki, lorlu dört krep, iki sahanda yumurta.",
       lula:"Ezogelin çorbası, lüle kebap, Türk pilavı, acıçuk salatası, tırnak ekmek, Türk çayı.",
-      kofte:"Mercimek çorbası, doğu usulü tavuk köfte, patates püresi, acıçuk salatası, tırnak ekmek, Türk çayı."
+      kofte:"Mercimek çorbası, doğu usulü tavuk köfte, patates püresi, acıçuk salatası, tırnak ekmek, Türk çayı.",
+      assorti:"Dana eti, lüle kebap, soğan, sos, tavuk kanadı, patates, dolma.",
+      kurtoba:"İnce ekmek, kurut, dana eti, domates, yeşillik, soğan."
     },
     zones:[
       ["Kapalı teras","Aydınlık salon: duvarlarda ve masaların üstünde yeşillik, lambalı kemerler, pencere kenarı masalar ve yumuşak koltuklar."],
@@ -706,25 +735,26 @@ const HALL_SHOTS=[
 // Второе место, где живут те же цифры, — Sets/content-pack-2026-09.md.
 // Состав «Ретро завтрака» снят с креатива Sets/creatives/zavtrak-retro-ru-150.png
 // (19.09.2026) — на кухне формулировку надо подтвердить. Ассорти и куртоба взяты
-// из меню кухни (раздел national),
-// их состав так и остаётся по-русски, как названия блюд в меню.
+// из меню кухни (раздел national). Составы всех сетов лежат в словаре (setMade),
+// иначе на вкладке «Сеты» пять карточек были на языке гостя, а две по-русски.
+// Названия сетов по-русски на всех языках: так их ищут в меню и в боте
+// (правило контент-пакета).
 const SETS = [
   { id:"retro",     name:"Ретро завтрак",  price:150000, per:75000, photo:TH+"eda-01-zavtrak-devushka.jpg", hours:"09:00–12:00", tag:"gift",         who:"two" },
   { id:"sytnoe",    name:"Сытное утро",    price:150000, per:75000, photo:TH+"eda-02-zavtrak-blizko.jpg",   hours:"09:00–12:00", tag:"giftPancakes", who:"two" },
   { id:"domashnee", name:"Домашнее утро",  price:170000, per:85000, photo:TH+"eda-04-zavtrak-stol.jpg",     hours:"09:00–12:00", tag:"giftPorridge", who:"two" },
   { id:"lula",      name:"Шашлык люля",    price:90000,  photo:TH+"eda-05-obed-lula.jpg",                     hours:"12:00–16:00", who:"one" },
   { id:"kofte",     name:"Куриная кофте",  price:80000,  photo:DISH+"kefte-vostochnomu-w.jpg", hours:"12:00–16:00", who:"one" },
-  { id:"assorti",   name:"Миллий ассорти", price:140000, photo:DISH+"milliy-assorti-w.jpg", tag:"two", who:"two",
-    made:"Говядина, люля, лук, соус, куриные крылья, картофель, долма." },
-  { id:"kurtoba",   name:"Куртоба",        price:156000, photo:DISH+"kurtoba-w.jpg",        tag:"two", who:"two",
-    made:"Тонкий хлеб, курт, говядина, помидоры, зелень, лук." },
+  { id:"assorti",   name:"Миллий ассорти", price:140000, photo:DISH+"milliy-assorti-w.jpg", tag:"two", who:"two" },
+  { id:"kurtoba",   name:"Куртоба",        price:156000, photo:DISH+"kurtoba-w.jpg",        tag:"two", who:"two" },
 ];
 
 // Меню кухни, перенесённое из site/src/data/fullMenu.ts и dishPhotos.ts
 // (источник — Меню.pdf, сентябрь 2026). Строка блюда:
 // [название, цена, вторая цена, примечание, состав, файл фото, хит].
 // Названия и составы остаются по-русски на всех языках: так они стоят в меню
-// и так их ищет гость. Переводятся заголовки разделов и интерфейс.
+// и так их ищет гость. Переводятся заголовки разделов, интерфейс и примечания
+// про порцию и объём (словарь notes).
 const MENU=[
 {id:"salads",time:"8–10",g:[
  {id:null,d:[
@@ -938,6 +968,10 @@ const hallLabel = () => {
   const i = HALL_KEYS.indexOf(s.hall);
   return i < 0 ? null : L.halls[i][0];
 };
+// «Больше 10» раньше лежал в состоянии подписью на языке, на котором его нажали:
+// после смены языка кнопка теряла выделение, а в итоге оставалось «больше 10».
+// Теперь в состоянии ключ 'many', подпись берётся из текущего словаря.
+const guestsLabel = () => s.guests==='many' ? L.many : s.guests;
 
 const el=(t,c,x)=>{const e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e;};
 
@@ -1056,7 +1090,7 @@ function renderParts(reset){
   const blocked=[];
   PART_KEYS.forEach((k,i)=>{
     const shut=(s.day==='today'&&closed.includes('today_'+k))||(s.day==='tomorrow'&&closed.includes('tomorrow_'+k));
-    if(shut){ blocked.push(L.parts[i].replace(/^\S+\s/,'').toLowerCase()); return; }
+    if(shut){ blocked.push(L.parts[i].replace(/^\S+\s/,'').toLocaleLowerCase(lang)); return; }
     const b=el('button','chip',L.parts[i]);
     if(s.part===k) b.classList.add('on');
     b.onclick=()=>{ buzz(); pick(parts,b); s.part=k; s.time=null; renderSlots(PART_TIMES[i]); update(); };
@@ -1075,8 +1109,8 @@ function renderSlots(times){
 // ── гости ───────────────────────────────────────────────
 function renderGuests(){
   const guests=$('guests'); guests.innerHTML='';
-  ['2','3','4','5','6','8','10',L.many].forEach(n=>{
-    const b=el('button','chip',n);
+  ['2','3','4','5','6','8','10','many'].forEach(n=>{
+    const b=el('button','chip',n==='many'?L.many:n);
     if(s.guests===n) b.classList.add('on');
     b.onclick=()=>{ buzz(); pick(guests,b); s.guests=n; update(); };
     guests.appendChild(b);
@@ -1247,7 +1281,7 @@ function dishRow(d){
   hd.appendChild(el('span','p', d[2] ? fmtNum(d[1])+' / '+fmtNum(d[2]) : fmtNum(d[1])));
   t.appendChild(hd);
   if(d[4]) t.appendChild(el('div','d',d[4]));
-  if(d[3]) t.appendChild(el('div','nt',d[3]));
+  if(d[3]) t.appendChild(el('div','nt',(L.notes&&L.notes[d[3]])||d[3]));
   row.appendChild(t);
   return row;
 }
@@ -1389,16 +1423,20 @@ function showStep(n, keepScroll){
 }
 
 function update(){
-  if(window.__sent) return;
   const dl=dayLabel();
   const rows=[[L.kWhen, dl&&s.time?dl+', '+s.time:''],
-    [L.kGuests, s.guests||''], [L.kHall, hallLabel()||''],
+    [L.kGuests, guestsLabel()||''], [L.kHall, hallLabel()||''],
     [L.kName, s.name||'']];
   if(!KNOWN) rows.push([L.kPhone, s.phone||'']);
   const body=$('summaryBody'); body.innerHTML='';
   rows.filter(([,v])=>v).forEach(([k,v])=>{ const d=el('div','line');
     d.appendChild(el('span',null,k)); d.appendChild(el('span',null,v)); body.appendChild(d); });
   const btn=tg?.MainButton; if(!btn) return;
+  // Заявка уже в пути: кнопку не включаем и не переподписываем действием,
+  // но подпись «отправляем» переводим, если гость успел сменить язык.
+  // Раньше выход стоял в начале функции, и после смены языка итог оставался
+  // на прежнем языке.
+  if(window.__sent){ btn.setText(L.sending); return; }
   btn.setParams({ color:'#C9A227', text_color:'#101A26' });
   // На сетах, меню и залах главная кнопка ведёт в бронь: оттуда она в один тап.
   if(tab!=='book'){ btn.setText(L.bookCta); btn.show(); btn.enable(); return; }
@@ -1444,7 +1482,7 @@ if(tg){
     try{ tg.HapticFeedback?.notificationOccurred('success'); }catch(e){}
 
     const booking={ t:'table', lang, day:s.day, date:s.date, dayLabel:dayLabel(),
-      part:s.part, time:s.time, guests:s.guests, hall:s.hall, hallLabel:hallLabel(),
+      part:s.part, time:s.time, guests:guestsLabel(), hall:s.hall, hallLabel:hallLabel(),
       name:s.name, phone:KNOWN?'':s.phone };
 
     // sendData умеет только приложение, открытое кнопкой клавиатуры. Если у нас
