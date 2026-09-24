@@ -392,7 +392,10 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 
   padding:0 14px; border:1px solid var(--line); border-radius:var(--r); background:var(--navy-2)}
 .pphone .mask{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:15.5px; letter-spacing:.06em;
   color:var(--cream); padding:12px 0}
-.pphone .hint.tap{font-size:13.5px}
+.pphone .pchange{flex:none; appearance:none; -webkit-appearance:none; font:inherit; font-size:13.5px; font-weight:600;
+  padding:8px 14px; border-radius:999px; border:1px solid var(--gold-dim); background:rgba(201,162,39,.08);
+  color:var(--gold-soft); cursor:pointer; text-decoration:none; line-height:1.2}
+.pphone .pchange:active{background:var(--gold); border-color:var(--gold); color:#101A26}
 input.bad{border-color:var(--err)}
 .perr{font-size:12.5px; color:var(--err); margin-top:7px}
 
@@ -2211,7 +2214,7 @@ function renderPPhone(focus){
   if(PHONE_KNOWN && !pf.editPhone){
     const row=el('div','pphone');
     row.appendChild(el('span','mask', PH ? '•• ••• '+PH.slice(0,2)+' '+PH.slice(2) : '•• ••• •• ••'));
-    const b=el('button','hint tap',L.p.changePhone); b.type='button';
+    const b=el('button','pchange',L.p.changePhone); b.type='button';
     b.onclick=()=>{ buzz(); pf.editPhone=true; renderPPhone(); profileChanged(); };
     row.appendChild(b); box.appendChild(row);
     return;
