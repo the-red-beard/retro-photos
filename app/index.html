@@ -12,6 +12,7 @@
   --gold:#C9A227; --gold-soft:#E0C36A; --gold-dim:rgba(201,162,39,.28);
   --cream:#F2E8D5; --cream-2:#A9A08E;
   --line:rgba(201,162,39,.20);
+  --err:#E8A091;   /* ошибка в поле профиля: мягкий красный, читается на тёмно-синем */
   --r:14px;
   /* высоту липкой полосы вкладок меряет JS: под ней приклеивается лента разделов меню */
   --tabsH:47px;
@@ -73,6 +74,16 @@ h1{font-family:"Playfair Display",Georgia,serif; font-size:clamp(21px, 6.2vw, 29
 }
 .langbar button.on{border-color:var(--gold); color:var(--gold-soft)}
 .langbar button:active{opacity:.55}
+/* Кнопка профиля: круг с первой буквой имени (нет имени — силуэт) сразу
+   за языками. Круг 34 px в ряд с языками, зона нажатия шире на 5 px. */
+.langbar .me{
+  position:relative; width:34px; min-width:34px; height:34px; padding:0; margin-left:4px;
+  border-color:var(--gold-dim); color:var(--gold-soft); letter-spacing:0; text-transform:none;
+  font-family:"Playfair Display",Georgia,serif; font-size:15px; font-weight:700;
+}
+.langbar .me::before{content:""; position:absolute; inset:-5px -3px}
+.langbar .me svg{width:17px; height:17px}
+.langbar .me.on{background:var(--gold); border-color:var(--gold); color:#101A26}
 
 /* вкладки: бронь, сеты, меню, залы. Липнут к верху, поэтому уйти с меню
    обратно в бронь можно с любой точки прокрутки. */
@@ -312,6 +323,79 @@ a.tel{display:inline-block; padding:7px 0; color:var(--gold-soft);
 a.tel:active{color:var(--gold); border-color:var(--gold)}
 footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 4px}
 
+/* ── профиль гостя ────────────────────────────────────── */
+/* счётчик справа от линии в подписи раздела: «2 из 5», «по желанию» */
+.label .n{order:1; font-size:12px; letter-spacing:.04em; text-transform:none; color:var(--cream-2)}
+.pcard{
+  margin-top:16px; padding:16px; border:1px solid var(--line); border-radius:var(--r);
+  background:radial-gradient(280px 130px at 100% 0%, rgba(201,162,39,.13), transparent 70%), var(--navy-2);
+}
+.pwho{display:flex; align-items:center; gap:13px}
+.pava{
+  width:54px; height:54px; flex:0 0 54px; border-radius:50%; border:1px solid var(--gold);
+  display:flex; align-items:center; justify-content:center; background:var(--navy-3);
+  font-family:"Playfair Display",Georgia,serif; font-size:24px; font-weight:700; color:var(--gold-soft);
+}
+.pava svg{width:26px; height:26px}
+.pwho .t{flex:1 1 auto; min-width:0}
+.pname{font-family:"Playfair Display",Georgia,serif; font-size:19px; font-weight:600; line-height:1.2;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.pname.empty{color:var(--cream-2); font-weight:400}
+.pcount{font-size:13px; color:var(--cream-2); margin-top:3px}
+.pstat{margin-top:15px; padding-top:14px; border-top:1px solid var(--line)}
+.plevel{font-family:"Playfair Display",Georgia,serif; font-size:clamp(26px, 8.4vw, 33px); font-weight:700;
+  line-height:1.1; color:var(--gold-soft); margin-top:5px}
+.pbar{height:6px; border-radius:6px; background:rgba(201,162,39,.16); overflow:hidden; margin-top:14px}
+.pbar i{display:block; height:100%; border-radius:6px;
+  background:linear-gradient(90deg, var(--gold), var(--gold-soft)); transition:width .3s ease}
+.pnext{font-size:13.5px; color:var(--cream-2); margin-top:8px}
+.pmax{font-size:14px; color:var(--cream); margin-top:9px; line-height:1.45}
+/* значки: открытый — золотой медальон и галочка, закрытый — пунктир и подсказка */
+.badges{display:grid; gap:8px}
+.badge{display:flex; align-items:center; gap:12px; padding:10px 12px;
+  border:1px solid var(--line); border-radius:12px; background:var(--navy-2)}
+.badge .md{
+  width:44px; height:44px; flex:0 0 44px; border-radius:50%; border:1px solid var(--gold);
+  display:flex; align-items:center; justify-content:center; color:var(--gold-soft);
+  background:radial-gradient(circle at 50% 28%, rgba(224,195,106,.30), rgba(201,162,39,.07) 70%);
+  font-family:"Playfair Display",Georgia,serif; font-size:17px; font-weight:700;
+  font-variant-numeric:lining-nums;   /* у Playfair цифры по умолчанию «старые», 1 ниже 3 */
+}
+.badge .md svg{width:22px; height:22px}
+.badge .t{flex:1 1 auto; min-width:0}
+.badge b{display:block; font-size:15px; font-weight:600; line-height:1.25}
+.badge .t span{display:block; font-size:12.5px; color:var(--cream-2); line-height:1.35; margin-top:2px}
+.badge .end{flex:0 0 auto; color:var(--gold); font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:12px; letter-spacing:.04em}
+.badge .end svg{width:18px; height:18px; display:block}
+.badge.off{background:transparent}
+.badge.off .md{border-style:dashed; border-color:var(--gold-dim); background:transparent; color:var(--cream-2); opacity:.6}
+.badge.off b{color:var(--cream-2); font-weight:500}
+.badge.off .end{color:var(--cream-2); opacity:.75}
+/* заполненность: кольцо с процентом и что осталось */
+.pfill{display:flex; align-items:center; gap:13px}
+.ring{position:relative; width:54px; height:54px; flex:0 0 54px}
+.ring svg{width:100%; height:100%; transform:rotate(-90deg); display:block}
+.ring circle{fill:none; stroke-width:4}
+.ring .bg{stroke:rgba(201,162,39,.16)}
+.ring .fg{stroke:var(--gold); stroke-linecap:round; transition:stroke-dashoffset .3s ease}
+.ring b{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:600; color:var(--gold-soft)}
+.pfill .t{min-width:0}
+.pfill .t b{display:block; font-size:15px; font-weight:600}
+.pfill .t span{display:block; font-size:13px; color:var(--cream-2); margin-top:2px}
+.flabel{display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+  font-size:13px; color:var(--cream-2); margin:18px 0 7px}
+.flabel i{font-style:normal; font-size:12px; color:#6E7B8C}
+/* сохранённый номер: видны только последние четыре цифры */
+.pphone{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:0 12px;
+  padding:0 14px; border:1px solid var(--line); border-radius:var(--r); background:var(--navy-2)}
+.pphone .mask{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:15.5px; letter-spacing:.06em;
+  color:var(--cream); padding:12px 0}
+.pphone .hint.tap{font-size:13.5px}
+input.bad{border-color:var(--err)}
+.perr{font-size:12.5px; color:var(--err); margin-top:7px}
+
 /* Узкие телефоны (360 px и уже): ужимаем то, что первым упирается в край. */
 @media (max-width:374px){
   .wrap{padding:0 14px}
@@ -335,8 +419,7 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 
   <img src="../img/terrasa-12-zal-vecherom.jpg" alt="">
   <div class="langbar" id="langbar"></div>
   <div class="cap">
-    <!-- lang="uz": в турецком заглавная от i — İ, и бренд превращался в «RETRO MİLLİY» -->
-    <div class="brand" lang="uz">Retro Milliy</div>
+    <div class="brand">Retro Milliy</div>
     <h1 id="h1"></h1>
   </div>
 </div>
@@ -433,6 +516,35 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 
   <div id="zones"></div>
 </div>
 
+<!-- ── профиль гостя ─────────────────────────────────── -->
+<!-- В полосе вкладок его нет: открывается кругом в шапке, назад ведёт
+     кнопка «Назад» Telegram или тот же круг. -->
+<div class="tabpage" data-tab="profile" hidden>
+  <div class="pcard" id="pCard"></div>
+  <section>
+    <div class="label"><span id="pBadgesL"></span><span class="n" id="pBadgesN"></span></div>
+    <div class="badges" id="pBadges"></div>
+  </section>
+  <section>
+    <div class="label"><span id="pDataL"></span></div>
+    <div class="pfill" id="pFill"></div>
+    <div class="flabel"><span id="pNameL"></span></div>
+    <input type="text" id="pName" autocomplete="name" maxlength="60">
+    <div class="perr" id="pNameErr" hidden></div>
+    <div class="flabel"><span id="pPhoneL"></span></div>
+    <div id="pPhoneBox"></div>
+    <div class="perr" id="pPhoneErr" hidden></div>
+    <div id="pPhoneKeep"></div>
+    <div class="flabel"><span id="pBdL"></span><i id="pBdOpt"></i></div>
+    <input type="text" id="pBd" inputmode="decimal" maxlength="5" autocomplete="off">
+    <div class="hint" id="pBdHint"></div>
+    <div class="perr" id="pBdErr" hidden></div>
+  </section>
+  <div class="note" id="pUnsaved" hidden></div>
+  <div class="note" id="pNoTg" hidden></div>
+  <div class="note" id="pErr" hidden></div>
+</div>
+
 <footer id="foot"></footer>
 </div>
 
@@ -496,6 +608,38 @@ const T = {
     mSearch:"Menyudan qidirish", mEmpty:"Hech narsa topilmadi",
     mTime:"tayyorlanish vaqti {t} daqiqa",
     hallsLead:"Uchta zal. Band qilishda o'zingizga yoqqanini tanlaysiz.",
+    // профиль гостя: статусы и значки без скидок и подарков, их владелец не утверждал
+    p:{
+      title:"Profil",
+      statusL:"Maqomingiz",
+      levels:["Yangi mehmon","Mehmon","O'z odamimiz","Doimiy mehmon","Retro do'sti"],
+      bkWord:["bandlik"],
+      bk0:"Hozircha bandliklar yo'q", bkN:"Retro Milliyda {n} ta {w}",
+      next:"«{s}» maqomigacha yana {n} ta {w} qoldi",
+      top:"Bu eng yuqori maqom. Bizga qaytib kelayotganingiz uchun rahmat!",
+      badgesL:"Nishonlar", badgesN:"{m} tadan {n} tasi",
+      // [название, когда открыт, как открыть]
+      badges:{
+        first:["Birinchi bandlik","Birinchi stol band qilindi","Ilovada stol band qiling"],
+        three:["Uchta bandlik","Retro Milliyda uchta stol","Uchinchi bandlikda ochiladi"],
+        ten:["O'nta bandlik","Retro Milliyda o'nta stol","O'ninchi bandlikda ochiladi"],
+        full:["Profil to'liq","Barcha ma'lumotlar joyida","Ism, telefon va tug'ilgan kunni kiriting"],
+        bday:["Tug'ilgan kun","Tug'ilgan kun: {d}","Tug'ilgan kuningizni pastda kiriting"]
+      },
+      dataL:"Ma'lumotlaringiz", fillT:"Profil to'liqligi", left:"Qoldi: {list}", done:"Barcha ma'lumotlar joyida",
+      fields:["ism","telefon","tug'ilgan kun"],
+      bdL:"Tug'ilgan kun", opt:"ixtiyoriy", bdPh:"KK.OO", bdHint:"Kun va oy, masalan 14.03",
+      changePhone:"Raqamni o'zgartirish", keepPhone:"Eski raqam qolsin",
+      nameErr:"Ismingizni yozing",
+      phoneErr:"Raqamga o'xshamadi. +998 XX XXX XX XX ko'rinishida yozing",
+      bdErr:"Sanaga o'xshamadi. Kun va oyni yozing, masalan 14.03",
+      save:"Saqlash", saving:"Saqlanmoqda…",
+      unsaved:"O'zgarishlar saqlanishi uchun pastdagi «Saqlash» tugmasini bosing.",
+      noTg:"Profilni faqat Telegram orqali saqlash mumkin: @retro_milliy_bot botini oching.",
+      err:"Saqlab bo'lmadi. Ilovani @retro_milliy_bot chatidagi pastki tugma orqali oching va «Saqlash»ni yana bosing.",
+      months:["yanvar","fevral","mart","aprel","may","iyun","iyul","avgust","sentabr","oktabr","noyabr","dekabr"],
+      bdFmt:"{d}-{m}"
+    },
     secs:{salads:"Salatlar",starters:"Gazaklar",tandyr:"Tandir va pitsa",soups:"Birinchi taomlar",
       national:"Milliy taomlar",turkish:"Turk taomlari",grill:"Shashliklar",sides:"Garnir va non",
       desserts:"Shirinliklar",drinks:"Ichimliklar"},
@@ -716,6 +860,37 @@ const T = {
     mSearch:"Поиск по меню", mEmpty:"Ничего не нашлось",
     mTime:"время готовки {t} минут",
     hallsLead:"Три зала. Выбираете свой при брони.",
+    p:{
+      title:"Профиль",
+      statusL:"Ваш статус",
+      levels:["Новый гость","Гость","Свой человек","Завсегдатай","Друг Retro"],
+      bkWord:["бронь","брони","броней"],
+      bk0:"Броней пока нет", bkN:"{n} {w} в Retro Milliy",
+      next:"Ещё {n} {w} до «{s}»",
+      top:"Это высший статус. Спасибо, что возвращаетесь к нам!",
+      badgesL:"Значки", badgesN:"{n} из {m}",
+      // [название, когда открыт, как открыть]
+      badges:{
+        first:["Первая бронь","Первый стол забронирован","Забронируйте стол в приложении"],
+        three:["Три брони","Три стола в Retro Milliy","Откроется на третьей брони"],
+        ten:["Десять броней","Десять столов в Retro Milliy","Откроется на десятой брони"],
+        full:["Профиль заполнен","Все данные на месте","Укажите имя, телефон и день рождения"],
+        bday:["День рождения","День рождения: {d}","Укажите день рождения ниже"]
+      },
+      dataL:"Ваши данные", fillT:"Заполненность профиля", left:"Осталось: {list}", done:"Все данные на месте",
+      fields:["имя","телефон","день рождения"],
+      bdL:"День рождения", opt:"по желанию", bdPh:"ДД.ММ", bdHint:"День и месяц, например 14.03",
+      changePhone:"Изменить номер", keepPhone:"Оставить прежний номер",
+      nameErr:"Напишите, как вас зовут",
+      phoneErr:"Не похоже на номер. Напишите в виде +998 XX XXX XX XX",
+      bdErr:"Не похоже на дату. Напишите день и месяц, например 14.03",
+      save:"Сохранить", saving:"Сохраняем…",
+      unsaved:"Нажмите «Сохранить» внизу, чтобы изменения остались в профиле.",
+      noTg:"Профиль сохраняется только из Telegram: откройте бота @retro_milliy_bot.",
+      err:"Не получилось сохранить. Откройте приложение кнопкой внизу чата @retro_milliy_bot и нажмите «Сохранить» ещё раз.",
+      months:["января","февраля","марта","апреля","мая","июня","июля","августа","сентября","октября","ноября","декабря"],
+      bdFmt:"{d} {m}"
+    },
     secs:{salads:"Салаты",starters:"Закуски",tandyr:"Тандыр и пицца",soups:"Первые блюда",
       national:"Национальные блюда",turkish:"Турецкие блюда",grill:"Шашлыки",sides:"Гарниры и хлеб",
       desserts:"Десерты",drinks:"Напитки"},
@@ -783,6 +958,37 @@ const T = {
     mSearch:"Search the menu", mEmpty:"Nothing found",
     mTime:"cooking time {t} min",
     hallsLead:"Three halls. You pick yours while booking.",
+    p:{
+      title:"Profile",
+      statusL:"Your status",
+      levels:["New guest","Guest","Familiar face","Regular","Friend of Retro"],
+      bkWord:["booking","bookings"],
+      bk0:"No bookings yet", bkN:"{n} {w} at Retro Milliy",
+      next:"{n} more {w} to “{s}”",
+      top:"This is the top status. Thank you for coming back to us!",
+      badgesL:"Badges", badgesN:"{n} of {m}",
+      // [название, когда открыт, как открыть]
+      badges:{
+        first:["First booking","Your first table is booked","Book a table in the app"],
+        three:["Three bookings","Three tables at Retro Milliy","Unlocks with your third booking"],
+        ten:["Ten bookings","Ten tables at Retro Milliy","Unlocks with your tenth booking"],
+        full:["Profile complete","All details in place","Add your name, phone and birthday"],
+        bday:["Birthday","Birthday: {d}","Add your birthday below"]
+      },
+      dataL:"Your details", fillT:"Profile completeness", left:"Still to add: {list}", done:"All details in place",
+      fields:["name","phone","birthday"],
+      bdL:"Birthday", opt:"optional", bdPh:"DD.MM", bdHint:"Day and month, for example 14.03",
+      changePhone:"Change number", keepPhone:"Keep my current number",
+      nameErr:"Please enter your name",
+      phoneErr:"That doesn't look like a number. Use +998 XX XXX XX XX",
+      bdErr:"That doesn't look like a date. Write day and month, for example 14.03",
+      save:"Save", saving:"Saving…",
+      unsaved:"Tap “Save” below to keep your changes.",
+      noTg:"The profile can be saved from Telegram only: open @retro_milliy_bot.",
+      err:"Couldn't save. Open the app with the button at the bottom of the @retro_milliy_bot chat and tap “Save” again.",
+      months:["January","February","March","April","May","June","July","August","September","October","November","December"],
+      bdFmt:"{d} {m}"
+    },
     secs:{salads:"Salads",starters:"Starters",tandyr:"Tandyr and pizza",soups:"Soups",
       national:"National dishes",turkish:"Turkish dishes",grill:"Grill",sides:"Sides and bread",
       desserts:"Desserts",drinks:"Drinks"},
@@ -962,226 +1168,6 @@ const T = {
       "Банановый":["Banana"],
       "Шоколадный":["Chocolate"]
     }
-  },
-  tr:{
-    h1:"Masa ayırtın", sub:"Bir dakikada doldurun, yönetici arayıp onaylasın",
-    l1:"Ne zaman geliyorsunuz", l2:"Saat", l3:"Kaç kişi", l4:"Sizi nereye alalım",
-    l5:"Adınız", l6:"Telefon",
-    lSets:"Setler", setsLead:"Hazır setler: kahvaltılar, öğle yemekleri ve menüden tabaklar",
-    setsFoot:"Ziyafet için masayı size göre kuruyoruz: (71) 269-30-05",
-    sum:"som",
-    setTag:{ gift:"Hediye: iki kişilik çay",
-             giftPancakes:"Hediye: iki lorlu krep ve iki kişilik çay",
-             giftPorridge:"Hediye: iki kişilik çay ve iki kâse lapa",
-             two:"2 kişilik" },
-    days:["Bugün","Yarın","Başka gün"],
-    parts:["🌅 Sabah","🌤 Gündüz","🌆 Akşam"],
-    many:"10'dan fazla",
-    halls:[["Kapalı teras","etrafı yeşillik"],["Müzik salonu","neon, uzun masa"],
-           ["Aile bölümü","aydınlık salon, oyun odası yanında"],["Fark etmez","uygun olan yere alın"]],
-    namePh:"Ad",
-    phoneBtn:"📱 Numarayı Telegram'dan al", phoneManual:"Olmadı mı? Elle yazın",
-    phoneGot:"Numara alındı: ", phoneHint:"Yönetici rezervasyonu telefonla onaylamak için numaranızı ister",
-    sumHead:"Rezervasyonunuz",
-    kWhen:"Ne zaman", kGuests:"Kişi", kHall:"Salon", kName:"Ad", kPhone:"Telefon",
-    send:"Talebi gönder", fill:"Tüm alanları doldurun", sending:"Gönderiliyor…",
-    next:"Devam", stepOf:"Adım {n} / {m}",
-    closedNote:"Bu saat dolu: ", closedTail:". Başka bir saat seçin.",
-    lateNote:"Bugün için rezervasyon saatleri doldu. Yarını ya da başka bir günü seçin.",
-    hallsClosed:"Şu an boş masa yok",
-    sendErr:"Talep gönderilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin ya da arayın: (71) 269-30-05",
-    noTg:"Talep yalnızca Telegram üzerinden gönderilir: @retro_milliy_bot botunu açın ya da arayın: (71) 269-30-05",
-    foot:"Retro Milliy · Oltintepa 28 · her gün 9:00–23:00",
-    tabs:["Rezervasyon","Setler","Menü","Salonlar"],
-    setNames:{retro:"Retro kahvaltı",sytnoe:"Doyurucu sabah",domashnee:"Ev sabahı",lula:"Lüle kebap",kofte:"Tavuk köfte",assorti:"Milliy tabağı",kurtoba:"Kurtoba"},
-    titles:["Masa ayırtın","Setler","Menü","Salonlarımız"],
-    bookCta:"Masa ayırtın", allSets:"Tüm setler →", seatHere:"Buraya alın",
-    setsPageLead:"Sabit fiyatlı kahvaltı ve öğle yemekleri, sofraya tabaklar.",
-    setsPageFoot:"Ziyafet için masayı size göre kuruyoruz: (71) 269-30-05",
-    forTwo:"İki kişilik", forOne:"Tek kişilik tam öğle yemeği", perPerson:"kişi başı {n}",
-    menuLead:"Mutfağın tam menüsü. Fiyatlar som cinsinden.",
-    mSearch:"Menüde ara", mEmpty:"Bir şey bulunamadı",
-    mTime:"pişirme süresi {t} dakika",
-    hallsLead:"Üç salon. Rezervasyonda kendinizinkini seçiyorsunuz.",
-    secs:{salads:"Salatalar",starters:"Başlangıçlar",tandyr:"Tandır ve pizza",soups:"Çorbalar",
-      national:"Milli yemekler",turkish:"Türk yemekleri",grill:"Şişler",sides:"Garnitür ve ekmek",
-      desserts:"Tatlılar",drinks:"İçecekler"},
-    grps:{cold:"Soğuk başlangıçlar · 8–10 dakika",hot:"Sıcak başlangıçlar · 10–15 dakika",
-      tandyrDishes:"Tandır",pizza:"Pizza",garnish:"Garnitürler",bread:"Ekmek",lemonade:"Limonatalar",
-      mocktails:"Alkolsüz kokteyller",soft:"İçecekler",tea:"Çaylar",fresh:"Taze sıkma",
-      milkshakes:"Milkshake"},
-    notes:{"5 шт":"5 adet","150 г грудки":"150 g tavuk göğsü","700 г":"700 g","1 шт":"1 adet",
-      "0,5 кг / 1 кг":"0,5 kg / 1 kg","1 шт, 1,7 кг":"1 adet, 1,7 kg","на 2 персоны":"2 kişilik",
-      "200 г":"200 g","1 шарик":"1 top","на 1 персону / на 2 персоны":"1 kişilik / 2 kişilik",
-      "1 л":"1 l","0,5 л":"0,5 l","стакан / 1 литр":"bardak / 1 litre",
-      "стакан (500 мл) / 1 литр":"bardak (500 ml) / 1 litre","чашка":"bardak"},
-    setMade:{
-      retro:"Peynir ve şarküteri tabağı, beyaz peynir, tereyağı, bal, reçel, zeytin, domates, salatalık ve yeşillik, sigara böreği, seçmeli sıcak.",
-      sytnoe:"Peynirli ve sebzeli iki omlet, kıymalı dört krep, iki kâse lapa.",
-      domashnee:"Altı sirniki, lorlu dört krep, iki sahanda yumurta.",
-      lula:"Ezogelin çorbası, lüle kebap, Türk pilavı, acıçuk salatası, tırnak ekmek, Türk çayı.",
-      kofte:"Mercimek çorbası, doğu usulü tavuk köfte, patates püresi, acıçuk salatası, tırnak ekmek, Türk çayı.",
-      assorti:"Dana eti, lüle kebap, soğan, sos, tavuk kanadı, patates, dolma.",
-      kurtoba:"İnce ekmek, kurut, dana eti, domates, yeşillik, soğan."
-    },
-    zones:[
-      ["Kapalı teras","Aydınlık salon: duvarlarda ve masaların üstünde yeşillik, lambalı kemerler, pencere kenarı masalar ve yumuşak koltuklar."],
-      ["Müzik salonu","Neonlu karanlık salon: yuvarlak aynalı duvar boyunca uzun masa, yeşil duvarın yanında kadife koltuklar."],
-      ["Aile bölümü","Oyun odasının yanındaki aydınlık salon: kaydırak, labirent, top havuzu ve yol desenli halı."]
-    ],
-    // блюда меню: [название, состав]; ключ — название из MENU как есть (см. dishTr)
-    dishes:{
-      // салаты
-      "Винегрет":["Vinegret","Haşlanmış pancar, patates, havuç, lahana turşusu, bezelye"],
-      "Салат Чобан Чирокчи":["Çoban Çirokçi salatası","Domates, salatalık, soğan, dolmalık biber, zeytinyağı, limon"],
-      "Салат Ташкент":["Taşkent salatası","Daikon turpu, dana eti, yumurta, yoğurt, soğan halkaları"],
-      "Мутабель":["Mütebbel","Tahinli patlıcan, Türk mezesi"],
-      "Оливье":["Olivye salatası","Haşlanmış patates, kornişon turşusu, havuç, dana eti, bezelye, mayonez, yumurta"],
-      "Салат Лайло":["Laylo salatası","Marine istiridye mantarı, tavuk göğsü, çıtır çöp patates, yumurta, yeşillik, mayonez"],
-      "Босфор":["Bosfor salatası","Kornişon turşusu, füme salam, domates, mısır, mayonez, sarımsak"],
-      "Зеленый салат с моцареллой":["Mozzarellalı yeşil salata","Roka, mısır, çeri domates, salatalık, mozzarella peyniri, susam yağı, balzamik krema, nar ekşisi"],
-      "Хрустящие баклажаны":["Çıtır patlıcan","Karamelize patlıcan, susam, çeri domates, yeşillik, kişniş, Aray sos, unagi sos"],
-      "Салат со свеклой и фетой с апельсинами":["Portakallı pancar ve feta salatası","Zeytinyağı, pancar, roka, feta peyniri, portakal, ceviz, arpacık soğan, bal, limon suyu"],
-      "Аляска":["Alaska salatası","Hindi rulo, kültür mantarı, mısır, kornişon turşusu, peynir, domates turşusu"],
-      "Элит":["Elit salatası","Dana rulo, roka, mayonez, kornişon turşusu, cevizli sos, arpacık soğan, domates"],
-      "Акдениз":["Akdeniz salatası","Fetaksa peyniri, aysberg marul, lolorosso, siyah zeytin, domates, dolmalık biber, zeytinyağı, salatalık"],
-      "Тулум":["Tulum salatası","Nar, lolorosso, roka, mısır, kuruyemiş, tulum peyniri, çeri domates, elma, kuru üzüm, nar ekşisi sos"],
-      "Салат Хевес":["Heves salatası","Füme hindi, füme salam, salatalık, peynir, mayonez"],
-      "Цезарь":["Sezar salata","Tavuk göğsü, parmesan, kruton, domates, Sezar sos, aysberg marul, bıldırcın yumurtası"],
-      "Салат Юлдуз":["Yulduz salatası","Karışık yeşillik, döner eti, salatalık, domates, maydanoz, kişniş, şefin özel sosu"],
-      "Ретро@salads":["Retro salatası","Dana eti, çam fıstığı, patlıcan, roka, aysberg marul, Aray sos, parmesan, çeri domates"],
-      // холодные закуски
-      "Хайдари":["Haydari","Süzme yoğurt, zeytinyağı, sarımsak, nane, dereotu"],
-      "Эзма":["Ezme","Domates, maydanoz, nar ekşisi, zeytinyağı, dolmalık biber, sarımsak, acı sos"],
-      "Овощное ассорти":["Sebze tabağı","Salatalık, domates, yeşillik"],
-      "Разносолы":["Turşu tabağı","Domates, salatalık, lahana turşusu, yeşil domates"],
-      "Соте":["Patlıcan sote","Patlıcan, domates, yeşillik, sarımsak, kişniş, tartar sos"],
-      "Сельдь по-русски":["Rus usulü ringa","Ringa balığı, patates, soğan"],
-      "Сырное ассорти":["Peynir tabağı"],
-      "Мясная тарелка":["Şarküteri tabağı"],
-      // горячие закуски
-      "Сигара бурек с курицей или с брынзой":["Tavuklu veya peynirli sigara böreği","Lavaş, tavuk, beyaz peynir, yeşillik"],
-      "Праздник дунганских перчиков":["Dungan biberi şöleni"],
-      "Кефте по-стамбульски с моцареллой":["İstanbul usulü mozzarellalı köfte","Patates püresi, mozzarella, maydanoz, sos, baharat"],
-      "Долма":["Etli yaprak dolması","Dana eti, asma yaprağı, pirinç, süzme yoğurt, yeşillik"],
-      "Читир Тавук":["Çıtır tavuk","Tavuk göğsü, patates kızartması"],
-      "Цыплёнок Табака":["Tabaka piliç"],
-      "Гарлики хрустящие":["Çıtır sarımsaklı ekmek"],
-      // тандыр и пицца
-      "Олот самса":["Olot samsa","Hamur, dana eti, baharat"],
-      "Лахмаджун":["Lahmacun","Dana eti, domates, sebze, baharat, hamur"],
-      "Пиде с сыром и медом":["Ballı peynirli pide","İnce hamur, peynir, bal, Antep fıstığı"],
-      "Хачапури":["Haçapuri","Hamur, mozzarella, tereyağı"],
-      "Пиде с мясом и сыром":["Etli kaşarlı pide","Domates, hamur, dana eti, soğan, biber, peynir"],
-      "Пиде ассорти":["Karışık pide","Domates, hamur, dana eti, tavuk, peynir, yeşillik, limon, dolmalık biber"],
-      "Пепперони":["Pepperoni","Hamur, mozzarella peyniri, kuru salam, domates"],
-      "Маргарита":["Margarita","Hamur, mozzarella peyniri, domates"],
-      // первые блюда
-      "Мержемек шурпа":["Mercimek çorbası","Mercimek, zeytinyağı, limon, kruton"],
-      "Эзогелин":["Ezogelin çorbası","Mercimek, zeytinyağı, havuç, biber"],
-      "Чучвара с бульоном":["Et suyunda çuçvara (küçük mantı)","Et, hamur, sebze, baharat"],
-      "Товук шурпа":["Tavuk çorbası","Tavuk, şehriye, yoğurt, baharat"],
-      "Кофте шурпа":["Köfte çorbası","Pirinçli köfte, patates, domates, havuç, et suyu, yeşillik"],
-      "Мастава":["Mastava","Kuzu eti, pirinç, havuç, patates, domates, baharat"],
-      "Кайнатма шурпа":["Kaynatma şurpa","Kuzu eti, patates, domates, havuç, baharat"],
-      "Грибной суп со сливками":["Kremalı mantar çorbası","Kültür mantarı, tereyağı, yeşillik, süt, kruton"],
-      // национальные блюда
-      "Манты":["Özbek mantısı","Hamur, et, yeşillik"],
-      "Рулька с пюре":["Püreli dana incik","Dana incik, patates püresi"],
-      "Норин":["Norin","Bitkisel yağ, at eti, kuru soğan, hamur, kimyon, baharat"],
-      "Лагман уйгурский":["Uygur lağmanı","Kuzu eti, el açması erişte, sebze, baharat"],
-      "Вагури":["Vaguri","Patatesli kuzu kızartması"],
-      "Думгаза с картофелем":["Patatesli dumgaza","Dana kuyruğu, patates, soğan, sos ve baharat"],
-      "Мясо по-домашнему":["Ev usulü et","Dana eti, soğan, patates, baharat"],
-      "Судак жареный":["Sudak balığı kızartması"],
-      "Сазан жареный":["Sazan kızartması"],
-      "Дуппи":["Duppi","Dana eti, tandır ekmeği, baharat, soğan"],
-      "Миллий ассорти":["Milliy tabağı","Dana eti, lüle kebap, soğan, sos, tavuk kanadı, patates, dolma"],
-      "Говядина с грибами в сливочном соусе":["Kremalı mantarlı dana","Dana eti, krema, mantar, karışık yeşillik, pirinç"],
-      "Гушт Сай":["Guşt say","Dana eti, domates, Dungan acı biberi"],
-      "Форель на мангале":["Mangalda alabalık","Alabalık, limon"],
-      "Бешбармак":["Beşbarmak","Kazı (at sucuğu), at eti, soğan, domates, hamur"],
-      "Куртоба":["Kurtoba","İnce ekmek, kurut, dana eti, domates, yeşillik, soğan"],
-      "Сокоро":["Sokoro","Bitkisel yağ, kuzu eti, soğan, soya, pirinç"],
-      // турецкие блюда
-      "Соте куриное":["Tavuk sote","Tavuk göğsü, mozzarella peyniri, dolmalık biber, soğan, baharat"],
-      "Филе барбекю (куриный)":["Barbekü tavuk fileto","Türk pilavı, kırmızı lahana, baharat, ızgara tavuk göğsü"],
-      "Дурум куриный":["Tavuk dürüm","Tavuk fileto, lavaş, aysberg marul, domates, arpacık soğan, patates kızartması, tartar sos"],
-      "Альфредо":["Alfredo","Tavuk göğsü, krema, mozzarella peyniri, Barilla makarna"],
-      "Сач кебаб с курицей":["Tavuklu sac kebap","Tavuk, baharat, kuru soğan, dolmalık biber, domates, bitkisel yağ, Türk pilavı"],
-      "Соте мясное":["Et sote","Dana eti, mozzarella peyniri, dolmalık biber, soğan, baharat"],
-      "Курица с грибами в сливочном соусе карри":["Kremalı köri soslu mantarlı tavuk","Tavuk göğsü, köri, pirinç, kültür mantarı, krema"],
-      "Тава стейк":["Tava steak","Dana eti, mozzarella peyniri, roka, çeri domates"],
-      "Бургер Ретро":["Retro burger","Şefin özel köftesi, patates kızartması"],
-      "Куриная кефте по-восточному":["Doğu usulü tavuk köfte","Mozzarella peyniri, tavuk kıyma, yeşillik, krema, kültür mantarı, dolmalık biber"],
-      "Золотые шпажки падишаха с картофелем":["Padişahın altın şişleri, patatesli","Dana eti, soğan, baharat, patates"],
-      "Томбик донер":["Tombik döner","Döner, domates, patates kızartması, marul, sos, tombik ekmeği"],
-      "Сач кебаб с мясом":["Etli sac kebap","Dana eti, kuru soğan, domates, bitkisel yağ, Türk pilavı, baharat, yeşil dolmalık biber"],
-      "Адана Тандыр":["Adana tandır","Adana kebap, domates, Dungan acı biberi, peynir, süzme yoğurt, maydanoz, lavaş"],
-      "Искандер кебаб":["İskender kebap","Et döner, pide ekmeği, tereyağı, süzme yoğurt, Dungan acı biberi, domates"],
-      "Пилавли донар":["Pilavlı döner","Dana eti, lavaş, Türk pilavı, patates kızartması, baharat, kornişon turşusu, biber turşusu"],
-      "Кефта Султана с золотым пюре":["Altın püreli Sultan köftesi","Tavuk kıyma, patates püresi, soğan, baharat"],
-      "Кефта кебаб":["Köfte kebap","Zırh kıyması, Türk pilavı, kırmızı lahana, domates, Dungan acı biberi"],
-      // шашлыки
-      "Рулет из говядины":["Dana rulo"],
-      "Шашлык Марварид":["Marvarid şiş"],
-      "Кусковой из говядины":["Dana kuşbaşı şiş"],
-      "Люля кебаб":["Lüle kebap"],
-      "Куриный шашлык":["Tavuk şiş"],
-      "Шашлык Наполеон":["Napolyon şiş"],
-      "Картофель на мангале":["Mangalda patates"],
-      "Кукуруза на мангале":["Mangalda mısır"],
-      "Товук пирзола":["Tavuk pirzola","Tavuk but şiş, Türk pilavı, karışık salata, sos"],
-      "Кашарли кофте":["Kaşarlı köfte","Dana köfte, mozzarella peyniri, Türk pilavı, kırmızı lahana"],
-      "Изгара кофте":["Izgara köfte","Mangalda dana köfte, Türk pilavı, karışık salata, sos"],
-      "Кашарли бейти":["Kaşarlı beyti","Tandır lavaşına sarılı peynirli kıyma kebabı, Türk pilavı, karışık salata, sos"],
-      // гарниры и хлеб
-      "Рис по-турецки":["Türk pilavı"],
-      "Картофель фри":["Patates kızartması"],
-      "Картофель по-деревенски":["Elma dilim patates"],
-      "Булгур":["Bulgur pilavı"],
-      "Тирнок экмек":["Tırnak ekmek","Türk ekmeği"],
-      "Хлеб симит":["Simit"],
-      "Афганский хлеб":["Afgan ekmeği"],
-      "Лепёшка":["Özbek tandır ekmeği"],
-      "Пуф":["Puf ekmek (balon ekmek)"],
-      "Хлеб ассорти":["Ekmek sepeti","Simit, Özbek tandır ekmeği, Türk ekmeği, Afgan ekmeği"],
-      // десерты
-      "Фруктовое ассорти (большое)":["Meyve tabağı (büyük)","Mevsim meyveleri"],
-      "Шоколадный фондан":["Çikolatalı fondan","Çikolata, tarçın, dondurma, Antep fıstığı"],
-      "Мороженое":["Dondurma"],
-      "Хавуч дилими":["Havuç dilimi","Dondurmalı baklava"],
-      "Пахлава фисташковая":["Fıstıklı baklava"],
-      "Кунафе":["Künefe"],
-      "Катмир кассиб":["Katmer kassib"],
-      // напитки: лимонады, коктейли, прохладительные, чаи, фреши, милкшейки
-      "Классический":["Klasik"],
-      "Цитрусовый":["Narenciyeli"],
-      "Яблоко-тархун":["Elma ve tarhun"],
-      "Ягодный":["Orman meyveli"],
-      "Мохито":["Mojito"],
-      "Вишневный поцелуй":["Vişne öpücüğü"],
-      "Ретро@drinks":["Retro"],
-      "Тропический бум":["Tropikal bum"],
-      "Viko сок в ассортименте":["Viko meyve suyu, çeşitli"],
-      "Coca-cola / Fanta / Sprite":["Coca-Cola / Fanta / Sprite"],
-      "Chortoq":["Chortoq maden suyu"],
-      "Минеральная вода":["Maden suyu"],
-      "Ice tea":["Soğuk çay (Ice tea)"],
-      "Айран":["Ayran"],
-      "Компот":["Komposto"],
-      "Турецкий чай":["Türk çayı"],
-      "Зеленый / черный чай":["Yeşil / siyah çay"],
-      "С лимоном":["Limonlu çay"],
-      "Фирменные чаи":["Özel çaylar","Meyve, zencefil, yasemin, narenciye"],
-      "Апельсиновый":["Portakal"],
-      "Яблочный":["Elma"],
-      "Яблочно-морковный":["Elma-havuç"],
-      "Яблоко-апельсин":["Elma-portakal"],
-      "Морковный фреш":["Havuç"],
-      "Банановый":["Muzlu"],
-      "Шоколадный":["Çikolatalı"]
-    }
   }
 };
 // Язык из адреса кладёт бот — он знает язык переписки. Но гость может сменить
@@ -1189,13 +1175,14 @@ const T = {
 // открытие. Поэтому рядом с выбором храним адресный язык на момент выбора:
 // сменили язык в боте — приходит другой адрес, и побеждает он, прежний выбор
 // снимается. Пока адрес прежний, побеждает выбор гостя.
-const LANGS = ['uz','ru','en','tr'];
-const URL_LANG = T[P.get('lang')] ? P.get('lang') : '';
+const LANGS = ['uz','ru','en'];
+// Язык не из списка (в том числе снятый турецкий) — как будто его нет: откроется узбекский.
+const URL_LANG = LANGS.includes(P.get('lang')) ? P.get('lang') : '';
 const LANG_KEY = 'retro.lang';
 function savedLang(){
   try{
     const v = JSON.parse(localStorage.getItem(LANG_KEY) || 'null');
-    if(!v || !T[v.lang]) return null;
+    if(!v || !LANGS.includes(v.lang)) return null;
     // Адреса нет (открыли ссылкой напрямую) — спорить не с чем, берём выбор.
     return (!URL_LANG || (v.from||'') === URL_LANG) ? v.lang : null;
   }catch(e){ return null; }
@@ -1248,9 +1235,9 @@ const SETS = [
 // (источник — Меню.pdf, сентябрь 2026). Строка блюда:
 // [название, цена, вторая цена, примечание, состав, файл фото, хит].
 // Здесь названия и составы по-русски, как в бумажном меню. На язык гостя их
-// переводит словарь dishes (uz/en/tr, ключ — русское название, см. dishTr),
+// переводит словарь dishes (uz/en, ключ — русское название, см. dishTr),
 // примечания про порцию и объём — словарь notes. Нет перевода — остаётся русский.
-// Новое блюдо в MENU — добавьте его и в dishes всех трёх языков.
+// Новое блюдо в MENU — добавьте его и в dishes узбекского и английского.
 const MENU=[
 {id:"salads",time:"8–10",g:[
  {id:null,d:[
@@ -1523,6 +1510,8 @@ const $=(id)=>document.getElementById(id);
 const TAB_I = {book:0, sets:1, menu:2, halls:3};
 const TABS = ['book','sets','menu','halls'];
 let tab = 'book';
+// У профиля нет места в полосе вкладок и в списке titles: заголовок свой.
+const titleOf = k => k==='profile' ? L.p.title : L.titles[TAB_I[k]];
 
 function renderTabs(){
   const box=$('tabs'); box.innerHTML='';
@@ -1531,6 +1520,7 @@ function renderTabs(){
     b.onclick=()=>{ if(k!==tab){ buzz(); goTab(k); } };
     box.appendChild(b);
   });
+  const me=$('meBtn'); if(me) me.classList.toggle('on', tab==='profile');
   measureTabs();
 }
 function measureTabs(){
@@ -1542,7 +1532,7 @@ function goTab(k, keepScroll){
   document.body.className='tab-'+k;
   document.querySelectorAll('.tabpage').forEach(p=>{ p.hidden = p.dataset.tab!==k; });
   renderTabs();
-  $('h1').textContent = L.titles[TAB_I[k]];
+  $('h1').textContent = titleOf(k);
   if(!keepScroll) window.scrollTo(0,0);
   if(tg){ (k!=='book' || step>1) ? tg.BackButton.show() : tg.BackButton.hide(); }
   if(k==='menu'){ measureTabs(); syncRail(); }
@@ -1551,7 +1541,7 @@ function goTab(k, keepScroll){
 
 // ── статический текст ───────────────────────────────────
 function renderChrome(){
-  $('h1').textContent=L.titles[TAB_I[tab]];
+  $('h1').textContent=titleOf(tab);
   $('sub').textContent=L.sub;
   $('l1').textContent=L.l1; $('l2').textContent=L.l2; $('l3').textContent=L.l3;
   $('l4').textContent=L.l4; $('l5').textContent=L.l5; $('l6').textContent=L.l6;
@@ -1581,6 +1571,11 @@ function renderLangbar(){
       document.documentElement.lang=code; buzz(); renderAll(true); };
     langbar.appendChild(b);
   });
+  const me=el('button','me'+(tab==='profile'?' on':'')); me.type='button'; me.id='meBtn';
+  me.setAttribute('aria-label', L.p.title);
+  avatarFill(me);
+  me.onclick=()=>{ buzz(); openProfile(); };
+  langbar.appendChild(me);
 }
 
 // ── день ────────────────────────────────────────────────
@@ -1715,7 +1710,7 @@ function renderZones(){
 const fmtSum=(n)=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ')+' '+L.sum;
 const fmtNum=(n)=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
 
-// Номер в подписи про банкет одинаков во всех четырёх языках, поэтому
+// Номер в подписи про банкет одинаков во всех трёх языках, поэтому
 // вырезаем его из строки и отдаём ссылкой на звонок.
 const PHONE_SHOWN='(71) 269-30-05', PHONE_TEL='+998712693005';
 // Имя бота в подсказке «откройте в Telegram» тоже ссылка: её видят вне Telegram.
@@ -1798,7 +1793,8 @@ function renderSetsPage(){
 // (перескок к якорю) и поиск по названию и составу.
 let mQuery='';
 // Поиск прощает диакритику и апострофы: гость с латинской клавиатурой пишет
-// «kofte» вместо «köfte», «sis» вместо «şiş», «shorva» вместо «sho'rva»,
+// «doner» вместо «Döner», «citir» вместо «Çıtır» (в английских названиях блюд
+// оригинальные буквы сохранены), «shorva» вместо «sho'rva»,
 // а ё и е — одна буква (й при этом тоже сводится к и — с обеих сторон, не мешает).
 const norm=(x)=>x.toLowerCase().replace(/ı/g,'i').normalize('NFD')
   .replace(/[̀-ͯ]/g,'').replace(/['‘’ʻʼ`´]/g,'');
@@ -1839,9 +1835,9 @@ const dishTr = (d, secId) => {
 
 // d = [название, цена, вторая цена, примечание, состав, файл фото, хит]
 function dishRow(d, secId){
-  const tr = dishTr(d, secId);
-  const name = (tr && tr[0]) || d[0];
-  const made = d[4] ? ((tr && tr[1]) || d[4]) : '';
+  const tx = dishTr(d, secId);
+  const name = (tx && tx[0]) || d[0];
+  const made = d[4] ? ((tx && tx[1]) || d[4]) : '';
   const row=el('div','dish');
   // Ищем и по-русски, и на языке гостя: блюдо могут назвать так, как его
   // зовут в зале, а могут — как написано у гостя на экране.
@@ -1952,22 +1948,25 @@ function renderPhone(){
   box.innerHTML='';
   if(s.phone){ box.appendChild(el('div','got',L.phoneGot+s.phone)); return; }
   const b=el('button','phone-btn',L.phoneBtn);
-  b.onclick=()=>{
-    // requestContact есть только с Telegram 6.9: на старом клиенте и вне Telegram
-    // он бросает исключение, и кнопка молча не работала. Там сразу ручной ввод.
-    if(!IN_TG || !tg.requestContact || (tg.isVersionAtLeast && !tg.isVersionAtLeast('6.9'))){ manual(); return; }
-    try{
-      tg.requestContact((ok,res)=>{
-        if(ok){ const raw=res?.responseUnsafe?.contact?.phone_number||res?.contact?.phone_number;
-          if(raw){ s.phone=String(raw).startsWith('+')?raw:'+'+raw; renderPhone(); update(); }
-          else manual(); }
-        else manual();
-      });
-    }catch(e){}   // второй тап, пока окно запроса открыто: запрос уже идёт
-  };
+  b.onclick=()=>askContact(p=>{ s.phone=p; renderPhone(); update(); }, ()=>manual());
   box.appendChild(b);
   const m=el('div','hint tap',L.phoneManual);
   m.onclick=()=>manual(); box.appendChild(m);
+}
+// Номер из Telegram одной кнопкой. Нет номера, отказ или старый клиент — onFail,
+// там гость пишет номер руками. Общий для брони и профиля.
+function askContact(onPhone, onFail){
+  // requestContact есть только с Telegram 6.9: на старом клиенте и вне Telegram
+  // он бросает исключение, и кнопка молча не работала. Там сразу ручной ввод.
+  if(!IN_TG || !tg.requestContact || (tg.isVersionAtLeast && !tg.isVersionAtLeast('6.9'))){ onFail(); return; }
+  try{
+    tg.requestContact((ok,res)=>{
+      if(ok){ const raw=res?.responseUnsafe?.contact?.phone_number||res?.contact?.phone_number;
+        if(raw){ const p=String(raw); onPhone(p.startsWith('+')?p:'+'+p); }
+        else onFail(); }
+      else onFail();
+    });
+  }catch(e){}   // второй тап, пока окно запроса открыто: запрос уже идёт
 }
 // focus=false — это перерисовка, клавиатуру сами не поднимаем.
 function manual(focus){
@@ -1988,7 +1987,7 @@ const STEPS=4;
 let step=1;
 // Цифр в номере от 9 (901234567) до 15 — длиннее номеров не бывает (E.164),
 // а раньше проходили и склеенные два номера, и случайная простыня цифр.
-const phoneOk=()=>{ const n=s.phone.replace(/\D/g,'').length; return n>=9 && n<=15; };
+const phoneOk=(v=s.phone)=>{ const n=String(v).replace(/\D/g,'').length; return n>=9 && n<=15; };
 const stepReady=(n)=>
   n===1 ? !!(s.day && (s.day!=='other'||(s.date && s.date>=tashNow(0).iso)) && s.time) :
   n===2 ? !!s.guests :
@@ -2023,6 +2022,8 @@ function update(){
   // на прежнем языке.
   if(window.__sent){ btn.setText(L.sending); return; }
   btn.setParams({ color:'#C9A227', text_color:'#101A26' });
+  if(tab==='profile'){ btn.setText(psent ? L.p.saving : L.p.save); btn.show();
+    psent ? btn.disable() : btn.enable(); return; }
   // На сетах, меню и залах главная кнопка ведёт в бронь: оттуда она в один тап.
   if(tab!=='book'){ btn.setText(L.bookCta); btn.show(); btn.enable(); return; }
   const last = step===STEPS, okStep = last ? ready() : stepReady(step);
@@ -2031,6 +2032,294 @@ function update(){
   btn.setText(last ? (okStep ? L.send : L.fill) : (L.next||'→'));
   btn.show();
   okStep ? btn.enable() : btn.disable();
+}
+
+// ── профиль гостя ───────────────────────────────────────
+// Открывается кругом в шапке, своей вкладки в полосе нет. Что бот знает о госте,
+// приходит в адресе: bk — сколько у него броней, bd — день рождения ДД.ММ,
+// ph — последние четыре цифры телефона (полный номер в адрес не кладём).
+// Сохранение — одно сообщение боту через sendData:
+//   {t:'profile', name, phone, birthday}
+// name — 1–60 знаков; phone — новый номер (9–15 цифр, можно с +) или пустая
+// строка, если номер не меняли; birthday — ДД.ММ или пустая строка.
+// Бот отвечает в чате «Профиль обновлён». Статусы и значки только показывают
+// путь гостя: ни скидок, ни подарков за них нет, владелец их не утверждал.
+const LEVELS=[0,1,3,6,10];          // с какой брони начинается каждый статус
+const BK=(v=>/^\d{1,6}$/.test(v) ? +v : 0)((P.get('bk')||'').trim());
+// ДД.ММ с проверкой числа в месяце (29.02 можно). Вернёт «07.03» или null.
+function parseBd(v){
+  const m=/^(\d{1,2})\.(\d{1,2})$/.exec(String(v||'').trim()); if(!m) return null;
+  const d=+m[1], mo=+m[2];
+  if(mo<1 || mo>12 || d<1 || d>[31,29,31,30,31,30,31,31,30,31,30,31][mo-1]) return null;
+  return String(d).padStart(2,'0')+'.'+String(mo).padStart(2,'0');
+}
+const BD0=parseBd(P.get('bd'))||'';
+const PH=(d=>d.length>=4 ? d.slice(-4) : '')((P.get('ph')||'').replace(/\D/g,''));
+// Номер у бота есть: пришли его последние цифры, либо гость уже знакомый (known=1).
+const PHONE_KNOWN=!!PH || KNOWN;
+const NAME0=(PRENAME || (who?.first_name ? [who.first_name,who.last_name].filter(Boolean).join(' ') : '')).slice(0,60);
+// Состояние формы. phone — только новый номер; пусто — номер не трогали.
+const pf={ name:NAME0, phone:'', bd:BD0, editPhone:false, manual:false, touched:{} };
+let psent=false, backTab='book', backY=0;
+
+const fill=(str,o)=>str.replace(/\{(\w+)\}/g,(m,k)=>o[k]!=null ? o[k] : m);
+// Номер для профиля проходит ту же проверку, что в брони (phoneOk: 9–15 цифр),
+// и вдобавок без букв: в профиль уходит только цифры и плюс.
+const PHONE_CHARS=/^\+?[\d\s().\-]+$/;
+const pPhoneValid=v=>!v || (PHONE_CHARS.test(v) && phoneOk(v));
+const pPhoneOut=v=>(v.startsWith('+')?'+':'')+v.replace(/\D/g,'');
+const levelOf=n=>LEVELS.reduce((i,t,k)=>n>=t ? k : i, 0);
+// «бронь / брони / броней» по-русски, «booking / bookings» по-английски,
+// в узбекском после числа слово не меняется.
+function bkWord(n){
+  const w=L.p.bkWord;
+  if(lang==='ru'){ const a=n%10, b=n%100;
+    return w[a===1 && b!==11 ? 0 : a>=2 && a<=4 && (b<10 || b>=20) ? 1 : 2]; }
+  return w[n===1 ? 0 : w.length-1];
+}
+const bdHuman=bd=>{ const [d,m]=bd.split('.'); return fill(L.p.bdFmt,{d:+d, m:L.p.months[+m-1]}); };
+
+const SVG=(p)=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';
+const ICON_USER =SVG('<circle cx="12" cy="8.2" r="3.7"/><path d="M4.8 20c.9-3.8 3.7-5.9 7.2-5.9s6.3 2.1 7.2 5.9"/>');
+const ICON_CAKE =SVG('<path d="M4 20h16"/><path d="M5.5 20v-6.6c0-.8.7-1.4 1.5-1.4h10c.8 0 1.5.6 1.5 1.4V20"/><path d="M5.5 15.6c1.3 0 1.9-1 3.3-1s2 1 3.2 1 1.9-1 3.2-1 2 1 3.3 1"/><path d="M12 12V9.2"/><path d="M12 7c.9-.7 1-1.7 0-2.8-1 1.1-.9 2.1 0 2.8z"/>');
+const ICON_CHECK=SVG('<path d="M5 12.6l4.3 4.2L19 7.2"/>');
+const ICON_LOCK =SVG('<rect x="5.5" y="11" width="13" height="9" rx="2"/><path d="M8.5 11V8.3a3.5 3.5 0 0 1 7 0V11"/>');
+
+// Первая буква имени в кругу; имени нет или оно не с буквы — силуэт.
+function avatarFill(node){
+  const ch=[...pf.name.trim()][0]||'';
+  if(/\p{L}/u.test(ch)) node.textContent=ch.toLocaleUpperCase(lang);
+  else node.innerHTML=ICON_USER;
+}
+
+// Всё, что видно на странице, считается от того, что сейчас в полях:
+// вписал день рождения — кольцо и значок откликаются сразу, а подсказка
+// внизу напоминает, что в профиле это окажется после «Сохранить».
+function pState(){
+  const name=pf.name.trim(), ph=pf.phone.trim(), bdRaw=pf.bd.trim();
+  const bd=bdRaw ? parseBd(bdRaw) : '';
+  const st={ name, bd, nameOk:name.length>=1 && name.length<=60, phoneOk:pPhoneValid(ph), bdOk:bd!==null };
+  st.hasName=st.nameOk;
+  st.hasPhone=PHONE_KNOWN || (!!ph && st.phoneOk);
+  st.hasBd=!!bd;
+  st.pct=Math.round([st.hasName,st.hasPhone,st.hasBd].filter(Boolean).length/3*100);
+  st.ok=st.nameOk && st.phoneOk && st.bdOk;
+  st.out={ t:'profile', name, phone: ph && st.phoneOk ? pPhoneOut(ph) : '', birthday: bd||'' };
+  st.dirty= name!==NAME0.trim() || !!ph || (bd===null ? bdRaw : bd)!==BD0;
+  return st;
+}
+
+const BADGES=[
+  {id:'first', mark:'1',  need:1,  ok:()=>BK>=1},
+  {id:'three', mark:'3',  need:3,  ok:()=>BK>=3},
+  {id:'ten',   mark:'10', need:10, ok:()=>BK>=10},
+  {id:'full',  svg:ICON_USER, ok:st=>st.hasName && st.hasPhone && st.hasBd},
+  {id:'bday',  svg:ICON_CAKE, ok:st=>st.hasBd},
+];
+
+function renderPCard(st){
+  const box=$('pCard'); box.innerHTML='';
+  const row=el('div','pwho');
+  const ava=el('div','pava'); ava.setAttribute('aria-hidden','true'); avatarFill(ava);
+  row.appendChild(ava);
+  const t=el('div','t');
+  t.appendChild(el('div', st.name ? 'pname' : 'pname empty', st.name || L.l5));
+  t.appendChild(el('div','pcount', BK ? fill(L.p.bkN,{n:BK, w:bkWord(BK)}) : L.p.bk0));
+  row.appendChild(t); box.appendChild(row);
+
+  const lv=levelOf(BK), stat=el('div','pstat');
+  stat.appendChild(el('div','stepline',L.p.statusL));
+  stat.appendChild(el('div','plevel',L.p.levels[lv]));
+  if(lv===LEVELS.length-1) stat.appendChild(el('div','pmax',L.p.top));
+  else {
+    const from=LEVELS[lv], to=LEVELS[lv+1], left=to-BK;
+    const bar=el('div','pbar'), i=el('i');
+    // Нулевая полоса выглядит сломанной: начало пути отмечаем тонкой чертой.
+    i.style.width=Math.max(4, Math.round((BK-from)/(to-from)*100))+'%';
+    bar.setAttribute('role','progressbar');
+    bar.setAttribute('aria-valuemin',from); bar.setAttribute('aria-valuemax',to); bar.setAttribute('aria-valuenow',BK);
+    bar.appendChild(i); stat.appendChild(bar);
+    stat.appendChild(el('div','pnext', fill(L.p.next,{n:left, w:bkWord(left), s:L.p.levels[lv+1]})));
+  }
+  box.appendChild(stat);
+}
+
+function renderPBadges(st){
+  const box=$('pBadges'); box.innerHTML=''; let got=0;
+  BADGES.forEach(b=>{
+    const on=b.ok(st); if(on) got++;
+    const [title,earned,how]=L.p.badges[b.id];
+    const row=el('div', on ? 'badge' : 'badge off');
+    const md=el('div','md'); md.setAttribute('aria-hidden','true');
+    if(b.svg) md.innerHTML=b.svg; else md.textContent=b.mark;
+    row.appendChild(md);
+    const t=el('div','t');
+    t.appendChild(el('b',null,title));
+    t.appendChild(el('span',null, on ? fill(earned,{d: st.bd ? bdHuman(st.bd) : ''}) : how));
+    row.appendChild(t);
+    // справа: галочка у открытого, счёт «1/3» у брони в пути, замок у остальных
+    const end=el('div','end');
+    if(on) end.innerHTML=ICON_CHECK;
+    else if(b.need>1) end.textContent=BK+'/'+b.need;
+    else end.innerHTML=ICON_LOCK;
+    end.setAttribute('aria-hidden','true');
+    row.appendChild(end);
+    box.appendChild(row);
+  });
+  $('pBadgesN').textContent=fill(L.p.badgesN,{n:got, m:BADGES.length});
+}
+
+function renderPFill(st){
+  const box=$('pFill'); box.innerHTML='';
+  const C=2*Math.PI*19;
+  const ring=el('div','ring');
+  ring.innerHTML='<svg viewBox="0 0 44 44" aria-hidden="true"><circle class="bg" cx="22" cy="22" r="19"/>'+
+    '<circle class="fg" cx="22" cy="22" r="19" stroke-dasharray="'+C.toFixed(2)+'" stroke-dashoffset="'+
+    (C*(1-st.pct/100)).toFixed(2)+'"/></svg>';
+  ring.appendChild(el('b',null,st.pct+'%'));
+  box.appendChild(ring);
+  const t=el('div','t');
+  t.appendChild(el('b',null,L.p.fillT));
+  const miss=[st.hasName,st.hasPhone,st.hasBd].map((h,i)=>h ? null : L.p.fields[i]).filter(Boolean);
+  t.appendChild(el('span',null, miss.length ? fill(L.p.left,{list:miss.join(', ')}) : L.p.done));
+  box.appendChild(t);
+}
+
+// Ошибку показываем у поля, из которого гость уже ушёл, или после «Сохранить»:
+// красная строка под пустым полем, которое ещё не трогали, только пугает.
+function renderPErrors(st){
+  const show=(id,inp,bad,msg)=>{ const n=$(id); n.hidden=!bad; if(bad) n.textContent=msg;
+    if(inp) inp.classList.toggle('bad',bad); };
+  show('pNameErr', $('pName'), !!pf.touched.name && !st.nameOk, L.p.nameErr);
+  show('pPhoneErr', $('pPhoneIn'), !!pf.touched.phone && !st.phoneOk, L.p.phoneErr);
+  show('pBdErr', $('pBd'), !!pf.touched.bd && !st.bdOk, L.p.bdErr);
+}
+
+function profileChanged(){
+  const st=pState();
+  renderPCard(st); renderPBadges(st); renderPFill(st); renderPErrors(st);
+  $('pUnsaved').hidden = !(IN_TG && st.dirty && !psent);
+  const me=$('meBtn'); if(me) avatarFill(me);
+}
+
+// Телефон: сохранённый номер показываем маской «•• ••• 45 67» с кнопкой
+// «Изменить номер». Номера нет или гость меняет его — та же пара, что в брони:
+// номер из Telegram одной кнопкой или вручную.
+function renderPPhone(focus){
+  const box=$('pPhoneBox'); box.innerHTML='';
+  const keep=$('pPhoneKeep'); keep.innerHTML='';
+  if(PHONE_KNOWN && !pf.editPhone){
+    const row=el('div','pphone');
+    row.appendChild(el('span','mask', PH ? '•• ••• '+PH.slice(0,2)+' '+PH.slice(2) : '•• ••• •• ••'));
+    const b=el('button','hint tap',L.p.changePhone); b.type='button';
+    b.onclick=()=>{ buzz(); pf.editPhone=true; renderPPhone(); profileChanged(); };
+    row.appendChild(b); box.appendChild(row);
+    return;
+  }
+  const toManual=(f)=>{ pf.manual=true; renderPPhone(f); };
+  if(pf.manual){
+    const i=el('input'); i.type='text'; i.id='pPhoneIn'; i.placeholder='+998 XX XXX XX XX';
+    i.inputMode='tel'; i.maxLength=24; i.autocomplete='tel'; i.value=pf.phone;
+    i.oninput=e=>{ pf.phone=e.target.value; profileChanged(); };
+    i.onblur=()=>{ if(pf.phone.trim()){ pf.touched.phone=1; renderPErrors(pState()); } };
+    box.appendChild(i); if(focus!==false) i.focus();
+  } else if(pf.phone){
+    box.appendChild(el('div','got',L.phoneGot+pf.phone));
+  } else {
+    const b=el('button','phone-btn',L.phoneBtn); b.type='button';
+    b.onclick=()=>askContact(p=>{ pf.phone=p; renderPPhone(); profileChanged(); }, ()=>toManual());
+    box.appendChild(b);
+    const m=el('div','hint tap',L.phoneManual); m.onclick=()=>toManual();
+    box.appendChild(m);
+  }
+  // Передумал менять — возвращаем прежний номер, в профиль уйдёт пустая строка.
+  // Ссылка стоит под строкой ошибки, чтобы ошибка была прямо под полем.
+  if(PHONE_KNOWN){
+    const c=el('div','hint tap',L.p.keepPhone);
+    c.onclick=()=>{ buzz(); pf.editPhone=false; pf.manual=false; pf.phone=''; pf.touched.phone=0;
+      renderPPhone(); profileChanged(); };
+    keep.appendChild(c);
+  }
+  renderPErrors(pState());
+}
+
+$('pName').value=pf.name;
+$('pName').oninput=e=>{ pf.name=e.target.value; profileChanged(); };
+$('pName').onblur=()=>{ pf.touched.name=1; renderPErrors(pState()); };
+// Дата рождения: точку после дня ставим сами (на цифровой клавиатуре её
+// часто нет), «/», «-», «,» и пробел считаем той же точкой.
+$('pBd').value=pf.bd;
+$('pBd').oninput=e=>{
+  let v=e.target.value.replace(/[\/\-, ]/g,'.').replace(/[^\d.]/g,'').replace(/\.{2,}/g,'.');
+  if(/^\d{3,4}$/.test(v)) v=v.slice(0,2)+'.'+v.slice(2);
+  v=v.slice(0,5);
+  if(v!==e.target.value) e.target.value=v;
+  pf.bd=v; profileChanged();
+};
+$('pBd').onblur=()=>{
+  const n=parseBd(pf.bd); if(n && n!==pf.bd){ pf.bd=n; $('pBd').value=n; }
+  if(pf.bd.trim()) pf.touched.bd=1;
+  profileChanged();
+};
+
+// Подписи страницы; значения полей не трогаем — смена языка их не стирает.
+function renderProfile(){
+  $('pBadgesL').textContent=L.p.badgesL;
+  $('pDataL').textContent=L.p.dataL;
+  $('pNameL').textContent=L.l5; $('pName').placeholder=L.namePh;
+  $('pPhoneL').textContent=L.l6;
+  $('pBdL').textContent=L.p.bdL; $('pBdOpt').textContent=L.p.opt;
+  $('pBd').placeholder=L.p.bdPh; $('pBdHint').textContent=L.p.bdHint;
+  $('pUnsaved').textContent=L.p.unsaved;
+  $('pNoTg').hidden=IN_TG;
+  if(!IN_TG) withPhone($('pNoTg'), L.p.noTg);
+  if(!$('pErr').hidden) withPhone($('pErr'), L.p.err);
+  renderPPhone(false);
+  profileChanged();
+}
+
+// Круг в шапке открывает профиль, повторное нажатие и «Назад» Telegram
+// возвращают туда, откуда пришли, на то же место прокрутки.
+function openProfile(){
+  if(tab==='profile'){ closeProfile(); return; }
+  backTab=tab; backY=window.scrollY;
+  goTab('profile');
+}
+function closeProfile(){
+  goTab(backTab, true);
+  window.scrollTo(0, backY); syncRail();
+}
+
+function saveProfile(){
+  if(psent) return;
+  pf.touched={name:1, phone:1, bd:1};
+  const st=pState(); renderPErrors(st);
+  if(!st.ok){
+    try{ tg?.HapticFeedback?.notificationOccurred('error'); }catch(e){}
+    const bad=!st.nameOk ? $('pName') : !st.phoneOk ? $('pPhoneIn') : $('pBd');
+    if(bad){ try{ bad.scrollIntoView({block:'center'}); }catch(e){} bad.focus(); }
+    return;
+  }
+  if(!IN_TG){ const n=$('pNoTg'); n.hidden=false; withPhone(n, L.p.noTg);
+    try{ n.scrollIntoView({block:'nearest'}); }catch(e){} return; }
+  psent=true;
+  $('pErr').hidden=true; $('pUnsaved').hidden=true;
+  const btn=tg.MainButton;
+  btn.disable(); btn.setText(L.p.saving);
+  try{ btn.showProgress(true); }catch(e){}
+  // sendData закрывает приложение, только если его открыли кнопкой клавиатуры.
+  // Открытое из меню или по ссылке он молча пропускает: если через несколько
+  // секунд мы всё ещё на экране, профиль не ушёл (так же устроена бронь).
+  try{ tg.sendData(JSON.stringify(st.out)); }catch(e){ profileFailed(); return; }
+  setTimeout(()=>{ if(psent) profileFailed(); }, 4000);
+}
+function profileFailed(){
+  psent=false;
+  try{ tg.MainButton.hideProgress(); }catch(e){}
+  try{ tg.HapticFeedback?.notificationOccurred('error'); }catch(e){}
+  const n=$('pErr'); n.hidden=false; withPhone(n, L.p.err);
+  try{ n.scrollIntoView({block:'nearest'}); }catch(e){}
+  profileChanged(); update();
 }
 
 // keepScroll=true — это смена языка: страница та же, отбрасывать гостя наверх
@@ -2043,7 +2332,7 @@ function renderAll(keepScroll){
   renderSets(); renderSetsPage(); renderMenu(); renderZones();
   renderDays(); renderGuests(); renderHalls();
   renderParts(false);
-  renderPhone(); showStep(step, keepScroll);
+  renderPhone(); renderProfile(); showStep(step, keepScroll);
   measureTabs();
   if(keepScroll){ window.scrollTo(0,y); syncRail(); }
 }
@@ -2052,6 +2341,7 @@ if(tg){
   tg.ready(); tg.expand();
   try{ tg.setHeaderColor('#0E1B2A'); tg.setBackgroundColor('#0E1B2A'); }catch(e){}
   tg.BackButton.onClick(()=>{
+    if(tab==='profile'){ closeProfile(); return; }
     if(tab!=='book'){ goTab('book'); return; }
     if(step>1) showStep(step-1);
   });
@@ -2067,6 +2357,7 @@ if(tg){
     update();
   };
   tg.MainButton.onClick(()=>{
+    if(tab==='profile'){ saveProfile(); return; }
     if(tab!=='book'){ goTab('book'); return; }
     if(step<STEPS){ if(stepReady(step)) showStep(step+1); return; }
     if(sent || !ready()) return;
