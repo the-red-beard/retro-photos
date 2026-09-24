@@ -465,6 +465,7 @@ const T = {
     foot:"Retro Milliy · Oltintepa 28 · har kuni 9:00–23:00",
     // вкладки и разделы
     tabs:["Band qilish","Setlar","Menyu","Zallar"],
+    setNames:{retro:"Retro nonushta",sytnoe:"To'yimli tong",domashnee:"Uydagidek tong",lula:"Lulya kabob",kofte:"Tovuqli kofte",assorti:"Milliy assorti",kurtoba:"Qurtoba"},
     titles:["Stol band qilish","Setlar","Menyu","Zallarimiz"],
     bookCta:"Stol band qilish", allSets:"Barcha setlar →", seatHere:"Shu yerga o'tqazing",
     setsPageLead:"Belgilangan narxdagi nonushta va tushliklar, dasturxonga yig'ilgan assorti.",
@@ -500,7 +501,160 @@ const T = {
       ["Yopiq terrasa","Yorug' zal: devorlarda va stollar tepasida ko'katlar, chiroqli ravoqlar, deraza yonidagi stollar va yumshoq divanlar."],
       ["Musiqali zal","Neonli qorong'i zal: dumaloq oynali devor bo'ylab uzun stol, yashil devor yonida baxmal divanlar."],
       ["Oilaviy zona","O'yin xonasi yonidagi yorug' zal: gorka, labirint, quruq basseyn va yo'l naqshli gilam."]
-    ]
+    ],
+    // блюда меню: [название, состав]; ключ — название из MENU как есть (см. dishTr)
+    dishes:{
+      // салаты
+      "Винегрет":["Vinegret","Qaynatilgan lavlagi, kartoshka, sabzi, tuzlangan karam, ko'k no'xat"],
+      "Салат Чобан Чирокчи":["Choban Chiroqchi salati","Pomidor, bodring, piyoz, bolgar qalampiri, zaytun moyi, limon"],
+      "Салат Ташкент":["Toshkent salati","Daykon, mol go'shti, tovuq tuxumi, yogurt, piyoz halqalari"],
+      "Мутабель":["Mutabel","Tahinli baqlajon, turkcha gazak"],
+      "Оливье":["Olivye","Qaynatilgan kartoshka, marinadlangan bodring, sabzi, mol go'shti, ko'k no'xat, mayonez, tovuq tuxumi"],
+      "Салат Лайло":["Laylo salati","Marinadlangan vyoshenka qo'ziqorini, tovuq to'shi, qarsildoq somoncha kartoshka, tuxum, ko'katlar, mayonez"],
+      "Босфор":["Bosfor","Marinadlangan bodring, dudlangan kolbasa, pomidor, makkajo'xori, mayonez, sarimsoq"],
+      "Зеленый салат с моцареллой":["Motsarellali ko'k salat","Rukkola, makkajo'xori, cherri pomidor, bodring, motsarella pishlog'i, kunjut yog'i, balzamik krem, narsharab"],
+      "Хрустящие баклажаны":["Qarsildoq baqlajon","Karamellangan baqlajon, kunjut, cherri pomidor, ko'katlar, kashnich, Aray sousi, Unagi sousi"],
+      "Салат со свеклой и фетой с апельсинами":["Lavlagi, feta va apelsinli salat","Zaytun moyi, lavlagi, rukkola, feta, apelsin, yong'oq, shalot piyozi, asal, limon sharbati"],
+      "Аляска":["Alyaska","Kurka ruleti, shampinyon, makkajo'xori, marinadlangan bodring, pishloq, marinadlangan pomidor"],
+      "Элит":["Elit","Mol go'shti ruleti, rukkola, mayonez, marinadlangan bodring, yong'oq sousi, shalot piyozi, pomidor"],
+      "Акдениз":["Akdeniz","Fetaksa pishlog'i, aysberg, lollo rosso, qora zaytun, pomidor, bolgar qalampiri, zaytun moyi, bodring"],
+      "Тулум":["Tulum","Anor, lollo rosso, rukkola, makkajo'xori, yong'oq, tulum pishlog'i, cherri pomidor, olma, kishmish, narsharab sousi"],
+      "Салат Хевес":["Heves salati","Dudlangan kurka, dudlangan kolbasa, bodring, pishloq, mayonez"],
+      "Цезарь":["Sezar","Tovuq to'shi, parmezan, suxariklar, pomidor, Sezar sousi, aysberg, bedana tuxumi"],
+      "Салат Юлдуз":["Yulduz salati","Salat miksi, doner go'shti, bodring, pomidor, petrushka, kashnich, oshpazning maxsus sousi"],
+      "Ретро@salads":["Retro salati","Mol go'shti, kedr yong'og'i, baqlajon, rukkola, aysberg, Aray sousi, parmezan, cherri pomidor"],
+      // холодные закуски
+      "Хайдари":["Haydari","Suzma, zaytun moyi, sarimsoq, yalpiz, shivit"],
+      "Эзма":["Ezme","Pomidor, petrushka, narsharab, zaytun moyi, bolgar qalampiri, sarimsoq, chili sousi"],
+      "Овощное ассорти":["Sabzavot assorti","Bodring, pomidor, ko'katlar"],
+      "Разносолы":["Tuzlamalar","Pomidor, bodring, achitilgan karam, g'o'r pomidor"],
+      "Соте":["Baqlajon sote","Baqlajon, pomidor, ko'katlar, sarimsoq, kashnich, tartar sousi"],
+      "Сельдь по-русски":["Ruscha seld","Seld balig'i, kartoshka, piyoz"],
+      "Сырное ассорти":["Pishloq assorti"],
+      "Мясная тарелка":["Go'sht kesimlari"],
+      // горячие закуски
+      "Сигара бурек с курицей или с брынзой":["Tovuqli yoki brinzali sigara burek","Lavash, tovuq, brinza, ko'katlar"],
+      "Праздник дунганских перчиков":["Dungan qalampirlari bayrami"],
+      "Кефте по-стамбульски с моцареллой":["Istanbulcha motsarellali kofte","Kartoshka pyuresi, motsarella, petrushka, sous, ziravorlar"],
+      "Долма":["Do'lma","Mol go'shti, uzum bargi, guruch, suzma, ko'katlar"],
+      "Читир Тавук":["Chitir tovuq","Tovuq to'shi, kartoshka fri"],
+      "Цыплёнок Табака":["Tabaka jo'ja"],
+      "Гарлики хрустящие":["Qarsildoq sarimsoqli nonchalar"],
+      // тандыр и пицца
+      "Олот самса":["Olot somsa","Xamir, mol go'shti, ziravorlar"],
+      "Лахмаджун":["Lahmajun","Mol go'shti, pomidor, sabzavotlar, ziravorlar, xamir"],
+      "Пиде с сыром и медом":["Pishloq va asalli pide","Yupqa xamir, pishloq, asal, pista"],
+      "Хачапури":["Xachapuri","Xamir, motsarella, sariyog'"],
+      "Пиде с мясом и сыром":["Go'sht va pishloqli pide","Pomidor, xamir, mol go'shti, piyoz, qalampir, pishloq"],
+      "Пиде ассорти":["Pide assorti","Pomidor, xamir, mol go'shti, tovuq, pishloq, ko'katlar, limon, bolgar qalampiri"],
+      "Пепперони":["Pepperoni","Xamir, motsarella pishlog'i, xom dudlangan kolbasa, pomidor"],
+      "Маргарита":["Margarita","Xamir, motsarella pishlog'i, pomidor"],
+      // первые блюда
+      "Мержемек шурпа":["Mercimek sho'rva","Yasmiq, zaytun moyi, limon, suxariklar"],
+      "Эзогелин":["Ezogelin sho'rva","Yasmiq, zaytun moyi, sabzi, qalampir"],
+      "Чучвара с бульоном":["Sho'rvali chuchvara","Go'sht, xamir, sabzavotlar, ziravorlar"],
+      "Товук шурпа":["Tovuq sho'rva","Tovuq, vermishel, yogurt, ziravorlar"],
+      "Кофте шурпа":["Kofte sho'rva","Guruchli tefteli, kartoshka, pomidor, sabzi, bulyon, ko'katlar"],
+      "Мастава":["Mastava","Qo'y go'shti, guruch, sabzi, kartoshka, pomidor, ziravorlar"],
+      "Кайнатма шурпа":["Qaynatma sho'rva","Qo'y go'shti, kartoshka, pomidor, sabzi, ziravorlar"],
+      "Грибной суп со сливками":["Qaymoqli qo'ziqorin sho'rva","Shampinyon, sariyog', ko'katlar, sut, suxariklar"],
+      // национальные блюда
+      "Манты":["Manti","Xamir, go'sht, ko'katlar"],
+      "Рулька с пюре":["Pyureli rulka","Mol go'shti rulkasi, kartoshka pyuresi"],
+      "Норин":["Norin","O'simlik yog'i, ot go'shti, piyoz, xamir, zira, ziravorlar"],
+      "Лагман уйгурский":["Uyg'urcha lag'mon","Qo'y go'shti, cho'zma xamir, sabzavotlar, ziravorlar"],
+      "Вагури":["Vaguri","Kartoshka bilan qovurilgan qo'zichoq go'shti"],
+      "Думгаза с картофелем":["Kartoshkali dumg'aza","Mol dumi, kartoshka, piyoz, sous va ziravorlar"],
+      "Мясо по-домашнему":["Uy usulida go'sht","Mol go'shti, piyoz, kartoshka, ziravorlar"],
+      "Судак жареный":["Qovurilgan sudak baliq"],
+      "Сазан жареный":["Qovurilgan zog'ora baliq"],
+      "Дуппи":["Duppi","Mol go'shti, non, ziravorlar, piyoz"],
+      "Миллий ассорти":["Milliy assorti","Mol go'shti, lulya kabob, piyoz, sous, tovuq qanotlari, kartoshka, do'lma"],
+      "Говядина с грибами в сливочном соусе":["Qaymoqli sousda qo'ziqorinli mol go'shti","Mol go'shti, qaymoq, qo'ziqorin, salat miksi, guruch"],
+      "Гушт Сай":["Go'sht say","Mol go'shti, pomidor, dungan qalampiri"],
+      "Форель на мангале":["Mangalda forel","Forel, limon"],
+      "Бешбармак":["Beshbarmoq","Qazi, ot go'shti, piyoz, pomidor, xamir"],
+      "Куртоба":["Qurtoba","Yupqa non, qurt, mol go'shti, pomidor, ko'katlar, piyoz"],
+      "Сокоро":["Sokoro","O'simlik yog'i, qo'y go'shti, piyoz, soya, guruch"],
+      // турецкие блюда
+      "Соте куриное":["Tovuqli sote","Tovuq to'shi, motsarella pishlog'i, bolgar qalampiri, piyoz, ziravorlar"],
+      "Филе барбекю (куриный)":["Barbekyu tovuq filesi","Turkcha guruch, qizil karam, ziravorlar, grilda pishirilgan tovuq to'shi"],
+      "Дурум куриный":["Tovuqli durum","Tovuq filesi, lavash, aysberg, pomidor, shalot piyozi, kartoshka fri, tartar sousi"],
+      "Альфредо":["Alfredo","Tovuq to'shi, qaymoq, motsarella pishlog'i, Barilla makaroni"],
+      "Сач кебаб с курицей":["Tovuqli sach kabob","Tovuq, ziravorlar, piyoz, bolgar qalampiri, pomidor, o'simlik yog'i, turkcha guruch"],
+      "Соте мясное":["Go'shtli sote","Mol go'shti, motsarella pishlog'i, bolgar qalampiri, piyoz, ziravorlar"],
+      "Курица с грибами в сливочном соусе карри":["Qaymoqli karri sousida qo'ziqorinli tovuq","Tovuq to'shi, karri, guruch, shampinyon, qaymoq"],
+      "Тава стейк":["Tava steyk","Mol go'shti, motsarella pishlog'i, rukkola, cherri pomidor"],
+      "Бургер Ретро":["Retro burger","Oshpazning maxsus kotleti, kartoshka fri"],
+      "Куриная кефте по-восточному":["Sharq uslubida tovuqli kofte","Motsarella pishlog'i, tovuq qiymasi, ko'katlar, qaymoq, shampinyon, bolgar qalampiri"],
+      "Золотые шпажки падишаха с картофелем":["Podshohning oltin sixchalari, kartoshka bilan","Mol go'shti, piyoz, ziravorlar, kartoshka"],
+      "Томбик донер":["Tombik doner","Doner, pomidor, kartoshka fri, salat bargi, sous, doner noni"],
+      "Сач кебаб с мясом":["Go'shtli sach kabob","Mol go'shti, piyoz, pomidor, o'simlik yog'i, turkcha guruch, ziravorlar, yashil bolgar qalampiri"],
+      "Адана Тандыр":["Adana tandir","Adana kabob, pomidor, dungan qalampiri, pishloq, suzma, petrushka, lavash"],
+      "Искандер кебаб":["Iskender kabob","Go'shtli doner, turk noni, sariyog', suzma, dungan qalampiri, pomidor"],
+      "Пилавли донар":["Pilavli doner","Mol go'shti, lavash, turkcha guruch, kartoshka fri, ziravorlar, marinadlangan bodring, marinadlangan qalampir"],
+      "Кефта Султана с золотым пюре":["Sulton koftesi, oltin pyure bilan","Tovuq qiymasi, kartoshka pyuresi, piyoz, ziravorlar"],
+      "Кефта кебаб":["Kofte kabob","Chopilgan go'sht, turkcha guruch, qizil karam, pomidor, dungan qalampiri"],
+      // шашлыки
+      "Рулет из говядины":["Mol go'shtidan rulet"],
+      "Шашлык Марварид":["Marvarid shashlik"],
+      "Кусковой из говядины":["Bo'lakli mol go'shti shashlik"],
+      "Люля кебаб":["Lulya kabob"],
+      "Куриный шашлык":["Tovuq shashlik"],
+      "Шашлык Наполеон":["Napoleon shashlik"],
+      "Картофель на мангале":["Mangalda kartoshka"],
+      "Кукуруза на мангале":["Mangalda makkajo'xori"],
+      "Товук пирзола":["Tovuq pirzola","Tovuq sonidan shashlik, turkcha guruch, salat miksi, sous"],
+      "Кашарли кофте":["Kasharli kofte","Mol go'shti kotletlari, motsarella pishlog'i, turkcha guruch, qizil karam"],
+      "Изгара кофте":["Izgara kofte","Mangalda pishirilgan mol go'shti kotletlari, turkcha guruch, salat miksi, sous"],
+      "Кашарли бейти":["Kasharli beyti","Tandir lavashiga o'ralgan pishloqli qiyma kabob, turkcha guruch, salat miksi, sous"],
+      // гарниры и хлеб
+      "Рис по-турецки":["Turkcha guruch"],
+      "Картофель фри":["Kartoshka fri"],
+      "Картофель по-деревенски":["Qishloqcha kartoshka"],
+      "Булгур":["Bulg'ur"],
+      "Тирнок экмек":["Tirnoq ekmek","Turk noni"],
+      "Хлеб симит":["Simit"],
+      "Афганский хлеб":["Afg'on noni"],
+      "Лепёшка":["Non"],
+      "Пуф":["Puf non"],
+      "Хлеб ассорти":["Non assorti","Simit, non, turk noni, afg'on noni"],
+      // десерты
+      "Фруктовое ассорти (большое)":["Meva assorti (katta)","Mavsumiy mevalar"],
+      "Шоколадный фондан":["Shokoladli fondan","Shokolad, dolchin, muzqaymoq, pista"],
+      "Мороженое":["Muzqaymoq"],
+      "Хавуч дилими":["Havuch dilimi","Muzqaymoqli turkcha paxlava"],
+      "Пахлава фисташковая":["Pistali paxlava"],
+      "Кунафе":["Kunafe"],
+      "Катмир кассиб":["Katmer kassib"],
+      // напитки: лимонады, коктейли, прохладительные, чаи, фреши, милкшейки
+      "Классический":["Klassik"],
+      "Цитрусовый":["Sitrusli"],
+      "Яблоко-тархун":["Olma va tarxun"],
+      "Ягодный":["Rezavorli"],
+      "Мохито":["Mojito"],
+      "Вишневный поцелуй":["Olcha bo'sasi"],
+      "Ретро@drinks":["Retro"],
+      "Тропический бум":["Tropik bum"],
+      "Viko сок в ассортименте":["Viko sharbati, turli ta'mlar"],
+      "Coca-cola / Fanta / Sprite":["Coca-Cola / Fanta / Sprite"],
+      "Chortoq":["Chortoq mineral suvi"],
+      "Минеральная вода":["Mineral suv"],
+      "Ice tea":["Muzli choy (Ice tea)"],
+      "Айран":["Ayron"],
+      "Компот":["Kompot"],
+      "Турецкий чай":["Turk choyi"],
+      "Зеленый / черный чай":["Ko'k / qora choy"],
+      "С лимоном":["Limonli choy"],
+      "Фирменные чаи":["Maxsus choylar","Mevali, zanjabilli, yasminli, sitrusli"],
+      "Апельсиновый":["Apelsin"],
+      "Яблочный":["Olma"],
+      "Яблочно-морковный":["Olma va sabzi"],
+      "Яблоко-апельсин":["Olma va apelsin"],
+      "Морковный фреш":["Sabzi"],
+      "Банановый":["Bananli"],
+      "Шоколадный":["Shokoladli"]
+    }
   },
   ru:{
     h1:"Забронировать стол", sub:"Заполните за минуту, администратор перезвонит и подтвердит",
@@ -590,6 +744,7 @@ const T = {
     closedNote:"Fully booked then: ", closedTail:". Please pick another.",
     foot:"Retro Milliy · Oltintepa 28 · every day 9:00–23:00",
     tabs:["Booking","Sets","Menu","Halls"],
+    setNames:{retro:"Retro Breakfast",sytnoe:"Hearty Morning",domashnee:"Homestyle Morning",lula:"Lyulya Kebab",kofte:"Chicken Kofte",assorti:"Milliy Platter",kurtoba:"Kurtoba"},
     titles:["Book a table","Sets","Menu","Our halls"],
     bookCta:"Book a table", allSets:"All sets →", seatHere:"Seat us here",
     setsPageLead:"Fixed-price breakfasts and lunches, platters for the table.",
@@ -624,7 +779,160 @@ const T = {
       ["Covered terrace","A bright hall with greenery along the walls and above the tables, arches with lamps, tables by the windows and soft sofas."],
       ["Music hall","A dark hall with neon: a long table along a wall of round mirrors, velvet sofas by the green wall."],
       ["Family area","A bright hall next to the playroom: a slide, a maze, a ball pit and a road-print carpet."]
-    ]
+    ],
+    // блюда меню: [название, состав]; ключ — название из MENU как есть (см. dishTr)
+    dishes:{
+      // салаты
+      "Винегрет":["Vinegret","Boiled beetroot, potatoes, carrots, sauerkraut, green peas"],
+      "Салат Чобан Чирокчи":["Choban Chiroqchi Salad","Tomatoes, cucumbers, onion, bell pepper, olive oil, lemon"],
+      "Салат Ташкент":["Tashkent Salad","Daikon, beef, egg, yoghurt, onion rings"],
+      "Мутабель":["Mutabal","Aubergine with tahini, a Turkish meze"],
+      "Оливье":["Olivier Salad","Boiled potatoes, pickled cucumbers, carrots, beef, green peas, mayonnaise, egg"],
+      "Салат Лайло":["Laylo Salad","Pickled oyster mushrooms, chicken breast, crispy straw potatoes, egg, herbs, mayonnaise"],
+      "Босфор":["Bosphorus","Pickled cucumbers, smoked sausage, tomatoes, sweetcorn, mayonnaise, garlic"],
+      "Зеленый салат с моцареллой":["Green Salad with Mozzarella","Rocket, sweetcorn, cherry tomatoes, cucumbers, mozzarella, sesame oil, balsamic glaze, narsharab pomegranate sauce"],
+      "Хрустящие баклажаны":["Crispy Aubergine","Caramelised aubergine, sesame, cherry tomatoes, herbs, coriander, Aray sauce, unagi sauce"],
+      "Салат со свеклой и фетой с апельсинами":["Beetroot, Feta and Orange Salad","Olive oil, beetroot, rocket, feta, orange, walnuts, shallot, honey, lemon juice"],
+      "Аляска":["Alaska","Turkey roll, button mushrooms, sweetcorn, pickled cucumbers, cheese, pickled tomatoes"],
+      "Элит":["Elite","Beef roll, rocket, mayonnaise, pickled cucumbers, nut sauce, shallot, tomatoes"],
+      "Акдениз":["Akdeniz (Mediterranean)","Fetaxa cheese, iceberg lettuce, lollo rosso, black olives, tomatoes, bell pepper, olive oil, cucumbers"],
+      "Тулум":["Tulum","Pomegranate, lollo rosso, rocket, sweetcorn, nuts, tulum cheese, cherry tomatoes, apple, raisins, narsharab pomegranate sauce"],
+      "Салат Хевес":["Heves Salad","Smoked turkey, smoked sausage, cucumbers, cheese, mayonnaise"],
+      "Цезарь":["Caesar Salad","Chicken breast, parmesan, croutons, tomatoes, Caesar dressing, iceberg lettuce, quail eggs"],
+      "Салат Юлдуз":["Yulduz Salad","Mixed leaves, döner meat, cucumbers, tomatoes, parsley, coriander, chef's signature sauce"],
+      "Ретро@salads":["Retro Salad","Beef, pine nuts, aubergine, rocket, iceberg lettuce, Aray sauce, parmesan, cherry tomatoes"],
+      // холодные закуски
+      "Хайдари":["Haydari","Suzma strained yoghurt, olive oil, garlic, dried mint, dill"],
+      "Эзма":["Ezme","Tomatoes, parsley, narsharab, olive oil, bell pepper, garlic, chilli sauce"],
+      "Овощное ассорти":["Fresh Vegetable Platter","Cucumbers, tomatoes, herbs"],
+      "Разносолы":["Assorted Pickles","Tomatoes, cucumbers, sauerkraut, green tomatoes"],
+      "Соте":["Aubergine Sauté","Aubergine, tomatoes, herbs, garlic, coriander, tartare sauce"],
+      "Сельдь по-русски":["Russian-style Herring","Herring, potatoes, onion"],
+      "Сырное ассорти":["Cheese Platter"],
+      "Мясная тарелка":["Cold Cuts Platter"],
+      // горячие закуски
+      "Сигара бурек с курицей или с брынзой":["Sigara Börek with Chicken or Brynza","Lavash, chicken, brynza white cheese, herbs"],
+      "Праздник дунганских перчиков":["Dungan Pepper Feast"],
+      "Кефте по-стамбульски с моцареллой":["Istanbul-style Kofte with Mozzarella","Mashed potatoes, mozzarella, parsley, sauce, spices"],
+      "Долма":["Dolma","Beef, vine leaves, rice, suzma yoghurt, herbs"],
+      "Читир Тавук":["Çıtır Tavuk (Crispy Chicken)","Chicken breast, French fries"],
+      "Цыплёнок Табака":["Chicken Tabaka"],
+      "Гарлики хрустящие":["Crispy Garlic Bread"],
+      // тандыр и пицца
+      "Олот самса":["Olot Samsa","Pastry, beef, spices"],
+      "Лахмаджун":["Lahmacun","Beef, tomatoes, vegetables, spices, thin dough"],
+      "Пиде с сыром и медом":["Pide with Cheese and Honey","Thin dough, cheese, honey, pistachios"],
+      "Хачапури":["Khachapuri","Dough, mozzarella, butter"],
+      "Пиде с мясом и сыром":["Pide with Meat and Cheese","Tomato, dough, beef, onion, pepper, cheese"],
+      "Пиде ассорти":["Mixed Pide","Tomato, dough, beef, chicken, cheese, herbs, lemon, bell pepper"],
+      "Пепперони":["Pepperoni","Dough, mozzarella, dry-cured sausage, tomatoes"],
+      "Маргарита":["Margherita","Dough, mozzarella, tomatoes"],
+      // первые блюда
+      "Мержемек шурпа":["Mercimek Lentil Soup","Lentils, olive oil, lemon, croutons"],
+      "Эзогелин":["Ezogelin Soup","Lentils, olive oil, carrot, pepper"],
+      "Чучвара с бульоном":["Chuchvara Dumplings in Broth","Meat, dough, vegetables, spices"],
+      "Товук шурпа":["Chicken Shurpa","Chicken, vermicelli, yoghurt, spices"],
+      "Кофте шурпа":["Kofte Shurpa","Meatballs with rice, potatoes, tomato, carrot, broth, herbs"],
+      "Мастава":["Mastava","Lamb, rice, carrot, potatoes, tomato, spices"],
+      "Кайнатма шурпа":["Kaynatma Shurpa","Lamb, potatoes, tomato, carrot, spices"],
+      "Грибной суп со сливками":["Cream of Mushroom Soup","Button mushrooms, butter, herbs, milk, croutons"],
+      // национальные блюда
+      "Манты":["Manti","Dough, meat, herbs"],
+      "Рулька с пюре":["Beef Shank with Mash","Beef shank, mashed potatoes"],
+      "Норин":["Norin","Vegetable oil, horse meat, onion, dough, cumin, spices"],
+      "Лагман уйгурский":["Uyghur Lagman","Lamb, hand-pulled noodles, vegetables, spices"],
+      "Вагури":["Vaguri","Fried lamb with potatoes"],
+      "Думгаза с картофелем":["Dumgaza with Potatoes","Oxtail, potatoes, onion, sauce and spices"],
+      "Мясо по-домашнему":["Homestyle Beef","Beef, onion, potatoes, spices"],
+      "Судак жареный":["Fried Zander"],
+      "Сазан жареный":["Fried Carp"],
+      "Дуппи":["Duppi","Beef, flatbread, spices, onion"],
+      "Миллий ассорти":["Milliy Platter","Beef, lyulya kebab, onion, sauce, chicken wings, potatoes, dolma"],
+      "Говядина с грибами в сливочном соусе":["Beef with Mushrooms in Cream Sauce","Beef, cream, mushrooms, mixed leaves, rice"],
+      "Гушт Сай":["Gosht Say","Beef, tomatoes, Dungan chilli pepper"],
+      "Форель на мангале":["Charcoal-grilled Trout","Trout, lemon"],
+      "Бешбармак":["Beshbarmak","Kazy horse sausage, horse meat, onion, tomatoes, flat noodles"],
+      "Куртоба":["Kurtoba","Thin flatbread, kurt, beef, tomatoes, herbs, onion"],
+      "Сокоро":["Sokoro","Vegetable oil, lamb, onion, soy, rice"],
+      // турецкие блюда
+      "Соте куриное":["Chicken Sauté","Chicken breast, mozzarella, bell pepper, onion, spices"],
+      "Филе барбекю (куриный)":["BBQ Chicken Fillet","Turkish rice, red cabbage, spices, grilled chicken breast"],
+      "Дурум куриный":["Chicken Dürüm","Chicken fillet, lavash, iceberg lettuce, tomatoes, shallot, French fries, tartare sauce"],
+      "Альфредо":["Alfredo","Chicken breast, cream, mozzarella, Barilla pasta"],
+      "Сач кебаб с курицей":["Chicken Saç Kebab","Chicken, spices, onion, bell pepper, tomatoes, vegetable oil, Turkish rice"],
+      "Соте мясное":["Beef Sauté","Beef, mozzarella, bell pepper, onion, spices"],
+      "Курица с грибами в сливочном соусе карри":["Chicken and Mushrooms in Creamy Curry Sauce","Chicken breast, curry, rice, button mushrooms, cream"],
+      "Тава стейк":["Tava Steak","Beef, mozzarella, rocket, cherry tomato"],
+      "Бургер Ретро":["Retro Burger","House patty, French fries"],
+      "Куриная кефте по-восточному":["Eastern-style Chicken Kofte","Mozzarella, minced chicken, herbs, cream, button mushrooms, bell pepper"],
+      "Золотые шпажки падишаха с картофелем":["The Padishah's Golden Skewers with Potatoes","Beef, onion, spices, potatoes"],
+      "Томбик донер":["Tombik Döner","Döner meat, tomato, French fries, lettuce, sauce, tombik bread"],
+      "Сач кебаб с мясом":["Beef Saç Kebab","Beef, onion, tomatoes, vegetable oil, Turkish rice, spices, green bell pepper"],
+      "Адана Тандыр":["Adana Tandyr","Adana kebab, tomatoes, Dungan chilli pepper, cheese, suzma yoghurt, parsley, lavash"],
+      "Искандер кебаб":["Iskender Kebab","Döner meat, Turkish bread, butter, suzma yoghurt, Dungan chilli pepper, tomatoes"],
+      "Пилавли донар":["Pilavli Döner (on Rice)","Beef, lavash, Turkish rice, French fries, spices, pickled cucumbers, pickled peppers"],
+      "Кефта Султана с золотым пюре":["Sultan's Kofte with Golden Mash","Minced chicken, mashed potatoes, onion, spices"],
+      "Кефта кебаб":["Kofte Kebab","Hand-chopped meat, Turkish rice, red cabbage, tomato, Dungan chilli pepper"],
+      // шашлыки
+      "Рулет из говядины":["Beef Roll"],
+      "Шашлык Марварид":["Marvarid Shashlik"],
+      "Кусковой из говядины":["Beef Chunk Shashlik"],
+      "Люля кебаб":["Lyulya Kebab"],
+      "Куриный шашлык":["Chicken Shashlik"],
+      "Шашлык Наполеон":["Napoleon Shashlik"],
+      "Картофель на мангале":["Charcoal-grilled Potatoes"],
+      "Кукуруза на мангале":["Charcoal-grilled Corn"],
+      "Товук пирзола":["Tavuk Pirzola","Chicken thigh shashlik, Turkish rice, mixed salad, sauce"],
+      "Кашарли кофте":["Kasharli Kofte","Beef patties, mozzarella, Turkish rice, red cabbage"],
+      "Изгара кофте":["Izgara Kofte","Charcoal-grilled beef patties, Turkish rice, mixed salad, sauce"],
+      "Кашарли бейти":["Kasharli Beyti","Minced kebab with cheese wrapped in tandyr lavash, Turkish rice, mixed salad, sauce"],
+      // гарниры и хлеб
+      "Рис по-турецки":["Turkish Rice"],
+      "Картофель фри":["French Fries"],
+      "Картофель по-деревенски":["Potato Wedges"],
+      "Булгур":["Bulgur"],
+      "Тирнок экмек":["Tirnok Ekmek","Turkish bread"],
+      "Хлеб симит":["Simit"],
+      "Афганский хлеб":["Afghan Bread"],
+      "Лепёшка":["Non (Uzbek Flatbread)"],
+      "Пуф":["Puf (Balloon Bread)"],
+      "Хлеб ассорти":["Bread Basket","Simit, Uzbek flatbread, Turkish bread, Afghan bread"],
+      // десерты
+      "Фруктовое ассорти (большое)":["Fruit Platter (Large)","Seasonal fruit"],
+      "Шоколадный фондан":["Chocolate Fondant","Chocolate, cinnamon, ice cream, pistachios"],
+      "Мороженое":["Ice Cream"],
+      "Хавуч дилими":["Havuç Dilimi","Turkish baklava with ice cream"],
+      "Пахлава фисташковая":["Pistachio Baklava"],
+      "Кунафе":["Künefe"],
+      "Катмир кассиб":["Katmer Kassib"],
+      // напитки: лимонады, коктейли, прохладительные, чаи, фреши, милкшейки
+      "Классический":["Classic"],
+      "Цитрусовый":["Citrus"],
+      "Яблоко-тархун":["Apple and Tarragon"],
+      "Ягодный":["Berry"],
+      "Мохито":["Mojito"],
+      "Вишневный поцелуй":["Cherry Kiss"],
+      "Ретро@drinks":["Retro"],
+      "Тропический бум":["Tropical Boom"],
+      "Viko сок в ассортименте":["Viko Juice, assorted flavours"],
+      "Coca-cola / Fanta / Sprite":["Coca-Cola / Fanta / Sprite"],
+      "Chortoq":["Chortoq Mineral Water"],
+      "Минеральная вода":["Mineral Water"],
+      "Ice tea":["Iced Tea"],
+      "Айран":["Ayran"],
+      "Компот":["Fruit Kompot"],
+      "Турецкий чай":["Turkish Tea"],
+      "Зеленый / черный чай":["Green / Black Tea"],
+      "С лимоном":["Tea with Lemon"],
+      "Фирменные чаи":["Signature Teas","Fruit, ginger, jasmine, citrus"],
+      "Апельсиновый":["Orange"],
+      "Яблочный":["Apple"],
+      "Яблочно-морковный":["Apple and Carrot"],
+      "Яблоко-апельсин":["Apple and Orange"],
+      "Морковный фреш":["Carrot"],
+      "Банановый":["Banana"],
+      "Шоколадный":["Chocolate"]
+    }
   },
   tr:{
     h1:"Masa ayırtın", sub:"Bir dakikada doldurun, yönetici arayıp onaylasın",
@@ -652,6 +960,7 @@ const T = {
     closedNote:"Bu saat dolu: ", closedTail:". Başka bir saat seçin.",
     foot:"Retro Milliy · Oltintepa 28 · her gün 9:00–23:00",
     tabs:["Rezervasyon","Setler","Menü","Salonlar"],
+    setNames:{retro:"Retro kahvaltı",sytnoe:"Doyurucu sabah",domashnee:"Ev sabahı",lula:"Lüle kebap",kofte:"Tavuk köfte",assorti:"Milliy tabağı",kurtoba:"Kurtoba"},
     titles:["Masa ayırtın","Setler","Menü","Salonlarımız"],
     bookCta:"Masa ayırtın", allSets:"Tüm setler →", seatHere:"Buraya alın",
     setsPageLead:"Sabit fiyatlı kahvaltı ve öğle yemekleri, sofraya tabaklar.",
@@ -686,7 +995,160 @@ const T = {
       ["Kapalı teras","Aydınlık salon: duvarlarda ve masaların üstünde yeşillik, lambalı kemerler, pencere kenarı masalar ve yumuşak koltuklar."],
       ["Müzik salonu","Neonlu karanlık salon: yuvarlak aynalı duvar boyunca uzun masa, yeşil duvarın yanında kadife koltuklar."],
       ["Aile bölümü","Oyun odasının yanındaki aydınlık salon: kaydırak, labirent, top havuzu ve yol desenli halı."]
-    ]
+    ],
+    // блюда меню: [название, состав]; ключ — название из MENU как есть (см. dishTr)
+    dishes:{
+      // салаты
+      "Винегрет":["Vinegret","Haşlanmış pancar, patates, havuç, lahana turşusu, bezelye"],
+      "Салат Чобан Чирокчи":["Çoban Çirokçi salatası","Domates, salatalık, soğan, dolmalık biber, zeytinyağı, limon"],
+      "Салат Ташкент":["Taşkent salatası","Daikon turpu, dana eti, yumurta, yoğurt, soğan halkaları"],
+      "Мутабель":["Mütebbel","Tahinli patlıcan, Türk mezesi"],
+      "Оливье":["Olivye salatası","Haşlanmış patates, kornişon turşusu, havuç, dana eti, bezelye, mayonez, yumurta"],
+      "Салат Лайло":["Laylo salatası","Marine istiridye mantarı, tavuk göğsü, çıtır çöp patates, yumurta, yeşillik, mayonez"],
+      "Босфор":["Bosfor salatası","Kornişon turşusu, füme salam, domates, mısır, mayonez, sarımsak"],
+      "Зеленый салат с моцареллой":["Mozzarellalı yeşil salata","Roka, mısır, çeri domates, salatalık, mozzarella peyniri, susam yağı, balzamik krema, nar ekşisi"],
+      "Хрустящие баклажаны":["Çıtır patlıcan","Karamelize patlıcan, susam, çeri domates, yeşillik, kişniş, Aray sos, unagi sos"],
+      "Салат со свеклой и фетой с апельсинами":["Portakallı pancar ve feta salatası","Zeytinyağı, pancar, roka, feta peyniri, portakal, ceviz, arpacık soğan, bal, limon suyu"],
+      "Аляска":["Alaska salatası","Hindi rulo, kültür mantarı, mısır, kornişon turşusu, peynir, domates turşusu"],
+      "Элит":["Elit salatası","Dana rulo, roka, mayonez, kornişon turşusu, cevizli sos, arpacık soğan, domates"],
+      "Акдениз":["Akdeniz salatası","Fetaksa peyniri, aysberg marul, lolorosso, siyah zeytin, domates, dolmalık biber, zeytinyağı, salatalık"],
+      "Тулум":["Tulum salatası","Nar, lolorosso, roka, mısır, kuruyemiş, tulum peyniri, çeri domates, elma, kuru üzüm, nar ekşisi sos"],
+      "Салат Хевес":["Heves salatası","Füme hindi, füme salam, salatalık, peynir, mayonez"],
+      "Цезарь":["Sezar salata","Tavuk göğsü, parmesan, kruton, domates, Sezar sos, aysberg marul, bıldırcın yumurtası"],
+      "Салат Юлдуз":["Yulduz salatası","Karışık yeşillik, döner eti, salatalık, domates, maydanoz, kişniş, şefin özel sosu"],
+      "Ретро@salads":["Retro salatası","Dana eti, çam fıstığı, patlıcan, roka, aysberg marul, Aray sos, parmesan, çeri domates"],
+      // холодные закуски
+      "Хайдари":["Haydari","Süzme yoğurt, zeytinyağı, sarımsak, nane, dereotu"],
+      "Эзма":["Ezme","Domates, maydanoz, nar ekşisi, zeytinyağı, dolmalık biber, sarımsak, acı sos"],
+      "Овощное ассорти":["Sebze tabağı","Salatalık, domates, yeşillik"],
+      "Разносолы":["Turşu tabağı","Domates, salatalık, lahana turşusu, yeşil domates"],
+      "Соте":["Patlıcan sote","Patlıcan, domates, yeşillik, sarımsak, kişniş, tartar sos"],
+      "Сельдь по-русски":["Rus usulü ringa","Ringa balığı, patates, soğan"],
+      "Сырное ассорти":["Peynir tabağı"],
+      "Мясная тарелка":["Şarküteri tabağı"],
+      // горячие закуски
+      "Сигара бурек с курицей или с брынзой":["Tavuklu veya peynirli sigara böreği","Lavaş, tavuk, beyaz peynir, yeşillik"],
+      "Праздник дунганских перчиков":["Dungan biberi şöleni"],
+      "Кефте по-стамбульски с моцареллой":["İstanbul usulü mozzarellalı köfte","Patates püresi, mozzarella, maydanoz, sos, baharat"],
+      "Долма":["Etli yaprak dolması","Dana eti, asma yaprağı, pirinç, süzme yoğurt, yeşillik"],
+      "Читир Тавук":["Çıtır tavuk","Tavuk göğsü, patates kızartması"],
+      "Цыплёнок Табака":["Tabaka piliç"],
+      "Гарлики хрустящие":["Çıtır sarımsaklı ekmek"],
+      // тандыр и пицца
+      "Олот самса":["Olot samsa","Hamur, dana eti, baharat"],
+      "Лахмаджун":["Lahmacun","Dana eti, domates, sebze, baharat, hamur"],
+      "Пиде с сыром и медом":["Ballı peynirli pide","İnce hamur, peynir, bal, Antep fıstığı"],
+      "Хачапури":["Haçapuri","Hamur, mozzarella, tereyağı"],
+      "Пиде с мясом и сыром":["Etli kaşarlı pide","Domates, hamur, dana eti, soğan, biber, peynir"],
+      "Пиде ассорти":["Karışık pide","Domates, hamur, dana eti, tavuk, peynir, yeşillik, limon, dolmalık biber"],
+      "Пепперони":["Pepperoni","Hamur, mozzarella peyniri, kuru salam, domates"],
+      "Маргарита":["Margarita","Hamur, mozzarella peyniri, domates"],
+      // первые блюда
+      "Мержемек шурпа":["Mercimek çorbası","Mercimek, zeytinyağı, limon, kruton"],
+      "Эзогелин":["Ezogelin çorbası","Mercimek, zeytinyağı, havuç, biber"],
+      "Чучвара с бульоном":["Et suyunda çuçvara (küçük mantı)","Et, hamur, sebze, baharat"],
+      "Товук шурпа":["Tavuk çorbası","Tavuk, şehriye, yoğurt, baharat"],
+      "Кофте шурпа":["Köfte çorbası","Pirinçli köfte, patates, domates, havuç, et suyu, yeşillik"],
+      "Мастава":["Mastava","Kuzu eti, pirinç, havuç, patates, domates, baharat"],
+      "Кайнатма шурпа":["Kaynatma şurpa","Kuzu eti, patates, domates, havuç, baharat"],
+      "Грибной суп со сливками":["Kremalı mantar çorbası","Kültür mantarı, tereyağı, yeşillik, süt, kruton"],
+      // национальные блюда
+      "Манты":["Özbek mantısı","Hamur, et, yeşillik"],
+      "Рулька с пюре":["Püreli dana incik","Dana incik, patates püresi"],
+      "Норин":["Norin","Bitkisel yağ, at eti, kuru soğan, hamur, kimyon, baharat"],
+      "Лагман уйгурский":["Uygur lağmanı","Kuzu eti, el açması erişte, sebze, baharat"],
+      "Вагури":["Vaguri","Patatesli kuzu kızartması"],
+      "Думгаза с картофелем":["Patatesli dumgaza","Dana kuyruğu, patates, soğan, sos ve baharat"],
+      "Мясо по-домашнему":["Ev usulü et","Dana eti, soğan, patates, baharat"],
+      "Судак жареный":["Sudak balığı kızartması"],
+      "Сазан жареный":["Sazan kızartması"],
+      "Дуппи":["Duppi","Dana eti, tandır ekmeği, baharat, soğan"],
+      "Миллий ассорти":["Milliy tabağı","Dana eti, lüle kebap, soğan, sos, tavuk kanadı, patates, dolma"],
+      "Говядина с грибами в сливочном соусе":["Kremalı mantarlı dana","Dana eti, krema, mantar, karışık yeşillik, pirinç"],
+      "Гушт Сай":["Guşt say","Dana eti, domates, Dungan acı biberi"],
+      "Форель на мангале":["Mangalda alabalık","Alabalık, limon"],
+      "Бешбармак":["Beşbarmak","Kazı (at sucuğu), at eti, soğan, domates, hamur"],
+      "Куртоба":["Kurtoba","İnce ekmek, kurut, dana eti, domates, yeşillik, soğan"],
+      "Сокоро":["Sokoro","Bitkisel yağ, kuzu eti, soğan, soya, pirinç"],
+      // турецкие блюда
+      "Соте куриное":["Tavuk sote","Tavuk göğsü, mozzarella peyniri, dolmalık biber, soğan, baharat"],
+      "Филе барбекю (куриный)":["Barbekü tavuk fileto","Türk pilavı, kırmızı lahana, baharat, ızgara tavuk göğsü"],
+      "Дурум куриный":["Tavuk dürüm","Tavuk fileto, lavaş, aysberg marul, domates, arpacık soğan, patates kızartması, tartar sos"],
+      "Альфредо":["Alfredo","Tavuk göğsü, krema, mozzarella peyniri, Barilla makarna"],
+      "Сач кебаб с курицей":["Tavuklu sac kebap","Tavuk, baharat, kuru soğan, dolmalık biber, domates, bitkisel yağ, Türk pilavı"],
+      "Соте мясное":["Et sote","Dana eti, mozzarella peyniri, dolmalık biber, soğan, baharat"],
+      "Курица с грибами в сливочном соусе карри":["Kremalı köri soslu mantarlı tavuk","Tavuk göğsü, köri, pirinç, kültür mantarı, krema"],
+      "Тава стейк":["Tava steak","Dana eti, mozzarella peyniri, roka, çeri domates"],
+      "Бургер Ретро":["Retro burger","Şefin özel köftesi, patates kızartması"],
+      "Куриная кефте по-восточному":["Doğu usulü tavuk köfte","Mozzarella peyniri, tavuk kıyma, yeşillik, krema, kültür mantarı, dolmalık biber"],
+      "Золотые шпажки падишаха с картофелем":["Padişahın altın şişleri, patatesli","Dana eti, soğan, baharat, patates"],
+      "Томбик донер":["Tombik döner","Döner, domates, patates kızartması, marul, sos, tombik ekmeği"],
+      "Сач кебаб с мясом":["Etli sac kebap","Dana eti, kuru soğan, domates, bitkisel yağ, Türk pilavı, baharat, yeşil dolmalık biber"],
+      "Адана Тандыр":["Adana tandır","Adana kebap, domates, Dungan acı biberi, peynir, süzme yoğurt, maydanoz, lavaş"],
+      "Искандер кебаб":["İskender kebap","Et döner, pide ekmeği, tereyağı, süzme yoğurt, Dungan acı biberi, domates"],
+      "Пилавли донар":["Pilavlı döner","Dana eti, lavaş, Türk pilavı, patates kızartması, baharat, kornişon turşusu, biber turşusu"],
+      "Кефта Султана с золотым пюре":["Altın püreli Sultan köftesi","Tavuk kıyma, patates püresi, soğan, baharat"],
+      "Кефта кебаб":["Köfte kebap","Zırh kıyması, Türk pilavı, kırmızı lahana, domates, Dungan acı biberi"],
+      // шашлыки
+      "Рулет из говядины":["Dana rulo"],
+      "Шашлык Марварид":["Marvarid şiş"],
+      "Кусковой из говядины":["Dana kuşbaşı şiş"],
+      "Люля кебаб":["Lüle kebap"],
+      "Куриный шашлык":["Tavuk şiş"],
+      "Шашлык Наполеон":["Napolyon şiş"],
+      "Картофель на мангале":["Mangalda patates"],
+      "Кукуруза на мангале":["Mangalda mısır"],
+      "Товук пирзола":["Tavuk pirzola","Tavuk but şiş, Türk pilavı, karışık salata, sos"],
+      "Кашарли кофте":["Kaşarlı köfte","Dana köfte, mozzarella peyniri, Türk pilavı, kırmızı lahana"],
+      "Изгара кофте":["Izgara köfte","Mangalda dana köfte, Türk pilavı, karışık salata, sos"],
+      "Кашарли бейти":["Kaşarlı beyti","Tandır lavaşına sarılı peynirli kıyma kebabı, Türk pilavı, karışık salata, sos"],
+      // гарниры и хлеб
+      "Рис по-турецки":["Türk pilavı"],
+      "Картофель фри":["Patates kızartması"],
+      "Картофель по-деревенски":["Elma dilim patates"],
+      "Булгур":["Bulgur pilavı"],
+      "Тирнок экмек":["Tırnak ekmek","Türk ekmeği"],
+      "Хлеб симит":["Simit"],
+      "Афганский хлеб":["Afgan ekmeği"],
+      "Лепёшка":["Özbek tandır ekmeği"],
+      "Пуф":["Puf ekmek (balon ekmek)"],
+      "Хлеб ассорти":["Ekmek sepeti","Simit, Özbek tandır ekmeği, Türk ekmeği, Afgan ekmeği"],
+      // десерты
+      "Фруктовое ассорти (большое)":["Meyve tabağı (büyük)","Mevsim meyveleri"],
+      "Шоколадный фондан":["Çikolatalı fondan","Çikolata, tarçın, dondurma, Antep fıstığı"],
+      "Мороженое":["Dondurma"],
+      "Хавуч дилими":["Havuç dilimi","Dondurmalı baklava"],
+      "Пахлава фисташковая":["Fıstıklı baklava"],
+      "Кунафе":["Künefe"],
+      "Катмир кассиб":["Katmer kassib"],
+      // напитки: лимонады, коктейли, прохладительные, чаи, фреши, милкшейки
+      "Классический":["Klasik"],
+      "Цитрусовый":["Narenciyeli"],
+      "Яблоко-тархун":["Elma ve tarhun"],
+      "Ягодный":["Orman meyveli"],
+      "Мохито":["Mojito"],
+      "Вишневный поцелуй":["Vişne öpücüğü"],
+      "Ретро@drinks":["Retro"],
+      "Тропический бум":["Tropikal bum"],
+      "Viko сок в ассортименте":["Viko meyve suyu, çeşitli"],
+      "Coca-cola / Fanta / Sprite":["Coca-Cola / Fanta / Sprite"],
+      "Chortoq":["Chortoq maden suyu"],
+      "Минеральная вода":["Maden suyu"],
+      "Ice tea":["Soğuk çay (Ice tea)"],
+      "Айран":["Ayran"],
+      "Компот":["Komposto"],
+      "Турецкий чай":["Türk çayı"],
+      "Зеленый / черный чай":["Yeşil / siyah çay"],
+      "С лимоном":["Limonlu çay"],
+      "Фирменные чаи":["Özel çaylar","Meyve, zencefil, yasemin, narenciye"],
+      "Апельсиновый":["Portakal"],
+      "Яблочный":["Elma"],
+      "Яблочно-морковный":["Elma-havuç"],
+      "Яблоко-апельсин":["Elma-portakal"],
+      "Морковный фреш":["Havuç"],
+      "Банановый":["Muzlu"],
+      "Шоколадный":["Çikolatalı"]
+    }
   }
 };
 // Язык из адреса кладёт бот — он знает язык переписки. Но гость может сменить
@@ -737,8 +1199,8 @@ const HALL_SHOTS=[
 // (19.09.2026) — на кухне формулировку надо подтвердить. Ассорти и куртоба взяты
 // из меню кухни (раздел national). Составы всех сетов лежат в словаре (setMade),
 // иначе на вкладке «Сеты» пять карточек были на языке гостя, а две по-русски.
-// Названия сетов по-русски на всех языках: так их ищут в меню и в боте
-// (правило контент-пакета).
+// Названия сетов в данных по-русски (так они идут в заявку и в бот);
+// гостю показываются на его языке через setNames / setName().
 const SETS = [
   { id:"retro",     name:"Ретро завтрак",  price:150000, per:75000, photo:TH+"eda-01-zavtrak-devushka.jpg", hours:"09:00–12:00", tag:"gift",         who:"two" },
   { id:"sytnoe",    name:"Сытное утро",    price:150000, per:75000, photo:TH+"eda-02-zavtrak-blizko.jpg",   hours:"09:00–12:00", tag:"giftPancakes", who:"two" },
@@ -752,9 +1214,10 @@ const SETS = [
 // Меню кухни, перенесённое из site/src/data/fullMenu.ts и dishPhotos.ts
 // (источник — Меню.pdf, сентябрь 2026). Строка блюда:
 // [название, цена, вторая цена, примечание, состав, файл фото, хит].
-// Названия и составы остаются по-русски на всех языках: так они стоят в меню
-// и так их ищет гость. Переводятся заголовки разделов, интерфейс и примечания
-// про порцию и объём (словарь notes).
+// Здесь названия и составы по-русски, как в бумажном меню. На язык гостя их
+// переводит словарь dishes (uz/en/tr, ключ — русское название, см. dishTr),
+// примечания про порцию и объём — словарь notes. Нет перевода — остаётся русский.
+// Новое блюдо в MENU — добавьте его и в dishes всех трёх языков.
 const MENU=[
 {id:"salads",time:"8–10",g:[
  {id:null,d:[
@@ -971,6 +1434,8 @@ const hallLabel = () => {
 // «Больше 10» раньше лежал в состоянии подписью на языке, на котором его нажали:
 // после смены языка кнопка теряла выделение, а в итоге оставалось «больше 10».
 // Теперь в состоянии ключ 'many', подпись берётся из текущего словаря.
+// Название сета на языке гостя; в русском словаре setNames нет — остаётся имя из данных.
+const setName = it => (L.setNames && L.setNames[it.id]) || it.name;
 const guestsLabel = () => s.guests==='many' ? L.many : s.guests;
 
 const el=(t,c,x)=>{const e=document.createElement(t); if(c)e.className=c; if(x!=null)e.textContent=x; return e;};
@@ -1000,13 +1465,14 @@ const $=(id)=>document.getElementById(id);
 // Бронь — вкладка по умолчанию, то есть ноль тапов от входа. С любой другой
 // вкладки в бронь ведут два пути: полоса вкладок сверху (она липкая) и главная
 // кнопка Telegram внизу, которая там подписана «Забронировать стол».
+const TAB_I = {book:0, sets:1, menu:2, halls:3};
 const TABS = ['book','sets','menu','halls'];
 let tab = 'book';
 
 function renderTabs(){
   const box=$('tabs'); box.innerHTML='';
   TABS.forEach((k,i)=>{
-    const b=el('button',k===tab?'on':null,L.tabs[i]);
+    const b=el('button',k===tab?'on':null,L.tabs[TAB_I[k]]);
     b.onclick=()=>{ if(k!==tab){ buzz(); goTab(k); } };
     box.appendChild(b);
   });
@@ -1021,7 +1487,7 @@ function goTab(k, keepScroll){
   document.body.className='tab-'+k;
   document.querySelectorAll('.tabpage').forEach(p=>{ p.hidden = p.dataset.tab!==k; });
   renderTabs();
-  $('h1').textContent = L.titles[TABS.indexOf(k)];
+  $('h1').textContent = L.titles[TAB_I[k]];
   if(!keepScroll) window.scrollTo(0,0);
   if(tg){ (k!=='book' || step>1) ? tg.BackButton.show() : tg.BackButton.hide(); }
   if(k==='menu'){ measureTabs(); syncRail(); }
@@ -1030,7 +1496,7 @@ function goTab(k, keepScroll){
 
 // ── статический текст ───────────────────────────────────
 function renderChrome(){
-  $('h1').textContent=L.titles[TABS.indexOf(tab)];
+  $('h1').textContent=L.titles[TAB_I[tab]];
   $('sub').textContent=L.sub;
   $('l1').textContent=L.l1; $('l2').textContent=L.l2; $('l3').textContent=L.l3;
   $('l4').textContent=L.l4; $('l5').textContent=L.l5; $('l6').textContent=L.l6;
@@ -1182,10 +1648,10 @@ function renderSets(){
   const box=$('sets'); box.innerHTML='';
   SETS.forEach(it=>{
     const card=el('button','setcard'); card.type='button';
-    card.appendChild(it.photo ? lazyImg(it.photo, it.name) : el('div','nophoto'));
+    card.appendChild(it.photo ? lazyImg(it.photo, setName(it)) : el('div','nophoto'));
     const inner=el('div','in');
     if(it.hours) inner.appendChild(el('div','when',it.hours));
-    inner.appendChild(el('b',null,it.name));
+    inner.appendChild(el('b',null,setName(it)));
     if(it.tag) inner.appendChild(el('div','gift',L.setTag[it.tag]));
     inner.appendChild(el('div','price',fmtSum(it.price)));
     card.appendChild(inner);
@@ -1214,10 +1680,10 @@ function renderSetsPage(){
   flashed=null;
   SETS.forEach(it=>{
     const card=el('div','setbig'); card.id='set-'+it.id;
-    card.appendChild(it.photo ? lazyImg(it.photo, it.name) : el('div','nophoto'));
+    card.appendChild(it.photo ? lazyImg(it.photo, setName(it)) : el('div','nophoto'));
     const inn=el('div','in');
     if(it.hours) inn.appendChild(el('div','when',it.hours));
-    inn.appendChild(el('h3',null,it.name));
+    inn.appendChild(el('h3',null,setName(it)));
     inn.appendChild(el('div','who', it.who==='one' ? L.forOne : L.forTwo));
     const made = (L.setMade && L.setMade[it.id]) || it.made;
     if(made) inn.appendChild(el('div','made',made));
@@ -1238,7 +1704,11 @@ function renderSetsPage(){
 // 139 позиций одним списком не вываливаем: сверху липкая лента разделов
 // (перескок к якорю) и поиск по названию и составу.
 let mQuery='';
-const norm=(x)=>x.toLowerCase().replace(/ё/g,'е');
+// Поиск прощает диакритику и апострофы: гость с латинской клавиатурой пишет
+// «kofte» вместо «köfte», «sis» вместо «şiş», «shorva» вместо «sho'rva»,
+// а ё и е — одна буква (й при этом тоже сводится к и — с обеих сторон, не мешает).
+const norm=(x)=>x.toLowerCase().replace(/ı/g,'i').normalize('NFD')
+  .replace(/[̀-ͯ]/g,'').replace(/['‘’ʻʼ`´]/g,'');
 
 function renderMenu(){
   const list=$('menuList'); list.innerHTML='';
@@ -1257,7 +1727,7 @@ function renderMenu(){
     sec.g.forEach(gr=>{
       const g=el('div','mgrp');
       if(gr.id) g.appendChild(el('div','mgh',L.grps[gr.id]||gr.id));
-      gr.d.forEach(d=>g.appendChild(dishRow(d)));
+      gr.d.forEach(d=>g.appendChild(dishRow(d, sec.id)));
       box.appendChild(g);
     });
     list.appendChild(box);
@@ -1265,22 +1735,36 @@ function renderMenu(){
   applySearch();
 }
 
+// Перевод блюда из словаря dishes текущего языка: [название, состав] или null.
+// Ключ — русское название из MENU как есть. Если одно название стоит в меню
+// дважды (салат «Ретро» и коктейль «Ретро»), ключ уточняется id раздела через @:
+// «Ретро@salads», «Ретро@drinks». Уточнённый ключ проверяется первым.
+const dishTr = (d, secId) => {
+  const D = L.dishes;
+  return D ? (D[d[0]+'@'+secId] || D[d[0]] || null) : null;
+};
+
 // d = [название, цена, вторая цена, примечание, состав, файл фото, хит]
-function dishRow(d){
+function dishRow(d, secId){
+  const tr = dishTr(d, secId);
+  const name = (tr && tr[0]) || d[0];
+  const made = d[4] ? ((tr && tr[1]) || d[4]) : '';
   const row=el('div','dish');
-  row.dataset.q=norm(d[0]+' '+d[4]);
+  // Ищем и по-русски, и на языке гостя: блюдо могут назвать так, как его
+  // зовут в зале, а могут — как написано у гостя на экране.
+  row.dataset.q=norm([d[0], d[4], name, made].join(' '));
   if(d[5]){
-    const img=lazyImg(DISH+d[5]+'.jpg', d[0]); img.width=56; img.height=56;
+    const img=lazyImg(DISH+d[5]+'.jpg', name); img.width=56; img.height=56;
     row.appendChild(img);
   } else row.appendChild(el('div','ph'));
   const t=el('div','t');
   const hd=el('div','hd');
-  const n=el('span','n',d[0]);
+  const n=el('span','n',name);
   if(d[6]) n.appendChild(el('i',null,'♥'));
   hd.appendChild(n);
   hd.appendChild(el('span','p', d[2] ? fmtNum(d[1])+' / '+fmtNum(d[2]) : fmtNum(d[1])));
   t.appendChild(hd);
-  if(d[4]) t.appendChild(el('div','d',d[4]));
+  if(made) t.appendChild(el('div','d',made));
   if(d[3]) t.appendChild(el('div','nt',(L.notes&&L.notes[d[3]])||d[3]));
   row.appendChild(t);
   return row;
