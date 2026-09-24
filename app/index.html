@@ -178,6 +178,9 @@ input[type=text], input[type=date], input[type=search]{
   width:100%; padding:13px 15px; border:1px solid var(--line); border-radius:var(--r);
   background:var(--navy-2); color:var(--cream); font-size:16px; font-family:inherit;
 }
+/* Без этого значок календаря рисовался чёрным по тёмно-синему и почти пропадал,
+   а сам выпадающий календарь открывался белым посреди тёмного экрана. */
+input[type=date]{color-scheme:dark}
 input::placeholder{color:#6E7B8C}
 input:focus{outline:none; border-color:var(--gold)}
 input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none; height:16px; width:16px;
@@ -319,6 +322,10 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 
   .dish img, .dish .ph{width:50px; height:50px; flex-basis:50px}
   .dish .n{font-size:14.5px}
   .hero .cap{left:14px; right:14px}
+  /* На 320 px кнопки языка наезжали на строку «RETRO MILLIY» в сжатой
+     шапке сетов, меню и залов: ужимаем их по ширине, высоту нажатия не трогаем. */
+  .langbar{right:10px; gap:4px}
+  .langbar button{padding:0 9px}
 }
 </style>
 </head>
@@ -328,7 +335,8 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 
   <img src="../img/terrasa-12-zal-vecherom.jpg" alt="">
   <div class="langbar" id="langbar"></div>
   <div class="cap">
-    <div class="brand">Retro Milliy</div>
+    <!-- lang="uz": в турецком заглавная от i — İ, и бренд превращался в «RETRO MİLLİY» -->
+    <div class="brand" lang="uz">Retro Milliy</div>
     <h1 id="h1"></h1>
   </div>
 </div>
@@ -342,6 +350,8 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 
   <div class="progress"><i id="bar"></i></div>
   <div class="stepline" id="stepline"></div>
   <div class="sub" id="sub"></div>
+  <!-- Вне Telegram нет ни кнопки «Далее», ни отправки: объясняем, куда идти -->
+  <div class="note" id="noTg" hidden></div>
 
   <div class="page" data-step="1">
     <section>
@@ -377,13 +387,16 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 
     <section>
       <div class="label"><span id="l4"></span></div>
       <div class="halls" id="halls"></div>
+      <div class="note" id="hallsNote" hidden></div>
     </section>
   </div>
 
   <div class="page" data-step="4" hidden>
     <section>
       <div class="label"><span id="l5"></span></div>
-      <input type="text" id="name" autocomplete="given-name">
+      <!-- maxlength: sendData берёт не больше 4096 байт, вставленная простыня
+           в имени роняла отправку -->
+      <input type="text" id="name" autocomplete="given-name" maxlength="60">
     </section>
     <section id="phoneSection">
       <div class="label"><span id="l6"></span></div>
@@ -394,6 +407,7 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 
       <div class="head" id="sumHead"></div>
       <div class="body" id="summaryBody"></div>
     </div>
+    <div class="note" id="sendErr" hidden></div>
   </div>
 </div>
 
@@ -424,6 +438,9 @@ footer{text-align:center; color:var(--cream-2); font-size:12.5px; margin:24px 0 
 
 <script>
 const tg = window.Telegram?.WebApp;
+// Скрипт Telegram грузится и в обычном браузере, но платформа там 'unknown',
+// а главной кнопки внизу нет: бронь дальше первого шага не шла.
+const IN_TG = !!tg && !!tg.platform && tg.platform!=='unknown';
 const P = new URLSearchParams(location.search);
 const closed = (P.get('closed') || '').split(',').filter(Boolean);
 const API = (P.get('api') || '').replace(/\/+$/,'');
@@ -462,6 +479,10 @@ const T = {
     send:"Arizani yuborish", fill:"Barcha maydonlarni to'ldiring", sending:"Yuborilmoqda…",
     next:"Keyingi", stepOf:"{m} qadamdan {n}-si",
     closedNote:"Bu vaqt band: ", closedTail:". Boshqasini tanlang.",
+    lateNote:"Bugun uchun band qilish vaqti tugadi. Ertaga yoki boshqa kunni tanlang.",
+    hallsClosed:"Hozir bo'sh joy yo'q",
+    sendErr:"Arizani yuborib bo'lmadi. Internetni tekshirib, yana bir bor bosing yoki qo'ng'iroq qiling: (71) 269-30-05",
+    noTg:"Arizani faqat Telegram orqali yuborish mumkin: @retro_milliy_bot botini oching yoki qo'ng'iroq qiling: (71) 269-30-05",
     foot:"Retro Milliy · Oltintepa 28 · har kuni 9:00–23:00",
     // вкладки и разделы
     tabs:["Band qilish","Setlar","Menyu","Zallar"],
@@ -680,6 +701,10 @@ const T = {
     send:"Отправить заявку", fill:"Заполните все поля", sending:"Отправляем…",
     next:"Далее", stepOf:"Шаг {n} из {m}",
     closedNote:"На это время всё занято: ", closedTail:". Выберите другое.",
+    lateNote:"На сегодня запись закончилась. Выберите завтра или другой день.",
+    hallsClosed:"Сейчас нет свободных мест",
+    sendErr:"Не получилось отправить заявку. Проверьте интернет и нажмите ещё раз или позвоните: (71) 269-30-05",
+    noTg:"Заявка отправляется только из Telegram: откройте бота @retro_milliy_bot или позвоните: (71) 269-30-05",
     foot:"Retro Milliy · Олтинтепа 28 · каждый день 9:00–23:00",
     tabs:["Бронь","Сеты","Меню","Залы"],
     titles:["Забронировать стол","Сеты","Меню","Наши залы"],
@@ -742,6 +767,10 @@ const T = {
     send:"Send request", fill:"Fill in every field", sending:"Sending…",
     next:"Next", stepOf:"Step {n} of {m}",
     closedNote:"Fully booked then: ", closedTail:". Please pick another.",
+    lateNote:"Today's booking hours are over. Please pick tomorrow or another day.",
+    hallsClosed:"No free tables right now",
+    sendErr:"We couldn't send your request. Check your connection and tap again, or call (71) 269-30-05",
+    noTg:"Requests are sent from Telegram only: open @retro_milliy_bot or call (71) 269-30-05",
     foot:"Retro Milliy · Oltintepa 28 · every day 9:00–23:00",
     tabs:["Booking","Sets","Menu","Halls"],
     setNames:{retro:"Retro Breakfast",sytnoe:"Hearty Morning",domashnee:"Homestyle Morning",lula:"Lyulya Kebab",kofte:"Chicken Kofte",assorti:"Milliy Platter",kurtoba:"Kurtoba"},
@@ -958,6 +987,10 @@ const T = {
     send:"Talebi gönder", fill:"Tüm alanları doldurun", sending:"Gönderiliyor…",
     next:"Devam", stepOf:"Adım {n} / {m}",
     closedNote:"Bu saat dolu: ", closedTail:". Başka bir saat seçin.",
+    lateNote:"Bugün için rezervasyon saatleri doldu. Yarını ya da başka bir günü seçin.",
+    hallsClosed:"Şu an boş masa yok",
+    sendErr:"Talep gönderilemedi. İnternet bağlantınızı kontrol edip tekrar deneyin ya da arayın: (71) 269-30-05",
+    noTg:"Talep yalnızca Telegram üzerinden gönderilir: @retro_milliy_bot botunu açın ya da arayın: (71) 269-30-05",
     foot:"Retro Milliy · Oltintepa 28 · her gün 9:00–23:00",
     tabs:["Rezervasyon","Setler","Menü","Salonlar"],
     setNames:{retro:"Retro kahvaltı",sytnoe:"Doyurucu sabah",domashnee:"Ev sabahı",lula:"Lüle kebap",kofte:"Tavuk köfte",assorti:"Milliy tabağı",kurtoba:"Kurtoba"},
@@ -1424,9 +1457,31 @@ const s = { day:null, date:null, part:null, time:null, guests:null,
 
 const dayLabel = () => {
   if(!s.day) return null;
-  if(s.day==='other') return s.date || null;
+  // Дата из календаря приходит как 2026-10-03: в итоге и в сообщении бота
+  // об отмене гость видел её в таком виде. Показываем 03.10.2026, как у бота.
+  if(s.day==='other'){ const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(s.date||'');
+    return m ? m[3]+'.'+m[2]+'.'+m[1] : (s.date || null); }
   return L.days[DAY_KEYS.indexOf(s.day)];
 };
+
+// Дата и минуты от полуночи по Ташкенту. «Сегодня» и «завтра» бот считает
+// по Ташкенту (resolveDate), а телефон гостя может жить в другом поясе.
+function tashNow(shiftDays){
+  const d=new Date(Date.now()+(shiftDays||0)*86400000), p=n=>String(n).padStart(2,'0');
+  try{
+    const o={};
+    new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Tashkent', year:'numeric', month:'2-digit',
+      day:'2-digit', hour:'2-digit', minute:'2-digit', hourCycle:'h23'})
+      .formatToParts(d).forEach(x=>{ o[x.type]=x.value; });
+    return { iso:o.year+'-'+o.month+'-'+o.day, min:(+o.hour%24)*60+(+o.minute) };
+  }catch(e){
+    return { iso:d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()), min:d.getHours()*60+d.getMinutes() };
+  }
+}
+// «Другой день» с сегодняшней или завтрашней датой — это те же сегодня и завтра:
+// иначе через календарь обходились и закрытые части дня, и прошедшее время.
+const effDay = () => s.day!=='other' ? s.day :
+  s.date===tashNow(0).iso ? 'today' : s.date===tashNow(1).iso ? 'tomorrow' : 'other';
 const hallLabel = () => {
   const i = HALL_KEYS.indexOf(s.hall);
   return i < 0 ? null : L.halls[i][0];
@@ -1510,6 +1565,9 @@ function renderChrome(){
   $('hallsLead').textContent=L.hallsLead;
   $('mSearch').placeholder=L.mSearch;
   $('mEmpty').textContent=L.mEmpty;
+  $('noTg').hidden=IN_TG;
+  if(!IN_TG) withPhone($('noTg'), L.noTg);
+  if(!$('sendErr').hidden) withPhone($('sendErr'), L.sendErr);
   document.title='Retro Milliy';
 }
 
@@ -1531,17 +1589,24 @@ function renderDays(){
   DAY_KEYS.forEach((k,i)=>{
     const b=el('button','chip wide',L.days[i]);
     if(s.day===k) b.classList.add('on');
-    b.onclick=()=>{ buzz(); pick(days,b); s.day=k;
+    // Повторный тап по уже выбранному дню стирал выбранное время.
+    b.onclick=()=>{ if(s.day===k) return; buzz(); pick(days,b); s.day=k;
       $('dateWrap').style.display = k==='other'?'block':'none';
       renderParts(true); update(); };
     days.appendChild(b);
   });
 }
-$('dateInput').onchange=e=>{ s.date=e.target.value; update(); };
+// Дата влияет на время: сегодняшняя прячет прошедшие слоты, завтрашняя —
+// закрытые части дня. Поэтому после выбора даты время перерисовываем.
+// Календарь iOS держит min не везде: прошедшую дату стираем сразу, иначе
+// кнопка «Далее» молча не включалась.
+$('dateInput').onchange=e=>{
+  let v=e.target.value;
+  if(v && v<tashNow(0).iso){ e.target.value=''; v=''; }
+  s.date=v||null; renderParts(false); update(); };
 // Календарь начинается с сегодня: вчерашняя бронь администратору не нужна,
 // а в пустом поле date гость её выбирал молча.
-(()=>{ const d=new Date(), p=n=>String(n).padStart(2,'0');
-  $('dateInput').min = d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()); })();
+$('dateInput').min = tashNow(0).iso;
 
 // ── время ───────────────────────────────────────────────
 // reset=true — гость сменил день, прежнее время больше не годится.
@@ -1553,18 +1618,32 @@ function renderParts(reset){
   $('timeSection').hidden = !s.day;
   parts.innerHTML=''; slots.innerHTML=''; note.style.display='none';
   if(reset){ s.part=null; s.time=null; }
-  const blocked=[];
+  const day=effDay(), blocked=[]; let late=false;
   PART_KEYS.forEach((k,i)=>{
-    const shut=(s.day==='today'&&closed.includes('today_'+k))||(s.day==='tomorrow'&&closed.includes('tomorrow_'+k));
+    const shut=(day==='today'||day==='tomorrow')&&closed.includes(day+'_'+k);
     if(shut){ blocked.push(L.parts[i].replace(/^\S+\s/,'').toLocaleLowerCase(lang)); return; }
+    if(!freeTimes(i).length){ late=true; return; }   // эта часть дня сегодня уже прошла
     const b=el('button','chip',L.parts[i]);
     if(s.part===k) b.classList.add('on');
-    b.onclick=()=>{ buzz(); pick(parts,b); s.part=k; s.time=null; renderSlots(PART_TIMES[i]); update(); };
+    b.onclick=()=>{ buzz(); pick(parts,b); s.part=k; s.time=null; renderSlots(freeTimes(i)); update(); };
     parts.appendChild(b);
   });
-  if(s.part){ const i=PART_KEYS.indexOf(s.part); if(i>=0) renderSlots(PART_TIMES[i]); }
-  if(blocked.length){ note.textContent=L.closedNote+blocked.join(', ')+L.closedTail; note.style.display='block'; }
+  // Выбранное раньше могло стать недоступным: сменили дату в календаре или
+  // время прошло, пока приложение было открыто. Такой выбор снимаем.
+  const pi=PART_KEYS.indexOf(s.part);
+  if(pi>=0 && !parts.querySelector('.on')){ s.part=null; s.time=null; }
+  else if(pi>=0){ const ft=freeTimes(pi); if(!ft.includes(s.time)) s.time=null; renderSlots(ft); }
+  if(!parts.children.length && late){ note.textContent=L.lateNote; note.style.display='block'; }
+  else if(blocked.length){ note.textContent=L.closedNote+blocked.join(', ')+L.closedTail; note.style.display='block'; }
 }
+// Сегодня прошедшие слоты не предлагаем: раньше в 21:30 можно было
+// отправить бронь на сегодня на 9:00.
+const toMin=t=>{ const [h,m]=t.split(':'); return h*60 + +m; };
+const freeTimes=i=>{
+  if(effDay()!=='today') return PART_TIMES[i];
+  const now=tashNow(0).min;
+  return PART_TIMES[i].filter(t=>toMin(t)>now);
+};
 function renderSlots(times){
   const slots=$('slots'); slots.innerHTML='';
   times.forEach(t=>{ const b=el('button','chip',t);
@@ -1586,8 +1665,9 @@ function renderGuests(){
 // ── залы: выбор в брони ─────────────────────────────────
 function renderHalls(){
   const halls=$('halls'); halls.innerHTML='';
+  const shut=[];
   HALL_KEYS.forEach((k,i)=>{
-    if(HALL_FIELDS[i]&&closed.includes(HALL_FIELDS[i])) return;
+    if(HALL_FIELDS[i]&&closed.includes(HALL_FIELDS[i])){ shut.push(L.halls[i][0]); return; }
     const [title,desc]=L.halls[i];
     const d=el('div','hall');
     if(s.hall===k) d.classList.add('on');
@@ -1597,13 +1677,18 @@ function renderHalls(){
     d.onclick=()=>{ buzz(); pick(halls,d); s.hall=k; update(); };
     halls.appendChild(d);
   });
+  // Закрытый зал раньше молча пропадал из списка, и гость не понимал, куда он делся.
+  const hn=$('hallsNote'); hn.hidden=!shut.length;
+  if(shut.length) hn.textContent=L.hallsClosed+': '+shut.join(', ')+'.';
 }
 
 // ── залы: витрина ───────────────────────────────────────
 function renderZones(){
   const box=$('zones'); box.innerHTML='';
   L.zones.forEach(([title,text],i)=>{
-    if(HALL_FIELDS[i]&&closed.includes(HALL_FIELDS[i])) return;
+    // Витрина показывает все три зала (вводная так и говорит: «три зала»);
+    // у закрытого вместо «посадить сюда» пометка. Раньше он исчезал целиком.
+    const shut=HALL_FIELDS[i]&&closed.includes(HALL_FIELDS[i]);
     const card=el('div','zone');
     const shots=el('div','shots');
     HALL_SHOTS[i].forEach(f=>{
@@ -1613,10 +1698,13 @@ function renderZones(){
     const inn=el('div','in');
     inn.appendChild(el('h3',null,title));
     inn.appendChild(el('p',null,text));
-    const b=el('button','ghost',L.seatHere);
-    b.onclick=()=>{ buzz(); s.hall=HALL_KEYS[i]; renderHalls(); goTab('book');
-      if(stepReady(1) && stepReady(2)) showStep(3); };
-    inn.appendChild(b);
+    if(shut) inn.appendChild(el('div','note',L.hallsClosed));
+    else {
+      const b=el('button','ghost',L.seatHere);
+      b.onclick=()=>{ buzz(); s.hall=HALL_KEYS[i]; renderHalls(); goTab('book');
+        if(stepReady(1) && stepReady(2)) showStep(3); };
+      inn.appendChild(b);
+    }
     card.appendChild(inn);
     box.appendChild(card);
   });
@@ -1630,14 +1718,19 @@ const fmtNum=(n)=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
 // Номер в подписи про банкет одинаков во всех четырёх языках, поэтому
 // вырезаем его из строки и отдаём ссылкой на звонок.
 const PHONE_SHOWN='(71) 269-30-05', PHONE_TEL='+998712693005';
+// Имя бота в подсказке «откройте в Telegram» тоже ссылка: её видят вне Telegram.
+const BOT_SHOWN='@retro_milliy_bot', BOT_URL='https://t.me/retro_milliy_bot';
 function withPhone(node, text){
   node.textContent='';
-  const i=text.indexOf(PHONE_SHOWN);
-  if(i<0){ node.textContent=text; return; }
-  node.appendChild(document.createTextNode(text.slice(0,i)));
-  const a=el('a','tel',PHONE_SHOWN); a.href='tel:'+PHONE_TEL;
-  node.appendChild(a);
-  node.appendChild(document.createTextNode(text.slice(i+PHONE_SHOWN.length)));
+  let rest=text;
+  [[BOT_SHOWN,BOT_URL],[PHONE_SHOWN,'tel:'+PHONE_TEL]].forEach(([shown,href])=>{
+    const i=rest.indexOf(shown); if(i<0) return;
+    node.appendChild(document.createTextNode(rest.slice(0,i)));
+    const a=el('a','tel',shown); a.href=href;
+    node.appendChild(a);
+    rest=rest.slice(i+shown.length);
+  });
+  node.appendChild(document.createTextNode(rest));
 }
 
 // короткая лента на первом шаге брони
@@ -1860,13 +1953,17 @@ function renderPhone(){
   if(s.phone){ box.appendChild(el('div','got',L.phoneGot+s.phone)); return; }
   const b=el('button','phone-btn',L.phoneBtn);
   b.onclick=()=>{
-    if(!tg?.requestContact){ manual(); return; }
-    tg.requestContact((ok,res)=>{
-      if(ok){ const raw=res?.responseUnsafe?.contact?.phone_number||res?.contact?.phone_number;
-        if(raw){ s.phone=String(raw).startsWith('+')?raw:'+'+raw; renderPhone(); update(); }
-        else manual(); }
-      else manual();
-    });
+    // requestContact есть только с Telegram 6.9: на старом клиенте и вне Telegram
+    // он бросает исключение, и кнопка молча не работала. Там сразу ручной ввод.
+    if(!IN_TG || !tg.requestContact || (tg.isVersionAtLeast && !tg.isVersionAtLeast('6.9'))){ manual(); return; }
+    try{
+      tg.requestContact((ok,res)=>{
+        if(ok){ const raw=res?.responseUnsafe?.contact?.phone_number||res?.contact?.phone_number;
+          if(raw){ s.phone=String(raw).startsWith('+')?raw:'+'+raw; renderPhone(); update(); }
+          else manual(); }
+        else manual();
+      });
+    }catch(e){}   // второй тап, пока окно запроса открыто: запрос уже идёт
   };
   box.appendChild(b);
   const m=el('div','hint tap',L.phoneManual);
@@ -1877,6 +1974,7 @@ function manual(focus){
   manualPhone=true;
   const box=$('phoneBox'); box.innerHTML='';
   const i=el('input'); i.type='text'; i.placeholder='+998 XX XXX XX XX'; i.inputMode='tel';
+  i.maxLength=24; i.autocomplete='tel';
   i.value=s.phone||'';
   i.oninput=e=>{ s.phone=e.target.value.trim(); update(); };
   box.appendChild(i); if(focus!==false) i.focus();
@@ -1888,11 +1986,14 @@ function manual(focus){
 // и уезжали за край на невысоких телефонах.
 const STEPS=4;
 let step=1;
+// Цифр в номере от 9 (901234567) до 15 — длиннее номеров не бывает (E.164),
+// а раньше проходили и склеенные два номера, и случайная простыня цифр.
+const phoneOk=()=>{ const n=s.phone.replace(/\D/g,'').length; return n>=9 && n<=15; };
 const stepReady=(n)=>
-  n===1 ? !!(s.day && (s.day!=='other'||s.date) && s.time) :
+  n===1 ? !!(s.day && (s.day!=='other'||(s.date && s.date>=tashNow(0).iso)) && s.time) :
   n===2 ? !!s.guests :
   n===3 ? !!s.hall :
-          !!(s.name && (KNOWN || s.phone.replace(/\D/g,'').length>=9));
+          !!(s.name && (KNOWN || phoneOk()));
 const ready=()=>[1,2,3,4].every(stepReady);
 
 function showStep(n, keepScroll){
@@ -1955,41 +2056,58 @@ if(tg){
     if(step>1) showStep(step-1);
   });
   let sent=false;                       // заявка уходит один раз, сколько бы ни нажали
+  // Заявка не ушла: возвращаем кнопку и говорим гостю, что делать.
+  // Раньше при сбое сети гость навсегда оставался с «Отправляем…».
+  const sendFailed=()=>{
+    sent=false; window.__sent=false;
+    try{ tg.MainButton.hideProgress(); }catch(e){}
+    try{ tg.HapticFeedback?.notificationOccurred('error'); }catch(e){}
+    const n=$('sendErr'); n.hidden=false; withPhone(n, L.sendErr);
+    try{ n.scrollIntoView({block:'nearest'}); }catch(e){}
+    update();
+  };
   tg.MainButton.onClick(()=>{
     if(tab!=='book'){ goTab('book'); return; }
     if(step<STEPS){ if(stepReady(step)) showStep(step+1); return; }
     if(sent || !ready()) return;
     sent=true; window.__sent=true;
+    $('sendErr').hidden=true;
     tg.MainButton.disable();
     tg.MainButton.setText(L.sending);
     try{ tg.MainButton.showProgress(true); }catch(e){}
     try{ tg.HapticFeedback?.notificationOccurred('success'); }catch(e){}
 
+    // Число гостей бот кладёт прямо в карточку администратору, а она всегда
+    // по-русски: «больше 10» уходит русским словом, как ключи части дня и зала.
+    // Раньше туда попадало «10 dan ko'p» или «more than 10».
     const booking={ t:'table', lang, day:s.day, date:s.date, dayLabel:dayLabel(),
-      part:s.part, time:s.time, guests:guestsLabel(), hall:s.hall, hallLabel:hallLabel(),
-      name:s.name, phone:KNOWN?'':s.phone };
+      part:s.part, time:s.time, guests:s.guests==='many' ? T.ru.many : s.guests,
+      hall:s.hall, hallLabel:hallLabel(), name:s.name, phone:KNOWN?'':s.phone };
+
+    // sendData закрывает приложение, только если его открыли кнопкой клавиатуры.
+    // Открытое из меню или по ссылке он молча пропускает: если через несколько
+    // секунд мы всё ещё на экране, заявка не ушла.
+    const viaSendData=()=>{
+      try{ tg.sendData(JSON.stringify(booking)); }catch(e){ sendFailed(); return; }
+      setTimeout(()=>{ if(sent) sendFailed(); }, 4000);
+    };
 
     // sendData умеет только приложение, открытое кнопкой клавиатуры. Если у нас
     // есть адрес бота и подпись Telegram — шлём напрямую, и тогда бронь работает
     // из любой точки входа: кнопки меню, ссылки, сообщения с фото.
     if(API && tg.initData){
+      // Повисший сервер без таймаута держал гостя на «Отправляем…» бесконечно.
+      const ctl=window.AbortController ? new AbortController() : null;
+      const timer=setTimeout(()=>{ if(ctl) ctl.abort(); }, 15000);
       fetch(API+'/booking',{ method:'POST', headers:{'content-type':'application/json'},
-        body:JSON.stringify({ initData:tg.initData, booking }) })
-        .then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
+        body:JSON.stringify({ initData:tg.initData, booking }), signal:ctl?ctl.signal:undefined })
+        .then(r=>{ clearTimeout(timer); if(!r.ok) throw new Error(r.status); return r.json(); })
         .then(()=>{ try{ tg.HapticFeedback?.notificationOccurred('success'); }catch(e){} tg.close(); })
-        .catch(()=>{
-          // не достучались — пробуем старым путём, а если и он недоступен,
-          // возвращаем кнопку, чтобы гость не остался с мёртвым экраном
-          try{ tg.sendData(JSON.stringify(booking)); }
-          catch(e){
-            sent=false; window.__sent=false;
-            try{ tg.MainButton.hideProgress(); }catch(e2){}
-            tg.MainButton.setText(L.send); tg.MainButton.enable();
-          }
-        });
+        // не достучались — пробуем старым путём (он сработает у кнопки клавиатуры)
+        .catch(()=>{ clearTimeout(timer); viaSendData(); });
       return;
     }
-    tg.sendData(JSON.stringify(booking));
+    viaSendData();
   });
 }
 renderAll();
