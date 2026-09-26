@@ -1207,12 +1207,15 @@ const HALL_KEYS = ['терраса','музыкальный','семейная',
 const HALL_FILES= ['terrasa-01-neon-arki.jpg','muzyk-01-bankentnyy-stol-zerkala.jpg',
                    'terrasa-03-zal-zelen.jpg', null];
 const HALL_FIELDS=['hall_terrace','hall_music','hall_family',null];
-// Витрина залов: кадры отобраны по тому, что на них видно.
+// Витрина залов: кадры отобраны по тому, что на них видно (сверено с Амиром 26.09.2026).
+// Терраса — только арки с неоном и столы у окон: terrasa-01/02/07/10. Остальные кадры
+// из папки «terrasa» (кресла, мандалы, плетёные люстры) — это семейный зал.
 const HALL_SHOTS=[
-  ['terrasa-01-neon-arki.jpg','terrasa-02-arki-lampy.jpg','terrasa-05-zelenyy-potolok.jpg',
-   'terrasa-07-stoly-u-okon.jpg','terrasa-09-divan-trava.jpg','terrasa-13-dlinnyy-stol.jpg'],
+  ['terrasa-01-neon-arki.jpg','terrasa-02-arki-lampy.jpg',
+   'terrasa-07-stoly-u-okon.jpg','terrasa-10-kruglyy-stol-mandala.jpg'],
   ['muzyk-01-bankentnyy-stol-zerkala.jpg','muzyk-02-neon-divan.jpg','muzyk-03-vhod-neon.jpg'],
-  ['terrasa-03-zal-zelen.jpg','semya-01-igrovaya-gorka.jpg','semya-02-labirint-kover.jpg']
+  ['terrasa-03-zal-zelen.jpg','terrasa-11-zal-sverhu.jpg','terrasa-13-dlinnyy-stol.jpg',
+   'terrasa-05-zelenyy-potolok.jpg','semya-01-igrovaya-gorka.jpg','semya-02-labirint-kover.jpg']
 ];
 
 // Витрина сетов. Цены завтраков подтверждены владельцем (150 000, 150 000, 170 000
@@ -1225,7 +1228,7 @@ const HALL_SHOTS=[
 // Названия сетов в данных по-русски (так они идут в заявку и в бот);
 // гостю показываются на его языке через setNames / setName().
 const SETS = [
-  { id:"retro",     name:"Ретро завтрак",  price:150000, per:75000, photo:TH+"eda-01-zavtrak-devushka.jpg", hours:"09:00–12:00", tag:"gift",         who:"two" },
+  { id:"retro",     name:"Ретро завтрак",  price:150000, per:75000, photo:TH+"eda-06-retro-zavtrak.jpg", hours:"09:00–12:00", tag:"gift",         who:"two" },
   { id:"sytnoe",    name:"Сытное утро",    price:150000, per:75000, photo:TH+"eda-02-zavtrak-blizko.jpg",   hours:"09:00–12:00", tag:"giftPancakes", who:"two" },
   { id:"domashnee", name:"Домашнее утро",  price:170000, per:85000, photo:TH+"eda-04-zavtrak-stol.jpg",     hours:"09:00–12:00", tag:"giftPorridge", who:"two" },
   { id:"lula",      name:"Шашлык люля",    price:90000,  photo:TH+"eda-05-obed-lula.jpg",                     hours:"12:00–16:00", who:"one" },
@@ -2405,6 +2408,8 @@ if(tg){
   });
 }
 renderAll();
+// Сайт ведёт сюда кнопкой «Всё меню» с ?tab=menu: гость сразу видит меню.
+{ const startTab=P.get('tab'); if(['sets','menu','halls'].includes(startTab)) goTab(startTab); }
 </script>
 </body>
 </html>
