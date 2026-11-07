@@ -207,6 +207,14 @@ input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none; height
   background:var(--navy-2); border:1px solid var(--gold); color:var(--gold-soft);
   text-align:center; padding:14px; border-radius:var(--r); font-size:15.5px;
 }
+.bqentry{display:flex; align-items:center; gap:12px; margin-top:14px; padding:8px 12px 8px 8px;
+  border:1px solid var(--gold); border-radius:var(--r); background:var(--navy-2);
+  color:var(--cream); text-decoration:none; cursor:pointer}
+.bqentry img{flex:none; width:52px; height:52px; border-radius:9px; object-fit:cover}
+.bqentry div{flex:1 1 auto; min-width:0}
+.bqentry b{display:block; font-size:15px; font-weight:600; color:var(--gold-soft)}
+.bqentry span{display:block; font-size:12.5px; line-height:1.35; color:var(--cream-2)}
+.bqentry::after{content:"›"; flex:none; font-size:22px; line-height:1; color:var(--gold-soft)}
 .hint{font-size:12.5px; color:var(--cream-2); margin-top:8px}
 /* Запасной путь для телефона: по нему промахивались, потому что ссылка
    была ровно в строку текста. Теперь у неё полноценная высота нажатия. */
@@ -440,6 +448,12 @@ input.bad{border-color:var(--err)}
   <div class="note" id="noTg" hidden></div>
 
   <div class="page" data-step="1">
+    <!-- Вход в заявку на Новый год и банкет, сама заявка идёт в боте.
+         Одна строка: первое действие брони остаётся на первом экране. -->
+    <a class="bqentry" id="bqEntry">
+      <img src="../sq/fasad-02-koridor-neon.jpg" alt="" decoding="async">
+      <div><b id="bqTitle"></b><span id="bqSub"></span></div>
+    </a>
     <section>
       <div class="label"><span id="l1"></span></div>
       <div class="row" id="days"></div>
@@ -576,6 +590,7 @@ const T = {
     l5:"Ismingiz", l6:"Telefon",
     lSets:"Setlar", setsLead:"Tayyor setlar: nonushta, tushlik va assorti",
     setsFoot:"Banketni stolingizga qarab yig'amiz: (71) 269-30-05",
+    bqTitle:"🎄 Yangi yil va banket", bqSub:"Menejer zal tanlaydi va menyuni hisoblaydi",
     sum:"so'm",
     setTag:{ gift:"Sovg'a: ikki kishiga choy",
              giftPancakes:"Sovg'a: ikki tvorogli blinchik va ikki kishiga choy",
@@ -830,6 +845,7 @@ const T = {
     l5:"Как вас зовут", l6:"Телефон",
     lSets:"Сеты", setsLead:"Готовые наборы: завтраки, обеды и ассорти из меню",
     setsFoot:"Банкет соберём под ваш стол: (71) 269-30-05",
+    bqTitle:"🎄 Новый год и банкет", bqSub:"Менеджер подберёт зал и посчитает меню",
     sum:"сум",
     setTag:{ gift:"Подарок: чай на двоих",
              giftPancakes:"Подарок: два блинчика с творогом и чай на двоих",
@@ -927,6 +943,7 @@ const T = {
     l5:"Your name", l6:"Phone",
     lSets:"Sets", setsLead:"Ready sets: breakfasts, lunches and platters from the menu",
     setsFoot:"For a banquet the host puts a table together for you: (71) 269-30-05",
+    bqTitle:"🎄 New Year & banquets", bqSub:"A manager finds the hall and menu",
     sum:"sum",
     setTag:{ gift:"Gift: tea for two",
              giftPancakes:"Gift: two curd pancakes plus tea for two",
@@ -1734,6 +1751,28 @@ function withPhone(node, text){
   node.appendChild(document.createTextNode(rest));
 }
 
+// Вход в заявку на Новый год и банкет. sendData закрывает приложение, только если
+// его открыли кнопкой клавиатуры, и бот сразу показывает выбор повода. Открытое из
+// меню или по ссылке он молча пропускает: если мы всё ещё на экране, ведём в бота
+// ссылкой с меткой. В браузере работает обычная ссылка.
+function renderBanquet(){
+  const a=$('bqEntry'), link=BOT_URL+'?start=app_bq_'+lang;
+  a.href=link;
+  $('bqTitle').textContent=L.bqTitle;
+  $('bqSub').textContent=L.bqSub;
+  a.onclick=e=>{
+    if(!IN_TG) return;
+    e.preventDefault(); buzz();
+    if(a.dataset.sent) return;
+    a.dataset.sent='1';
+    try{ tg.sendData(JSON.stringify({t:'banquet', lang})); }catch(err){}
+    setTimeout(()=>{
+      delete a.dataset.sent;
+      try{ tg.openTelegramLink(link); tg.close(); }catch(err){ location.href=link; }
+    }, 1500);
+  };
+}
+
 // короткая лента на первом шаге брони
 function renderSets(){
   $('lSets').textContent=L.lSets;
@@ -2335,7 +2374,7 @@ function renderAll(keepScroll){
   const y = keepScroll ? window.scrollY : 0;
   if(io) io.disconnect();   // прежние кадры выброшены, наблюдать за ними нечего
   renderLangbar(); renderChrome(); renderTabs();
-  renderSets(); renderSetsPage(); renderMenu(); renderZones();
+  renderBanquet(); renderSets(); renderSetsPage(); renderMenu(); renderZones();
   renderDays(); renderGuests(); renderHalls();
   renderParts(false);
   renderPhone(); renderProfile(); showStep(step, keepScroll);
